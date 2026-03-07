@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GANKETI | Premium Original Streetwear</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;800;900&family=Poppins:wght@300;500;600&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg: #0a0a0a; --text: #ffffff; --card: #141414; }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { background: var(--bg); color: var(--text); font-family: 'Poppins', sans-serif; }
+
+        header { padding: 20px; display: flex; justify-content: space-between; border-bottom: 1px solid #222; position: sticky; top: 0; background: rgba(10,10,10,0.9); z-index: 100; }
+        .logo { font-family: 'Montserrat', sans-serif; font-size: 24px; font-weight: 900; letter-spacing: 2px; }
+        .cart-btn { background: transparent; color: white; border: 1px solid #444; padding: 5px 15px; border-radius: 20px; font-weight: 600; cursor: pointer; }
+
+        .hero { text-align: center; padding: 60px 20px; background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1556821840-3a63f95609a7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80') center/cover; }
+        .hero h1 { font-family: 'Montserrat', sans-serif; font-size: 36px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px;}
+        .hero p { font-size: 14px; color: #ccc; margin-bottom: 20px; font-weight: 300; }
+
+        .container { padding: 30px 20px; max-width: 1200px; margin: 0 auto; }
+        .section-title { font-family: 'Montserrat', sans-serif; font-size: 20px; font-weight: 800; text-transform: uppercase; margin-bottom: 20px; }
+        
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; }
+        .card { background: var(--card); transition: 0.3s; }
+        .card:hover { transform: translateY(-5px); }
+        .img-box { width: 100%; height: 250px; background: #222; position: relative; }
+        .img-box img { width: 100%; height: 100%; object-fit: cover; }
+        .badge { position: absolute; top: 10px; left: 10px; background: white; color: black; font-size: 10px; font-weight: 800; padding: 3px 8px; text-transform: uppercase; }
+        .info { padding: 15px; }
+        .cat { font-size: 10px; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
+        .name { font-size: 14px; font-weight: 600; margin-bottom: 10px; line-height: 1.4; }
+        .price { font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 16px; margin-bottom: 15px; }
+        .btn-add { background: transparent; color: white; border: 1px solid white; width: 100%; padding: 10px; font-weight: 600; cursor: pointer; text-transform: uppercase; font-size: 12px; transition: 0.2s;}
+        .btn-add:hover { background: white; color: black; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <div class="logo">GANKETI</div>
+        <button class="cart-btn">CART [ 0 ]</button>
+    </header>
+
+    <div class="hero">
+        <h1>Authentic Streetwear</h1>
+        <p>Premium original fashion for the modern youth.</p>
+    </div>
+
+    <div class="container">
+        <h2 class="section-title">New Arrivals</h2>
+        <div class="grid" id="productGrid">
+            <p style="text-align: center; width: 100%; color: #888;">Memuat koleksi...</p>
+        </div>
+    </div>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+
+    <script>
+        // Kunci Firebase GANKETI
+        const firebaseConfig = {
+            apiKey: "AIzaSyDoh1VBH6YEicKHPyViPi0NUsnILaTin8g",
+            authDomain: "ganketi.firebaseapp.com",
+            databaseURL: "https://ganketi-default-rtdb.firebaseio.com",
+            projectId: "ganketi",
+            storageBucket: "ganketi.firebasestorage.app",
+            messagingSenderId: "61078873925",
+            appId: "1:61078873925:web:c5bf3bdf7cc18f11d6002c"
+        };
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        // Menyedot data dari Firebase secara Real-time
+        db.ref('products').on('value', (snapshot) => {
+            const data = snapshot.val();
+            const grid = document.getElementById('productGrid');
+            
+            if(!data) {
+                grid.innerHTML = '<p style="text-align:center; width:100%; color:#888;">Belum ada produk. Admin belum upload.</p>';
+                return;
+            }
+
+            // Ubah Object Firebase jadi Array dan urutkan dari yang terbaru
+            const productsArray = Object.keys(data).map(key => ({ id: key, ...data[key] }));
+            productsArray.sort((a, b) => b.timestamp - a.timestamp);
+
+            // Render ke layar
+            grid.innerHTML = productsArray.map(p => `
+                <div class="card">
+                    <div class="img-box">
+                        <div class="badge">Original</div>
+                        <img src="${p.image}" alt="${p.name}">
+                    </div>
+                    <div class="info">
+                        <div class="cat">${p.category}</div>
+                        <div class="name">${p.name}</div>
+                        <div class="price">Rp ${p.price.toLocaleString('id-ID')}</div>
+                        <button class="btn-add">+ Add to Cart</button>
+                    </div>
+                </div>
+            `).join('');
+        });
+    </script>
+</body>
+</html>
