@@ -10,20 +10,20 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { background: var(--bg); color: var(--text); font-family: 'Poppins', sans-serif; }
 
+        /* HEADER & HERO */
         header { padding: 20px; display: flex; justify-content: space-between; border-bottom: 1px solid #222; position: sticky; top: 0; background: rgba(10,10,10,0.9); z-index: 100; }
         .logo { font-family: 'Montserrat', sans-serif; font-size: 24px; font-weight: 900; letter-spacing: 2px; }
-        .cart-btn { background: transparent; color: white; border: 1px solid #444; padding: 5px 15px; border-radius: 20px; font-weight: 600; cursor: pointer; }
-
+        .cart-btn { background: #fff; color: #000; border: none; padding: 8px 20px; border-radius: 30px; font-weight: 700; cursor: pointer; transition: 0.3s; }
+        .cart-btn:hover { background: #ccc; }
         .hero { text-align: center; padding: 60px 20px; background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.7)), url('https://images.unsplash.com/photo-1556821840-3a63f95609a7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80') center/cover; }
         .hero h1 { font-family: 'Montserrat', sans-serif; font-size: 36px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px;}
-        .hero p { font-size: 14px; color: #ccc; margin-bottom: 20px; font-weight: 300; }
 
+        /* PRODUCT GRID */
         .container { padding: 30px 20px; max-width: 1200px; margin: 0 auto; }
         .section-title { font-family: 'Montserrat', sans-serif; font-size: 20px; font-weight: 800; text-transform: uppercase; margin-bottom: 20px; }
-        
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 20px; }
-        .card { background: var(--card); transition: 0.3s; }
-        .card:hover { transform: translateY(-5px); }
+        .card { background: var(--card); transition: 0.3s; border: 1px solid #222; }
+        .card:hover { transform: translateY(-5px); border-color: #555; }
         .img-box { width: 100%; height: 250px; background: #222; position: relative; }
         .img-box img { width: 100%; height: 100%; object-fit: cover; }
         .badge { position: absolute; top: 10px; left: 10px; background: white; color: black; font-size: 10px; font-weight: 800; padding: 3px 8px; text-transform: uppercase; }
@@ -33,18 +33,30 @@
         .price { font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 16px; margin-bottom: 15px; }
         .btn-add { background: transparent; color: white; border: 1px solid white; width: 100%; padding: 10px; font-weight: 600; cursor: pointer; text-transform: uppercase; font-size: 12px; transition: 0.2s;}
         .btn-add:hover { background: white; color: black; }
+
+        /* SISTEM KERANJANG & INVOICE MODAL */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
+        .modal-box { background: #141414; width: 90%; max-width: 450px; border-radius: 12px; border: 1px solid #333; padding: 25px; max-height: 90vh; overflow-y: auto; }
+        .modal-header { display: flex; justify-content: space-between; font-weight: 800; font-size: 18px; border-bottom: 1px solid #333; padding-bottom: 15px; margin-bottom: 15px; font-family: 'Montserrat', sans-serif; }
+        .close-btn { color: #ef4444; cursor: pointer; font-size: 14px; }
+        .cart-item { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 15px; border-bottom: 1px dashed #333; padding-bottom: 10px; }
+        .btn-checkout { background: #fff; color: #000; width: 100%; padding: 15px; border: none; font-weight: 800; font-family: 'Montserrat', sans-serif; margin-top: 20px; cursor: pointer; text-transform: uppercase; }
+        
+        /* INVOICE DESIGN */
+        .invoice-box { background: #fff; color: #000; padding: 20px; font-family: monospace; font-size: 12px; text-align: left; border-radius: 8px; margin-top: 15px;}
+        .inv-title { text-align: center; font-weight: bold; font-size: 16px; margin-bottom: 10px; border-bottom: 2px dashed #000; padding-bottom: 10px;}
     </style>
 </head>
 <body>
 
     <header>
         <div class="logo">GANKETI</div>
-        <button class="cart-btn">CART [ 0 ]</button>
+        <button class="cart-btn" onclick="openCart()">CART [ <span id="cartCount">0</span> ]</button>
     </header>
 
     <div class="hero">
         <h1>Authentic Streetwear</h1>
-        <p>Premium original fashion for the modern youth.</p>
+        <p>Elevate your style with GANKETI original collections.</p>
     </div>
 
     <div class="container">
@@ -54,11 +66,36 @@
         </div>
     </div>
 
+    <div class="modal" id="cartModal">
+        <div class="modal-box">
+            <div class="modal-header">
+                <span id="modalTitle">YOUR CART</span>
+                <span class="close-btn" onclick="closeCart()">✕ CLOSE</span>
+            </div>
+            
+            <div id="cartArea">
+                <div id="cartItemsList"><p style="color:#666; text-align:center;">Cart is empty.</p></div>
+                <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 16px; margin-top: 20px;">
+                    <span>SUBTOTAL:</span>
+                    <span id="cartTotalDisplay">Rp 0</span>
+                </div>
+                <button class="btn-checkout" onclick="prosesCheckout()">SECURE CHECKOUT 🔒</button>
+            </div>
+
+            <div id="invoiceArea" style="display:none;">
+                <p style="text-align:center; color:#4ade80; font-weight:bold; margin-bottom:15px;">✅ ORDER CREATED SUCCESSFULLY!</p>
+                <div class="invoice-box" id="invoicePaper">
+                    </div>
+                <button class="btn-checkout" style="background:#4285F4; color:white; margin-top:15px;" onclick="lanjutBayarMidtrans()">PROCEED TO PAYMENT 💳</button>
+            </div>
+
+        </div>
+    </div>
+
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <script>
-        // Kunci Firebase GANKETI
         const firebaseConfig = {
             apiKey: "AIzaSyDoh1VBH6YEicKHPyViPi0NUsnILaTin8g",
             authDomain: "ganketi.firebaseapp.com",
@@ -71,22 +108,20 @@
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        // Menyedot data dari Firebase secara Real-time
+        let globalProducts = [];
+        let cart = JSON.parse(localStorage.getItem('ganketiCart') || '[]');
+        updateCartCount();
+
+        // SEDOT DATA DARI FIREBASE
         db.ref('products').on('value', (snapshot) => {
             const data = snapshot.val();
             const grid = document.getElementById('productGrid');
-            
-            if(!data) {
-                grid.innerHTML = '<p style="text-align:center; width:100%; color:#888;">Belum ada produk. Admin belum upload.</p>';
-                return;
-            }
+            if(!data) return grid.innerHTML = '<p style="text-align:center; width:100%; color:#888;">No products available.</p>';
 
-            // Ubah Object Firebase jadi Array dan urutkan dari yang terbaru
-            const productsArray = Object.keys(data).map(key => ({ id: key, ...data[key] }));
-            productsArray.sort((a, b) => b.timestamp - a.timestamp);
+            globalProducts = Object.keys(data).map(key => ({ id: key, ...data[key] }));
+            globalProducts.sort((a, b) => b.timestamp - a.timestamp);
 
-            // Render ke layar
-            grid.innerHTML = productsArray.map(p => `
+            grid.innerHTML = globalProducts.map(p => `
                 <div class="card">
                     <div class="img-box">
                         <div class="badge">Original</div>
@@ -96,11 +131,106 @@
                         <div class="cat">${p.category}</div>
                         <div class="name">${p.name}</div>
                         <div class="price">Rp ${p.price.toLocaleString('id-ID')}</div>
-                        <button class="btn-add">+ Add to Cart</button>
+                        <button class="btn-add" onclick="addToCart('${p.id}')">+ ADD TO CART</button>
                     </div>
                 </div>
             `).join('');
         });
+
+        // FUNGSI KERANJANG BELANJA
+        function addToCart(id) {
+            const product = globalProducts.find(p => p.id === id);
+            const existing = cart.find(c => c.id === id);
+            if(existing) { existing.qty += 1; } else { cart.push({ ...product, qty: 1 }); }
+            
+            localStorage.setItem('ganketiCart', JSON.stringify(cart));
+            updateCartCount();
+            openCart();
+        }
+
+        function updateCartCount() {
+            const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
+            document.getElementById('cartCount').innerText = totalItems;
+        }
+
+        function openCart() {
+            document.getElementById('modalTitle').innerText = "YOUR CART";
+            document.getElementById('cartArea').style.display = 'block';
+            document.getElementById('invoiceArea').style.display = 'none';
+            document.getElementById('cartModal').style.display = 'flex';
+            
+            const list = document.getElementById('cartItemsList');
+            let total = 0;
+
+            if (cart.length === 0) {
+                list.innerHTML = '<p style="color:#666; text-align:center;">Cart is empty.</p>';
+            } else {
+                list.innerHTML = cart.map((item, index) => {
+                    total += (item.price * item.qty);
+                    return `<div class="cart-item">
+                        <div style="width:70%;"><b>${item.name}</b><br><span style="color:#888;">${item.qty} x Rp ${item.price.toLocaleString('id-ID')}</span></div>
+                        <div style="text-align:right; font-weight:bold;">Rp ${(item.price * item.qty).toLocaleString('id-ID')}<br><span style="color:#ef4444; cursor:pointer;" onclick="removeItem(${index})">Remove</span></div>
+                    </div>`;
+                }).join('');
+            }
+            document.getElementById('cartTotalDisplay').innerText = `Rp ${total.toLocaleString('id-ID')}`;
+        }
+
+        function removeItem(index) {
+            cart.splice(index, 1);
+            localStorage.setItem('ganketiCart', JSON.stringify(cart));
+            updateCartCount();
+            openCart();
+        }
+
+        function closeCart() { document.getElementById('cartModal').style.display = 'none'; }
+
+        // GENERATE INVOICE OTOMATIS & SIMPAN ORDER
+        function prosesCheckout() {
+            if(cart.length === 0) return alert("Cart is empty!");
+
+            // 1. Buat Nomor Invoice (Contoh: INV-GKT-1709876543210)
+            const invoiceNumber = "INV-GKT-" + Date.now();
+            const orderDate = new Date().toLocaleString('id-ID');
+            let grandTotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+
+            // 2. Simpan Rekap Order ke Firebase Admin
+            const orderData = {
+                invoice_no: invoiceNumber,
+                date: orderDate,
+                items: cart,
+                total: grandTotal,
+                status: "UNPAID"
+            };
+            db.ref('orders').push(orderData); // Pesanan masuk ke database admin!
+
+            // 3. Cetak Struk Digital di Layar Pembeli
+            let itemsHtml = cart.map(i => `${i.qty}x ${i.name.substring(0,15)}... <span style="float:right;">${(i.price * i.qty).toLocaleString('id-ID')}</span>`).join('<br>');
+            
+            document.getElementById('invoicePaper').innerHTML = `
+                <div class="inv-title">GANKETI OFFICIAL</div>
+                INVOICE : ${invoiceNumber}<br>
+                TANGGAL : ${orderDate}<br>
+                STATUS  : <span style="color:red; font-weight:bold;">UNPAID (Menunggu Pembayaran)</span>
+                <hr style="border-top:1px dashed #000; margin:10px 0;">
+                ${itemsHtml}
+                <hr style="border-top:1px dashed #000; margin:10px 0;">
+                <b>GRAND TOTAL : <span style="float:right; font-size:14px;">Rp ${grandTotal.toLocaleString('id-ID')}</span></b>
+            `;
+
+            // Bersihkan keranjang dan tampilkan Invoice
+            cart = [];
+            localStorage.setItem('ganketiCart', JSON.stringify(cart));
+            updateCartCount();
+            
+            document.getElementById('modalTitle').innerText = "ORDER SUMMARY";
+            document.getElementById('cartArea').style.display = 'none';
+            document.getElementById('invoiceArea').style.display = 'block';
+        }
+
+        function lanjutBayarMidtrans() {
+            alert("TAHAP SELANJUTNYA:\n\nInvoice sudah dibuat dan masuk ke Database Admin. \n\nDi titik ini, kita akan membutuhkan integrasi Server Backend Midtrans/Xendit agar Pop-Up pembayaran QRIS/Virtual Account bisa muncul secara aman.");
+        }
     </script>
 </body>
 </html>
