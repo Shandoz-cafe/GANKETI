@@ -3,60 +3,61 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Panel | GANKETI</title>
+    <title>GANKETI | Secure Admin Panel</title>
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Poppins', sans-serif; background: #f4f4f5; color: #18181b; padding: 20px; }
-        .container { max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); }
-        h2 { text-align: center; margin-bottom: 20px; font-weight: 700; letter-spacing: 1px; }
+        body { font-family: 'Poppins', sans-serif; background: #0a0a0a; color: #fff; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; }
+        .container { background: #141414; padding: 30px; border-radius: 12px; width: 100%; max-width: 500px; border: 1px solid #333; }
+        h2 { text-align: center; margin-bottom: 20px; letter-spacing: 2px; }
         .form-group { margin-bottom: 15px; }
-        label { display: block; font-size: 12px; font-weight: 600; margin-bottom: 5px; color: #52525b; }
-        input, select { width: 100%; padding: 12px; border: 1px solid #e4e4e7; border-radius: 8px; font-family: inherit; box-sizing: border-box; }
-        button { width: 100%; padding: 15px; background: #000; color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.3s; margin-top: 10px;}
-        button:hover { background: #27272a; }
-        #status { text-align: center; margin-top: 15px; font-size: 14px; font-weight: 600; }
+        label { display: block; font-size: 12px; color: #aaa; margin-bottom: 5px; }
+        input, select { width: 100%; padding: 12px; border: 1px solid #444; background: #222; color: white; border-radius: 8px; box-sizing: border-box; }
+        button { width: 100%; padding: 15px; background: #fff; color: #000; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; margin-top: 10px; text-transform: uppercase; }
+        button:hover { background: #ccc; }
+        .btn-google { background: #4285F4; color: white; }
+        .btn-google:hover { background: #357ae8; }
+        #adminWorkspace { display: none; }
+        #loginWorkspace { text-align: center; }
+        #statusMessage { text-align: center; margin-top: 15px; font-size: 13px; }
     </style>
 </head>
 <body>
 
     <div class="container">
-        <h2>GANKETI ADMIN STUDIO</h2>
-        
-        <div class="form-group">
-            <label>Nama Produk</label>
-            <input type="text" id="pName" placeholder="Contoh: GANKETI Oversized T-Shirt">
-        </div>
-        
-        <div class="form-group">
-            <label>Kategori</label>
-            <select id="pCategory">
-                <option value="T-Shirt">T-Shirt</option>
-                <option value="Hoodie">Hoodie</option>
-                <option value="Jacket">Jacket</option>
-                <option value="Pants">Pants</option>
-                <option value="Accessories">Accessories</option>
-            </select>
-        </div>
-        
-        <div class="form-group">
-            <label>Harga Jual (Rp)</label>
-            <input type="number" id="pPrice" placeholder="Contoh: 185000">
+        <h2>GANKETI <span style="font-weight:300;">ADMIN</span></h2>
+
+        <div id="loginWorkspace">
+            <p style="color:#aaa; font-size:14px; margin-bottom:20px;">Sistem ini dilindungi. Harap login dengan akun Master.</p>
+            <button class="btn-google" onclick="loginGoogle()">🔒 MASUK DENGAN GOOGLE</button>
+            <div id="loginStatus" style="color:red; margin-top:15px; font-size:13px;"></div>
         </div>
 
-        <div class="form-group">
-            <label>Upload Foto Produk (Maks 1MB)</label>
-            <input type="file" id="pImage" accept="image/*">
-        </div>
+        <div id="adminWorkspace">
+            <div style="background:#222; padding:10px; border-radius:8px; margin-bottom:20px; font-size:12px; text-align:center; color:#4ade80;">
+                ✅ Akses Diberikan: ganketistore@gmail.com
+                <span style="display:block; margin-top:5px; color:#ef4444; cursor:pointer;" onclick="logout()">[ Keluar ]</span>
+            </div>
 
-        <button onclick="uploadProduct()">UPLOAD KE TOKO</button>
-        <div id="status"></div>
+            <div class="form-group"><label>Nama Produk</label><input type="text" id="pName"></div>
+            <div class="form-group"><label>Kategori</label>
+                <select id="pCategory">
+                    <option value="T-Shirt">T-Shirt</option><option value="Hoodie">Hoodie</option>
+                    <option value="Jacket">Jacket</option><option value="Pants">Pants</option>
+                </select>
+            </div>
+            <div class="form-group"><label>Harga (Rp)</label><input type="number" id="pPrice"></div>
+            <div class="form-group"><label>Foto (Maks 1MB)</label><input type="file" id="pImage" accept="image/*"></div>
+
+            <button onclick="uploadProduct()">UPLOAD KE ETALASE</button>
+            <div id="statusMessage"></div>
+        </div>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
 
     <script>
-        // Kunci Firebase GANKETI
         const firebaseConfig = {
             apiKey: "AIzaSyDoh1VBH6YEicKHPyViPi0NUsnILaTin8g",
             authDomain: "ganketi.firebaseapp.com",
@@ -67,55 +68,54 @@
             appId: "1:61078873925:web:c5bf3bdf7cc18f11d6002c"
         };
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
         const db = firebase.database();
+
+        // CEK LOGIN OTOMATIS
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                if(user.email === "ganketistore@gmail.com") {
+                    document.getElementById('loginWorkspace').style.display = 'none';
+                    document.getElementById('adminWorkspace').style.display = 'block';
+                } else {
+                    document.getElementById('loginStatus').innerText = "⛔ Akses Ditolak! Email ini bukan Master Admin.";
+                    auth.signOut();
+                }
+            } else {
+                document.getElementById('loginWorkspace').style.display = 'block';
+                document.getElementById('adminWorkspace').style.display = 'none';
+            }
+        });
+
+        function loginGoogle() {
+            const provider = new firebase.auth.GoogleAuthProvider();
+            auth.signInWithPopup(provider).catch(err => alert("Gagal Login: " + err.message));
+        }
+
+        function logout() { auth.signOut(); }
 
         function uploadProduct() {
             const name = document.getElementById('pName').value;
             const category = document.getElementById('pCategory').value;
             const price = document.getElementById('pPrice').value;
-            const imageFile = document.getElementById('pImage').files[0];
-            const statusLabel = document.getElementById('status');
+            const file = document.getElementById('pImage').files[0];
+            const msg = document.getElementById('statusMessage');
 
-            if(!name || !price || !imageFile) {
-                statusLabel.style.color = "red";
-                statusLabel.innerText = "Isi semua data dan pilih foto!";
-                return;
-            }
+            if(!name || !price || !file) return msg.innerHTML = "<span style='color:red;'>Data belum lengkap!</span>";
+            if(file.size > 1024 * 1024) return msg.innerHTML = "<span style='color:red;'>Foto maksimal 1MB!</span>";
 
-            if(imageFile.size > 1024 * 1024) {
-                statusLabel.style.color = "red";
-                statusLabel.innerText = "Ukuran foto terlalu besar! Maksimal 1MB.";
-                return;
-            }
+            msg.innerHTML = "<span style='color:white;'>Mengunggah...</span>";
 
-            statusLabel.style.color = "blue";
-            statusLabel.innerText = "Sedang mengunggah...";
-
-            // Ubah gambar jadi teks Base64 untuk disimpan ke Database
             const reader = new FileReader();
             reader.onload = function(e) {
-                const base64Image = e.target.result;
-
-                // Simpan ke Firebase branch 'products'
                 db.ref('products').push({
-                    name: name,
-                    category: category,
-                    price: parseInt(price),
-                    image: base64Image,
-                    timestamp: Date.now()
+                    name: name, category: category, price: parseInt(price), image: e.target.result, timestamp: Date.now()
                 }).then(() => {
-                    statusLabel.style.color = "green";
-                    statusLabel.innerText = "Berhasil! Produk sudah tampil di toko depan.";
-                    // Reset form
-                    document.getElementById('pName').value = '';
-                    document.getElementById('pPrice').value = '';
-                    document.getElementById('pImage').value = '';
-                }).catch((error) => {
-                    statusLabel.style.color = "red";
-                    statusLabel.innerText = "Gagal: " + error.message;
+                    msg.innerHTML = "<span style='color:#4ade80;'>✅ Upload Sukses!</span>";
+                    document.getElementById('pName').value = ''; document.getElementById('pPrice').value = ''; document.getElementById('pImage').value = '';
                 });
             };
-            reader.readAsDataURL(imageFile);
+            reader.readAsDataURL(file);
         }
     </script>
 </body>
