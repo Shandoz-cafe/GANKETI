@@ -90,6 +90,9 @@
 
             <div style="display: flex; gap: 10px;"><div class="form-group" style="flex:1;"><label>Modal Supplier</label><input type="number" id="eCost"></div><div class="form-group" style="flex:1;"><label>Harga Jual</label><input type="number" id="ePrice"></div></div>
             <div style="display: flex; gap: 10px;"><div class="form-group" style="flex:1;"><label>Jumlah Stok</label><input type="number" id="eStock"></div><div class="form-group" style="flex:1;"><label>Harga Coret</label><input type="number" id="eOriginalPrice"></div></div>
+            
+            <div class="form-group"><label>Link URL Supplier (Rahasia Admin)</label><input type="url" id="eLink" placeholder="https://shopee.co.id/..."></div>
+
             <div class="form-group"><label>Ganti Foto</label><input type="file" id="eImages" accept="image/*" multiple style="padding: 9px;"><p style="font-size: 10px; color: #888;">*Akan menimpa foto lama.</p></div>
             <button class="btn-action" style="background:#3b82f6; color:white;" onclick="saveEditedProduct()">💾 SIMPAN PERUBAHAN</button>
         </div>
@@ -133,6 +136,9 @@
 
                 <div style="display: flex; gap: 10px;"><div class="form-group" style="flex:1;"><label>Modal Supplier</label><input type="number" id="pCost"></div><div class="form-group" style="flex:1;"><label>Harga Jual</label><input type="number" id="pPrice"></div></div>
                 <div style="display: flex; gap: 10px;"><div class="form-group" style="flex:1;"><label>Jumlah Stok</label><input type="number" id="pStock" placeholder="50"></div><div class="form-group" style="flex:1;"><label>Harga Coret</label><input type="number" id="pOriginalPrice" placeholder="Opsional"></div></div>
+                
+                <div class="form-group"><label>Link URL Supplier (Dropship - Khusus Admin)</label><input type="url" id="pLink" placeholder="Masukkan Link Shopee/Tokopedia dll... (Opsional)"></div>
+
                 <div class="form-group"><label>Foto Produk</label><input type="file" id="pImages" accept="image/*" multiple style="padding: 9px;"></div>
                 <button class="btn-action" onclick="uploadProduct()">UPLOAD KE ETALASE</button>
                 <div id="statusMessage" style="text-align:center; margin-top:15px; font-size:13px; font-weight: 600;"></div>
@@ -264,6 +270,8 @@
         let adminProductsData = {}; let currentEditId = null;
         let allOrdersData = []; let allExpensesData = [];
         let currentFinFilter = 'hari'; let customFinDate = ''; let finChart = null;
+
+        // VARIABEL KATEGORI
         let currentCategoriesData = []; let currentEditCatId = null;
 
         function switchTab(tabName) {
@@ -368,11 +376,13 @@
         }
 
         // =========================================================
-        // 🔥 MESIN UPLOAD & MANAGE PRODUK (MULTI CATEGORY) 🔥
+        // 🔥 MESIN UPLOAD & MANAGE PRODUK DENGAN MULTI-KATEGORI 🔥
         // =========================================================
         function uploadProduct() { 
             const name = document.getElementById('pName').value; 
             const cost = document.getElementById('pCost').value; const price = document.getElementById('pPrice').value; const stock = document.getElementById('pStock').value; const orig = document.getElementById('pOriginalPrice').value; const files = document.getElementById('pImages').files;
+            
+            const link = document.getElementById('pLink').value.trim(); // 🔥 BACA LINK SUPPLIER
             
             const checkedCats = Array.from(document.querySelectorAll('.pCatCb:checked')).map(cb => cb.value);
             if(checkedCats.length === 0) return alert("Pilih minimal 1 kategori!");
@@ -385,10 +395,12 @@
             Promise.all(readFiles).then(imgs => {
                 let data = { name, category: categoryString, cost: parseInt(cost), price: parseInt(price), stock: parseInt(stock), images: imgs, timestamp: Date.now(), isPopular: false };
                 if(orig) data.originalPrice = parseInt(orig);
+                if(link) data.link = link; // 🔥 SIMPAN LINK KE DATABASE
+                
                 db.ref('products').push(data).then(() => { 
                     document.getElementById('statusMessage').innerHTML = "<span style='color:#4ade80;'>✅ Upload sukses!</span>"; 
-                    ['pName','pCost','pPrice','pStock','pOriginalPrice','pImages'].forEach(id=>document.getElementById(id).value=''); 
-                    document.querySelectorAll('.pCatCb').forEach(cb => cb.checked = false);
+                    ['pName','pCost','pPrice','pStock','pOriginalPrice','pLink','pImages'].forEach(id=>document.getElementById(id).value=''); 
+                    document.querySelectorAll('.pCatCb').forEach(cb => cb.checked = false); // Reset checkbox
                     setTimeout(() => { document.getElementById('statusMessage').innerHTML = ""; }, 3000);
                 });
             });
@@ -406,7 +418,7 @@
 
         function openEditModal(id) { 
             currentEditId = id; let p = adminProductsData[id]; 
-            ['eName','eCost','ePrice','eStock','eOriginalPrice'].forEach(k=>document.getElementById(k).value=p[k.replace('e','').toLowerCase()]||''); 
+            ['eName','eCost','ePrice','eStock','eOriginalPrice', 'eLink'].forEach(k=>document.getElementById(k).value=p[k.replace('e','').toLowerCase()]||''); // 🔥 BACA LINK KE FORM EDIT
             
             document.querySelectorAll('.eCatCb').forEach(cb => {
                 cb.checked = p.category ? p.category.includes(cb.value) : false;
@@ -424,11 +436,16 @@
 
             let u = { name: document.getElementById('eName').value, category: categoryString, cost: parseInt(document.getElementById('eCost').value), price: parseInt(document.getElementById('ePrice').value), stock: parseInt(document.getElementById('eStock').value) };
             let o = document.getElementById('eOriginalPrice').value; if(o) u.originalPrice = parseInt(o); else u.originalPrice = null;
+            let l = document.getElementById('eLink').value.trim(); if(l) u.link = l; else u.link = null; // 🔥 UPDATE LINK KE DATABASE
             let files = document.getElementById('eImages').files;
+            
             if(files.length>0) { Promise.all(Array.from(files).map(file => new Promise(resolve => { const reader = new FileReader(); reader.onload = e => resolve(e.target.result); reader.readAsDataURL(file); }))).then(imgs => { u.images = imgs; db.ref('products/'+currentEditId).update(u).then(()=>{closeEditModal(); alert('Tersimpan!');}); }); } 
             else { db.ref('products/'+currentEditId).update(u).then(()=>{closeEditModal(); alert('Tersimpan!');}); }
         }
 
+        // =========================================================
+        // 🔥 MESIN BANNER 🔥
+        // =========================================================
         function uploadBanners() { 
             const files = document.getElementById('promoBanners').files;
             if(files.length === 0) return alert("Pilih gambar banner dulu!");
@@ -446,7 +463,7 @@
         });
 
         // =========================================================
-        // 🔥 ENGINE RENDER PESANAN & TRACKING (RESI) 🔥
+        // 🔥 ENGINE RENDER PESANAN (MUNCULKAN TOMBOL LINK SUPPLIER) 🔥
         // =========================================================
         function fetchDataSuper() {
             db.ref('orders').on('value', snap => {
@@ -466,17 +483,56 @@
             list.innerHTML = allOrdersData.sort((a,b)=>b.timestamp-a.timestamp).map(o => {
                 let itemsHtml = o.items.map(i => {
                     let imgUrl = i.images ? i.images[0] : (i.image ? i.image : 'https://via.placeholder.com/45');
-                    return `<div class="item-row"><img src="${imgUrl}" class="item-img"><div style="flex:1;"><div style="font-size:12px; font-weight:bold; color:#fff;">${i.name}</div><div style="font-size:10px; color:#888;">${i.qty}x @ Rp ${i.price.toLocaleString('id-ID')}</div></div><div style="font-size:12px; font-weight:bold; color:#4ade80;">Rp ${(i.price * i.qty).toLocaleString('id-ID')}</div></div>`;
+                    
+                    // 🔥 LOGIC TOMBOL LINK SUPPLIER: HANYA MUNCUL DI ADMIN JIKA ADA LINK 🔥
+                    let supplierLinkHtml = i.link ? `<a href="${i.link}" target="_blank" style="display:inline-block; margin-top:3px; font-size:9px; background:#3b82f6; color:white; padding:3px 6px; border-radius:4px; text-decoration:none;">🔗 Beli di Supplier</a>` : '';
+
+                    return `
+                    <div class="item-row">
+                        <img src="${imgUrl}" class="item-img">
+                        <div style="flex:1;">
+                            <div style="font-size:12px; font-weight:bold; color:#fff;">${i.name}</div>
+                            <div style="font-size:10px; color:#888;">${i.qty}x @ Rp ${i.price.toLocaleString('id-ID')} <br> ${supplierLinkHtml}</div>
+                        </div>
+                        <div style="font-size:12px; font-weight:bold; color:#4ade80;">
+                            Rp ${(i.price * i.qty).toLocaleString('id-ID')}
+                        </div>
+                    </div>`;
                 }).join('');
 
                 return `
                 <div class="order-card">
-                    <div class="order-header"><div><span style="color:#3b82f6; font-size:14px;">${o.invoice_no}</span><br><span style="font-size:10px; color:#888; font-weight:normal;">📅 ${o.date}</span></div><div><span class="badge-status status-${o.status}">${o.status}</span></div></div>
-                    <div style="margin-bottom:15px; color:#ccc; font-size:12px; line-height:1.6;"><b style="color:white;">Penerima:</b> ${o.customer.name} (WA: ${o.customer.phone})<br><b style="color:white;">Email:</b> ${o.customer.email}<br><b style="color:white;">Alamat:</b> ${o.customer.address}</div>
-                    <div style="background:#0a0a0a; border-radius:8px; border: 1px solid #222; overflow:hidden; margin-bottom:15px;"><div style="background:#111; padding:8px 12px; font-size:10px; color:#888; text-transform:uppercase; border-bottom:1px solid #222;">Rincian Produk</div>${itemsHtml}<div style="display:flex; justify-content:space-between; padding:12px; background:#111; border-top:1px dashed #333; align-items:center;"><span style="font-size:11px; color:#888;">Grand Total</span><b style="color:#4ade80; font-size:15px;">Rp ${o.total.toLocaleString('id-ID')}</b></div></div>
+                    <div class="order-header">
+                        <div>
+                            <span style="color:#3b82f6; font-size:14px;">${o.invoice_no}</span><br>
+                            <span style="font-size:10px; color:#888; font-weight:normal;">📅 ${o.date}</span>
+                        </div>
+                        <div><span class="badge-status status-${o.status}">${o.status}</span></div>
+                    </div>
+                    
+                    <div style="margin-bottom:15px; color:#ccc; font-size:12px; line-height:1.6;">
+                        <b style="color:white;">Penerima:</b> ${o.customer.name} (WA: ${o.customer.phone})<br>
+                        <b style="color:white;">Email:</b> ${o.customer.email}<br>
+                        <b style="color:white;">Alamat:</b> ${o.customer.address}
+                    </div>
+                    
+                    <div style="background:#0a0a0a; border-radius:8px; border: 1px solid #222; overflow:hidden; margin-bottom:15px;">
+                        <div style="background:#111; padding:8px 12px; font-size:10px; color:#888; text-transform:uppercase; border-bottom:1px solid #222;">Rincian Produk</div>
+                        ${itemsHtml}
+                        <div style="display:flex; justify-content:space-between; padding:12px; background:#111; border-top:1px dashed #333; align-items:center;">
+                            <span style="font-size:11px; color:#888;">Grand Total</span>
+                            <b style="color:#4ade80; font-size:15px;">Rp ${o.total.toLocaleString('id-ID')}</b>
+                        </div>
+                    </div>
+                    
                     <div style="text-align:right; display:flex; justify-content:flex-end; align-items:center; gap:10px;">
                         ${o.status === 'UNPAID' ? `<button class="btn-status" style="background:#f59e0b; border:none; color:black;" onclick="updateStatus('${o.id}', 'PAID')">✅ LUNAS (Lanjut Kemas)</button>` : ''} 
-                        ${o.status === 'PAID' ? `<input type="text" id="resi-${o.id}" placeholder="Input Nomor Resi..." style="padding:8px; font-size:11px; border-radius:6px; border:1px solid #444; background:#111; color:white; width:160px;"><button class="btn-status" style="background:#4ade80; border:none; color:black; padding:9px 15px;" onclick="kirimPesanan('${o.id}')">📦 KIRIM</button>` : ''}
+                        
+                        ${o.status === 'PAID' ? `
+                            <input type="text" id="resi-${o.id}" placeholder="Input Nomor Resi..." style="padding:8px; font-size:11px; border-radius:6px; border:1px solid #444; background:#111; color:white; width:160px;">
+                            <button class="btn-status" style="background:#4ade80; border:none; color:black; padding:9px 15px;" onclick="kirimPesanan('${o.id}')">📦 KIRIM</button>
+                        ` : ''}
+                        
                         ${o.status === 'SHIPPED' ? `<div style="color:#4ade80; font-size:12px; font-weight:bold;">No. Resi: <span style="color:white;">${o.resi || '-'}</span></div>` : ''}
                     </div>
                 </div>`;
