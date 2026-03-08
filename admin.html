@@ -54,9 +54,11 @@
 
             <div id="tabUpload">
                 <div class="form-group"><label>Nama Produk</label><input type="text" id="pName"></div>
+                
                 <div class="form-group"><label>Kategori</label>
-                    <select id="pCategory"><option value="T-Shirt">T-Shirt</option><option value="Hoodie">Hoodie</option><option value="Jacket">Jacket</option><option value="Pants">Pants</option><option value="Accessories">Accessories</option></select>
+                    <select id="pCategory"><option value="">Memuat Kategori dari Menu Tampilan...</option></select>
                 </div>
+
                 <div style="display: flex; gap: 10px;">
                     <div class="form-group" style="flex:1;"><label>Modal Supplier</label><input type="number" id="pCost"></div>
                     <div class="form-group" style="flex:1;"><label>Harga Jual</label><input type="number" id="pPrice"></div>
@@ -88,12 +90,12 @@
                 </div>
                 <div id="bannerList" style="margin-bottom: 30px;"></div>
 
-                <h3 style="font-size: 14px; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 5px;">2. Menu Kategori (Ikon Bulat)</h3>
+                <h3 style="font-size: 14px; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 5px;">2. Menu Kategori (Akan muncul di Web & Dropdown Upload)</h3>
                 <div style="display: flex; gap: 10px;">
-                    <div class="form-group" style="flex:1;"><label>Nama Kategori</label><input type="text" id="catName" placeholder="Cth: T-Shirt"></div>
+                    <div class="form-group" style="flex:1;"><label>Nama Kategori</label><input type="text" id="catName" placeholder="Cth: Kemeja"></div>
                     <div class="form-group" style="flex:1;"><label>Upload Ikon (1:1/Kotak)</label><input type="file" id="catIcon" accept="image/*" style="padding: 9px;"></div>
                 </div>
-                <button onclick="uploadCategoryBubble()" style="background:#3b82f6; color:white; border:none; padding:8px 15px; margin-bottom:15px; border-radius:4px; font-weight:bold; cursor:pointer;">TAMBAH KATEGORI</button>
+                <button onclick="uploadCategoryBubble()" style="background:#4ade80; color:black; border:none; padding:8px 15px; margin-bottom:15px; border-radius:4px; font-weight:bold; cursor:pointer;">+ TAMBAH KATEGORI</button>
                 <div id="categoryBubbleList"></div>
 
             </div>
@@ -127,7 +129,7 @@
             });
             if(tabName === 'finance') loadFinanceReport(); 
             if(tabName === 'manage') loadManageProducts();
-            if(tabName === 'design') { loadBanners(); loadBubbleCategories(); }
+            if(tabName === 'design') loadBanners(); 
         }
 
         auth.onAuthStateChanged(user => {
@@ -139,15 +141,48 @@
         function loginGoogle() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
         function logout() { auth.signOut(); }
 
-        // ENGINE UPLOAD PRODUK
+        // =========================================================
+        // 🔥 ENGINE SINKRONISASI KATEGORI (TAMPILAN <-> UPLOAD) 🔥
+        // =========================================================
+        db.ref('ui_categories').on('value', snap => {
+            const data = snap.val(); 
+            const pCategory = document.getElementById('pCategory');
+            const bubbleList = document.getElementById('categoryBubbleList');
+            
+            if(!data) { 
+                if(bubbleList) bubbleList.innerHTML = '<p style="color:#888; font-size:11px;">Belum ada kategori. Silakan tambah di atas.</p>';
+                if(pCategory) pCategory.innerHTML = '<option value="">Kosong! Buat kategori di Menu TAMPILAN dulu!</option>';
+                return; 
+            }
+
+            // 1. Render List di tab "TAMPILAN"
+            if(bubbleList) {
+                bubbleList.innerHTML = Object.keys(data).map(key => `<div class="list-item-admin"><div style="display:flex; align-items:center; gap:10px;"><img src="${data[key].icon}" style="width:30px; height:30px; border-radius:50%; object-fit:cover;"> <span>${data[key].name}</span></div> <button onclick="deleteItem('ui_categories', '${key}')" style="background:none; border:1px solid #ef4444; color:#ef4444; cursor:pointer; padding:5px; border-radius:4px;">Hapus</button></div>`).join('');
+            }
+
+            // 2. Render Dropdown Options di tab "UPLOAD"
+            if(pCategory) {
+                let catOptions = '';
+                Object.keys(data).map(k => data[k]).sort((a,b) => a.timestamp - b.timestamp).forEach(c => {
+                    catOptions += `<option value="${c.name}">${c.name}</option>`;
+                });
+                pCategory.innerHTML = catOptions;
+            }
+        });
+
+        // =========================================================
+
         function uploadProduct() {
             const name = document.getElementById('pName').value; const category = document.getElementById('pCategory').value;
             const cost = document.getElementById('pCost').value; const price = document.getElementById('pPrice').value; 
             const stock = document.getElementById('pStock').value; const origPrice = document.getElementById('pOriginalPrice').value;
             const files = document.getElementById('pImages').files; const msg = document.getElementById('statusMessage');
 
+            // Validasi Kategori (Cegah kalau belum ada kategori)
+            if(!category) return msg.innerHTML = "<span style='color:#ef4444;'>Bikin Kategori dulu di menu TAMPILAN Bos!</span>";
             if(!name || !cost || !price || !stock || files.length === 0) return msg.innerHTML = "<span style='color:#ef4444;'>Lengkapi semua data & pilih foto!</span>";
             if(files.length > 5) return msg.innerHTML = "<span style='color:#ef4444;'>Maksimal 5 foto!</span>";
+            
             msg.innerHTML = "<span style='color:white;'>Mengunggah...</span>";
             const readFiles = Array.from(files).map(file => new Promise(resolve => { const reader = new FileReader(); reader.onload = e => resolve(e.target.result); reader.readAsDataURL(file); }));
 
@@ -162,7 +197,6 @@
             });
         }
 
-        // ENGINE MANAGE PRODUK
         function loadManageProducts() {
             db.ref('products').on('value', snapshot => {
                 const data = snapshot.val(); const list = document.getElementById('manageProductsList');
@@ -179,7 +213,6 @@
         function updateStock(id) { const newStock = document.getElementById('edit-stock-' + id).value; db.ref('products/' + id).update({ stock: parseInt(newStock) }).then(() => alert('Stok diupdate!')); }
         function deleteProduct(id) { if(confirm("Yakin hapus produk ini permanen?")) { db.ref('products/' + id).remove(); } }
 
-        // ENGINE DESAIN WEB (BANNERS & BUBBLES)
         function uploadBanners() {
             const files = document.getElementById('promoBanners').files;
             if(files.length === 0) return alert("Pilih gambar banner dulu!");
@@ -187,6 +220,7 @@
             Promise.all(readFiles).then(base64Images => {
                 base64Images.forEach(img => { db.ref('ui_banners').push({ image: img, timestamp: Date.now() }); });
                 document.getElementById('promoBanners').value = '';
+                alert("Banner berhasil diupload!");
             });
         }
         function loadBanners() {
@@ -204,19 +238,12 @@
             reader.onload = function(e) {
                 db.ref('ui_categories').push({ name: name, icon: e.target.result, timestamp: Date.now() });
                 document.getElementById('catName').value = ''; document.getElementById('catIcon').value = '';
+                alert("Kategori berhasil ditambahkan! Sekarang bisa dipilih di menu UPLOAD.");
             }; reader.readAsDataURL(file);
-        }
-        function loadBubbleCategories() {
-            db.ref('ui_categories').on('value', snap => {
-                const data = snap.val(); const list = document.getElementById('categoryBubbleList');
-                if(!data) return list.innerHTML = '<p style="color:#888; font-size:11px;">Belum ada kategori visual.</p>';
-                list.innerHTML = Object.keys(data).map(key => `<div class="list-item-admin"><div style="display:flex; align-items:center; gap:10px;"><img src="${data[key].icon}" style="width:30px; height:30px; border-radius:50%; object-fit:cover;"> <span>${data[key].name}</span></div> <button onclick="deleteItem('ui_categories', '${key}')" style="background:none; border:1px solid #ef4444; color:#ef4444; cursor:pointer; padding:5px; border-radius:4px;">Hapus</button></div>`).join('');
-            });
         }
 
         function deleteItem(path, key) { if(confirm("Hapus item ini?")) db.ref(path + '/' + key).remove(); }
 
-        // ENGINE ORDER & FINANCE
         let allOrdersData = [];
         function loadOrders() {
             db.ref('orders').on('value', snapshot => {
