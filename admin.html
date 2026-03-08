@@ -3,10 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    
     <title>GANKETI | ERP Command Center</title>
     <link rel="icon" href="ganketiweb.png" type="image/png">
-    
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -24,6 +22,7 @@
         .btn-action { width: 100%; padding: 15px; background: #fff; color: #000; border: none; border-radius: 8px; font-weight: 800; cursor: pointer; margin-top: 10px; text-transform: uppercase; letter-spacing: 1px; transition: 0.2s;}
         .btn-action:hover { opacity: 0.8; }
         
+        /* CSS KARTU ORDER & RESI */
         .order-card { background: #1a1a1a; border: 1px solid #333; border-radius: 10px; padding: 20px; margin-bottom: 20px; font-size: 13px; box-shadow: 0 4px 6px rgba(0,0,0,0.3);}
         .order-header { display: flex; justify-content: space-between; border-bottom: 1px dashed #444; padding-bottom: 12px; margin-bottom: 15px; align-items: flex-start;}
         .badge-status { padding: 6px 12px; border-radius: 6px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;}
@@ -41,6 +40,7 @@
         .modal-content { background: #141414; padding: 25px; border-radius: 12px; width: 90%; max-width: 500px; border: 1px solid #444; max-height: 90vh; overflow-y: auto; }
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 10px; }
 
+        /* FINANCE DASHBOARD */
         .fin-filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; background: #1a1a1a; padding: 15px; border-radius: 8px; border: 1px solid #333; align-items: center; justify-content: space-between;}
         .btn-filter { background: #222; color: #aaa; border: 1px solid #444; padding: 8px 15px; border-radius: 6px; font-size: 11px; font-weight: bold; cursor: pointer; transition: 0.3s; }
         .btn-filter.active { background: #3b82f6; color: white; border-color: #3b82f6; }
@@ -55,6 +55,7 @@
         .data-table th { text-align: left; padding: 10px; border-bottom: 1px solid #444; color: #aaa; }
         .data-table td { padding: 10px; border-bottom: 1px solid #222; }
 
+        /* PRINT LAYER (PDF) */
         #printLayer { display: none; }
         @media print {
             @page { size: A4 portrait; margin: 15mm; }
@@ -117,11 +118,18 @@
             <div id="tabManage" style="display:none;"><div id="manageProductsList"></div></div>
 
             <div id="tabDesign" style="display:none;">
-                <h3 style="font-size: 14px; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 5px;">1. Promo Banner</h3>
-                <div class="form-group"><input type="file" id="promoBanners" accept="image/*" multiple style="padding: 9px;"><button onclick="uploadBanners()" class="btn-action" style="padding:10px; font-size:11px;">Upload Banner</button></div>
+                <h3 style="font-size: 14px; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 5px;">1. Promo Banner (Slide Otomatis)</h3>
+                <div class="form-group">
+                    <input type="file" id="promoBanners" accept="image/*" multiple style="padding: 9px;">
+                    <button onclick="uploadBanners()" class="btn-action" style="padding:10px; font-size:11px;">Upload Banner</button>
+                </div>
                 <div id="bannerList" style="margin-bottom: 30px;"></div>
+                
                 <h3 style="font-size: 14px; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 5px;">2. Menu Kategori (Visual)</h3>
-                <div style="display: flex; gap: 10px;"><div class="form-group" style="flex:1;"><input type="text" id="catName" placeholder="Nama"></div><div class="form-group" style="flex:1;"><input type="file" id="catIcon" accept="image/*" style="padding: 9px;"></div></div>
+                <div style="display: flex; gap: 10px;">
+                    <div class="form-group" style="flex:1;"><input type="text" id="catName" placeholder="Nama Kategori (Cth: Jaket)"></div>
+                    <div class="form-group" style="flex:1;"><input type="file" id="catIcon" accept="image/*" style="padding: 9px;"></div>
+                </div>
                 <button onclick="uploadCategoryBubble()" class="btn-action" style="padding:10px; font-size:11px; background:#4ade80;">Tambah Kategori</button>
                 <div id="categoryBubbleList" style="margin-top: 15px;"></div>
             </div>
@@ -253,23 +261,38 @@
         function loginGoogle() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
         function logout() { auth.signOut(); }
 
-        // UMUM (SINKRON, UPLOAD, MANAGE, DESIGN)
+        // UMUM (SINKRON KATEGORI KE DROPDOWN)
         db.ref('ui_categories').on('value', snap => {
             const data = snap.val(); const pCat = document.getElementById('pCategory'); const eCat = document.getElementById('eCategory'); const bList = document.getElementById('categoryBubbleList');
-            if(!data) return;
+            if(!data) {
+                if(bList) bList.innerHTML = '';
+                if(pCat) pCat.innerHTML = '<option value="">Bikin Kategori di tab TAMPILAN dulu!</option>';
+                if(eCat) eCat.innerHTML = '<option value="">Bikin Kategori di tab TAMPILAN dulu!</option>';
+                return;
+            }
             if(bList) bList.innerHTML = Object.keys(data).map(key => `<div class="list-item-admin"><div style="display:flex; align-items:center; gap:10px;"><img src="${data[key].icon}" style="width:30px; height:30px; border-radius:50%; object-fit:cover;"> <span>${data[key].name}</span></div> <button onclick="db.ref('ui_categories/${key}').remove()" style="background:none; border:1px solid #ef4444; color:#ef4444; cursor:pointer; padding:5px; border-radius:4px;">Hapus</button></div>`).join('');
             let opts = Object.keys(data).map(k => `<option value="${data[k].name}">${data[k].name}</option>`).join('');
             if(pCat) pCat.innerHTML = opts; if(eCat) eCat.innerHTML = opts;
         });
 
+        // =========================================================
+        // 🔥 MESIN UPLOAD & MANAGE PRODUK 🔥
+        // =========================================================
         function uploadProduct() { 
             const name = document.getElementById('pName').value; const cat = document.getElementById('pCategory').value; const cost = document.getElementById('pCost').value; const price = document.getElementById('pPrice').value; const stock = document.getElementById('pStock').value; const orig = document.getElementById('pOriginalPrice').value; const files = document.getElementById('pImages').files;
-            if(!name || !cost || !price || !stock || files.length===0) return alert("Lengkapi data!");
+            if(!cat) return alert("Pilih kategori dulu!");
+            if(!name || !cost || !price || !stock || files.length===0) return alert("Lengkapi data dan pilih foto!");
+            
+            document.getElementById('statusMessage').innerHTML = "<span style='color:white;'>Mengunggah...</span>";
             const readFiles = Array.from(files).map(file => new Promise(resolve => { const reader = new FileReader(); reader.onload = e => resolve(e.target.result); reader.readAsDataURL(file); }));
             Promise.all(readFiles).then(imgs => {
                 let data = { name, category: cat, cost: parseInt(cost), price: parseInt(price), stock: parseInt(stock), images: imgs, timestamp: Date.now(), isPopular: false };
                 if(orig) data.originalPrice = parseInt(orig);
-                db.ref('products').push(data).then(() => { alert("Upload sukses!"); ['pName','pCost','pPrice','pStock','pOriginalPrice','pImages'].forEach(id=>document.getElementById(id).value=''); });
+                db.ref('products').push(data).then(() => { 
+                    document.getElementById('statusMessage').innerHTML = "<span style='color:#4ade80;'>✅ Upload sukses!</span>"; 
+                    ['pName','pCost','pPrice','pStock','pOriginalPrice','pImages'].forEach(id=>document.getElementById(id).value=''); 
+                    setTimeout(() => { document.getElementById('statusMessage').innerHTML = ""; }, 3000);
+                });
             });
         }
 
@@ -293,9 +316,47 @@
             else { db.ref('products/'+currentEditId).update(u).then(()=>{closeEditModal(); alert('Tersimpan!');}); }
         }
 
-        function uploadBanners() { /* ... */ }
-        function uploadCategoryBubble() { /* ... */ }
-        function deleteItem(path, key) { if(confirm("Hapus item ini?")) db.ref(path + '/' + key).remove(); }
+        // =========================================================
+        // 🔥 MESIN UPLOAD BANNER & KATEGORI (FIXED) 🔥
+        // =========================================================
+        function uploadBanners() { 
+            const files = document.getElementById('promoBanners').files;
+            if(files.length === 0) return alert("Pilih gambar banner dulu!");
+            
+            const readFiles = Array.from(files).map(file => new Promise(resolve => { 
+                const reader = new FileReader(); 
+                reader.onload = e => resolve(e.target.result); 
+                reader.readAsDataURL(file); 
+            }));
+            
+            Promise.all(readFiles).then(base64Images => {
+                base64Images.forEach(img => { 
+                    db.ref('ui_banners').push({ image: img, timestamp: Date.now() }); 
+                });
+                document.getElementById('promoBanners').value = '';
+                alert("Banner berhasil diupload!");
+            });
+        }
+        
+        db.ref('ui_banners').on('value', snap => {
+            const data = snap.val(); const list = document.getElementById('bannerList');
+            if(!data) return list.innerHTML = '<p style="color:#888; font-size:11px;">Belum ada banner.</p>';
+            list.innerHTML = Object.keys(data).map(key => `<div class="list-item-admin"><img src="${data[key].image}" style="height:40px; border-radius:4px;"> <button onclick="if(confirm('Hapus banner ini?')) db.ref('ui_banners/${key}').remove()" style="background:none; border:1px solid #ef4444; color:#ef4444; cursor:pointer; padding:5px; border-radius:4px;">Hapus</button></div>`).join('');
+        });
+
+        function uploadCategoryBubble() { 
+            const name = document.getElementById('catName').value.trim(); 
+            const file = document.getElementById('catIcon').files[0];
+            if(!name || !file) return alert("Isi nama dan pilih ikon kategori!");
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                db.ref('ui_categories').push({ name: name, icon: e.target.result, timestamp: Date.now() });
+                document.getElementById('catName').value = ''; document.getElementById('catIcon').value = '';
+                alert("Kategori berhasil ditambahkan!");
+            }; 
+            reader.readAsDataURL(file);
+        }
 
         // =========================================================
         // 🔥 ENGINE RENDER PESANAN & TRACKING (RESI) 🔥
