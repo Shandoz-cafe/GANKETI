@@ -10,7 +10,7 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
         body { background: var(--bg); color: var(--text); -webkit-font-smoothing: antialiased; overflow-x: hidden;}
 
-        /* NAVBAR SUPER PREMIUM */
+        /* NAVBAR */
         header { background: rgba(5,5,5,0.85); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; }
         .logo { font-family: 'Oswald', sans-serif; font-size: 26px; font-weight: 700; letter-spacing: 2px; color: var(--primary); cursor: pointer; text-transform: uppercase; user-select: none; touch-action: manipulation; -webkit-tap-highlight-color: transparent;}
         .nav-icons { display: flex; gap: 15px; align-items: center; }
@@ -18,7 +18,7 @@
         .icon-btn:hover { color: var(--primary); }
         .cart-badge { background: var(--primary); color: var(--bg); font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 20px; }
 
-        /* KATEGORI LENGKET DI BAWAH NAVBAR */
+        /* KATEGORI NAV */
         .category-nav { display: flex; gap: 10px; padding: 12px 20px; overflow-x: auto; white-space: nowrap; background: var(--bg); position: sticky; top: 64px; z-index: 99; border-bottom: 1px solid var(--border); scrollbar-width: none; }
         .category-nav::-webkit-scrollbar { display: none; }
         .cat-chip { background: transparent; color: var(--text-dim); border: 1px solid var(--border); padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: 500; cursor: pointer; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; }
@@ -86,7 +86,7 @@
         .status-SHIPPED { background: rgba(74, 222, 128, 0.2); color: #4ade80; border: 1px solid #4ade80; }
         .receipt { background: #fff; color: #000; padding: 20px; font-family: monospace; font-size: 13px; border-radius: 8px; margin-top: 15px; border-top: 5px solid #000; box-shadow: 0 4px 6px rgba(0,0,0,0.3);}
 
-        /* 🔥 CUSTOM MODERN TOAST NOTIFICATIONS 🔥 */
+        /* TOAST NOTIFICATIONS */
         .toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 99999; display: flex; flex-direction: column; gap: 10px; pointer-events: none; width: 90%; max-width: 400px; }
         .modern-toast { background: var(--surface); border: 1px solid var(--border); color: white; padding: 16px 20px; border-radius: 12px; font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.8); animation: toastSlideDown 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
         .modern-toast.success { border-left: 4px solid #4ade80; }
@@ -114,22 +114,12 @@
         </div>
     </header>
 
-    <div class="category-nav" id="categoryNav">
-        <button class="cat-chip active" onclick="filterCategory('ALL')">ALL</button>
-    </div>
-
-    <div class="hero">
-        <div class="hero-content">
-            <h1>Authentic Streetwear</h1>
-            <p>Premium Original Collection. Est. 2026</p>
-        </div>
-    </div>
+    <div class="category-nav" id="categoryNav"><button class="cat-chip active" onclick="filterCategory('ALL')">ALL</button></div>
+    <div class="hero"><div class="hero-content"><h1>Authentic Streetwear</h1><p>Premium Original Collection. Est. 2026</p></div></div>
 
     <div class="container">
         <h2 class="section-title" id="secTitle">LATEST DROP</h2>
-        <div class="grid" id="productGrid">
-            <p style="text-align: center; width: 100%; color: var(--text-dim);">Memuat etalase...</p>
-        </div>
+        <div class="grid" id="productGrid"><p style="text-align: center; width: 100%; color: var(--text-dim);">Memuat etalase...</p></div>
     </div>
 
     <div class="modal" id="mainModal">
@@ -140,7 +130,6 @@
             </div>
             
             <div id="previewArea" style="display:none;"></div>
-
             <div id="cartArea" style="display:none;">
                 <div id="cartItemsList"></div>
                 <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 16px; margin: 20px 0; border-top: 1px solid var(--border); padding-top: 15px;">
@@ -150,12 +139,47 @@
             </div>
 
             <div id="shippingArea" style="display:none;">
-                <p style="font-size: 12px; color: #4ade80; margin-bottom: 15px;">✅ Akun tertaut. Invoice otomatis disimpan ke akun Anda.</p>
+                <p style="font-size: 12px; color: #4ade80; margin-bottom: 15px;">✅ Akun tertaut. Mohon lengkapi alamat pengiriman di bawah ini.</p>
+                
                 <div class="form-group"><label>Email Akun</label><input type="email" id="cEmail" readonly></div>
-                <div class="form-group"><label>Nama Lengkap Penerima</label><input type="text" id="cName" placeholder="Nama Lengkap"></div>
+                <div class="form-group"><label>Nama Penerima</label><input type="text" id="cName" placeholder="Nama Lengkap"></div>
                 <div class="form-group"><label>No. WhatsApp Aktif</label><input type="number" id="cPhone" placeholder="08..."></div>
-                <div class="form-group"><label>Alamat Lengkap & Kode Pos</label><textarea id="cAddress" rows="3" placeholder="Jalan, RT/RW, Kecamatan, Kota, Kode Pos..."></textarea></div>
-                <button class="btn-main" onclick="buatPesananSekarang()">PLACE SECURE ORDER 🔒</button>
+                
+                <div style="border-top: 1px solid var(--border); margin: 20px 0; padding-top: 15px;"></div>
+                <h3 style="font-size: 14px; margin-bottom: 15px; color: var(--primary);">Detail Alamat</h3>
+
+                <div class="form-group">
+                    <label>Jalan, Gedung, Nomor Rumah</label>
+                    <input type="text" id="cStreet" placeholder="Contoh: Jl. Sudirman No. 10, Gedung A">
+                </div>
+                
+                <div style="display: flex; gap: 10px;">
+                    <div class="form-group" style="flex:1;"><label>RT</label><input type="number" id="cRT" placeholder="001"></div>
+                    <div class="form-group" style="flex:1;"><label>RW</label><input type="number" id="cRW" placeholder="002"></div>
+                </div>
+
+                <div class="form-group">
+                    <label>Provinsi</label>
+                    <select id="cProv" onchange="loadCities()"><option value="">Memuat Provinsi...</option></select>
+                </div>
+                <div class="form-group">
+                    <label>Kota / Kabupaten</label>
+                    <select id="cCity" onchange="loadDistricts()" disabled><option value="">Pilih Provinsi Dahulu</option></select>
+                </div>
+                <div class="form-group">
+                    <label>Kecamatan</label>
+                    <select id="cDist" onchange="loadVillages()" disabled><option value="">Pilih Kota Dahulu</option></select>
+                </div>
+                <div class="form-group">
+                    <label>Kelurahan / Desa</label>
+                    <select id="cVill" disabled><option value="">Pilih Kecamatan Dahulu</option></select>
+                </div>
+                <div class="form-group">
+                    <label>Kode Pos</label>
+                    <input type="number" id="cZip" placeholder="12345">
+                </div>
+
+                <button class="btn-main" onclick="buatPesananSekarang()" style="margin-top: 10px;">PLACE SECURE ORDER 🔒</button>
             </div>
 
             <div id="invoiceArea" style="display:none;">
@@ -165,9 +189,7 @@
                 <button class="btn-main" style="margin-top: 15px; background: #25D366; color: white;" onclick="closeModal()">SELESAI</button>
             </div>
 
-            <div id="historyArea" style="display:none;">
-                <div id="historyList"></div>
-            </div>
+            <div id="historyArea" style="display:none;"><div id="historyList"></div></div>
 
             <div id="logoutConfirmArea" style="display:none; text-align:center;">
                 <h3 style="font-size: 16px; margin-bottom: 10px;">Keluar dari Akun?</h3>
@@ -194,83 +216,41 @@
         let currentUser = null; 
         updateCartCount();
 
-        // 🔥 ENGINE MODERN TOAST NOTIFICATION (PENGGANTI ALERT JADUL) 🔥
         function showToast(message, type = 'info') {
             const container = document.getElementById('toast-container');
             const toast = document.createElement('div');
             toast.className = `modern-toast ${type}`;
-            
             let icon = '💡';
-            if(type === 'success') icon = '✅';
-            if(type === 'error') icon = '❌';
-            if(type === 'warning') icon = '⚠️';
-
+            if(type === 'success') icon = '✅'; if(type === 'error') icon = '❌'; if(type === 'warning') icon = '⚠️';
             toast.innerHTML = `<span class="toast-icon">${icon}</span> <div>${message}</div>`;
             container.appendChild(toast);
-
-            setTimeout(() => {
-                toast.style.animation = 'toastFadeOut 0.4s forwards';
-                setTimeout(() => toast.remove(), 400);
-            }, 3500);
+            setTimeout(() => { toast.style.animation = 'toastFadeOut 0.4s forwards'; setTimeout(() => toast.remove(), 400); }, 3500);
         }
 
-        // SISTEM AUTENTIKASI
         auth.onAuthStateChanged(user => {
-            if (user) {
-                currentUser = user;
-                document.getElementById('loginBtn').innerHTML = `👤 ${user.displayName.split(' ')[0].toUpperCase()}`;
-            } else {
-                currentUser = null;
-                document.getElementById('loginBtn').innerHTML = `👤 LOGIN`;
-            }
+            if (user) { currentUser = user; document.getElementById('loginBtn').innerHTML = `👤 ${user.displayName.split(' ')[0].toUpperCase()}`; } 
+            else { currentUser = null; document.getElementById('loginBtn').innerHTML = `👤 LOGIN`; }
         });
 
         function handleAuth() {
-            if(currentUser) {
-                // Munculin Custom Modal buat nanya Yakin Logout, bukan pakai confirm() bawaan
-                hideAllAreas();
-                document.getElementById('modalTitle').innerText = "AKUN SAYA";
-                document.getElementById('logoutConfirmArea').style.display = 'block';
-                document.getElementById('mainModal').style.display = 'flex';
-            } else {
-                const provider = new firebase.auth.GoogleAuthProvider();
-                auth.signInWithPopup(provider).then((result) => {
-                    showToast(`Selamat datang, ${result.user.displayName}!`, 'success');
-                }).catch(err => {
-                    showToast("Gagal Login: " + err.message, 'error');
-                });
-            }
+            if(currentUser) { hideAllAreas(); document.getElementById('modalTitle').innerText = "AKUN SAYA"; document.getElementById('logoutConfirmArea').style.display = 'block'; document.getElementById('mainModal').style.display = 'flex'; } 
+            else { const provider = new firebase.auth.GoogleAuthProvider(); auth.signInWithPopup(provider).then((result) => { showToast(`Selamat datang, ${result.user.displayName}!`, 'success'); }).catch(err => { showToast("Gagal Login: " + err.message, 'error'); }); }
         }
 
-        function executeLogout() {
-            auth.signOut().then(() => {
-                closeModal();
-                showToast("Berhasil keluar dari akun.", 'info');
-            });
-        }
+        function executeLogout() { auth.signOut().then(() => { closeModal(); showToast("Berhasil keluar dari akun.", 'info'); }); }
 
         let clickCount = 0; let lastClickTime = 0;
         function secretAdminLogin() {
-            const now = Date.now(); 
-            if (now - lastClickTime > 3000) clickCount = 0; 
-            lastClickTime = now; 
-            clickCount++;
-            if (clickCount >= 5) { 
-                showToast("Mengakses sistem rahasia... 🚀", 'success'); 
-                document.body.style.opacity = '0'; 
-                document.body.style.transition = '0.5s'; 
-                setTimeout(() => { window.location.assign('https://shandoz-cafe.github.io/GANKETI/admin.html?v=' + Date.now()); }, 800); 
-            }
+            const now = Date.now(); if (now - lastClickTime > 3000) clickCount = 0; lastClickTime = now; clickCount++;
+            if (clickCount >= 5) { showToast("Mengakses sistem rahasia... 🚀", 'success'); document.body.style.opacity = '0'; document.body.style.transition = '0.5s'; setTimeout(() => { window.location.assign('https://shandoz-cafe.github.io/GANKETI/admin.html?v=' + Date.now()); }, 800); }
         }
 
         db.ref('products').on('value', (snapshot) => {
             const data = snapshot.val(); const grid = document.getElementById('productGrid');
             if(!data) return grid.innerHTML = '<p style="text-align:center; width:100%; color:var(--text-dim);">Belum ada koleksi yang dirilis.</p>';
-            
             globalProducts = Object.keys(data).map(key => ({ id: key, ...data[key] })).sort((a, b) => b.timestamp - a.timestamp);
             let uniqueCategories = [...new Set(globalProducts.map(p => p.category))];
-            renderCategoryNav(uniqueCategories); 
-            renderProducts();
+            renderCategoryNav(uniqueCategories); renderProducts();
         });
 
         function renderCategoryNav(categories) {
@@ -279,34 +259,15 @@
             document.getElementById('categoryNav').innerHTML = navHtml;
         }
 
-        function filterCategory(cat) { 
-            activeCategory = cat; 
-            document.getElementById('secTitle').innerText = cat === 'ALL' ? 'LATEST DROP' : cat;
-            renderCategoryNav([...new Set(globalProducts.map(p => p.category))]); 
-            renderProducts(); 
-        }
+        function filterCategory(cat) { activeCategory = cat; document.getElementById('secTitle').innerText = cat === 'ALL' ? 'LATEST DROP' : cat; renderCategoryNav([...new Set(globalProducts.map(p => p.category))]); renderProducts(); }
 
         function renderProducts() {
             const grid = document.getElementById('productGrid');
             let filteredProducts = activeCategory === 'ALL' ? globalProducts : globalProducts.filter(p => p.category === activeCategory);
             if(filteredProducts.length === 0) return grid.innerHTML = '<p style="text-align:center; width:100%; color:var(--text-dim);">Kategori kosong.</p>';
-
             grid.innerHTML = filteredProducts.map(p => {
-                let imgThumb = p.images ? p.images[0] : p.image; 
-                let isHabis = (!p.stock || p.stock <= 0);
-                
-                return `
-                <div class="card" onclick="openPreview('${p.id}')">
-                    <div class="img-box">
-                        <div class="badge" style="background: ${isHabis ? '#ef4444' : 'var(--primary)'}; color: ${isHabis ? 'white' : 'black'};">${isHabis ? 'SOLD OUT' : 'ORIGINAL'}</div>
-                        <img src="${imgThumb}" style="${isHabis ? 'filter: grayscale(100%); opacity: 0.5;' : ''}">
-                    </div>
-                    <div class="info">
-                        <div class="cat">${p.category}</div>
-                        <div class="name">${p.name}</div>
-                        <div class="price">Rp ${p.price.toLocaleString('id-ID')}</div>
-                    </div>
-                </div>`;
+                let imgThumb = p.images ? p.images[0] : p.image; let isHabis = (!p.stock || p.stock <= 0);
+                return `<div class="card" onclick="openPreview('${p.id}')"><div class="img-box"><div class="badge" style="background: ${isHabis ? '#ef4444' : 'var(--primary)'}; color: ${isHabis ? 'white' : 'black'};">${isHabis ? 'SOLD OUT' : 'ORIGINAL'}</div><img src="${imgThumb}" style="${isHabis ? 'filter: grayscale(100%); opacity: 0.5;' : ''}"></div><div class="info"><div class="cat">${p.category}</div><div class="name">${p.name}</div><div class="price">Rp ${p.price.toLocaleString('id-ID')}</div></div></div>`;
             }).join('');
         }
 
@@ -315,56 +276,32 @@
 
         function openPreview(id) {
             hideAllAreas(); const p = globalProducts.find(x => x.id === id); if(!p) return;
-            document.getElementById('modalTitle').innerText = p.category;
-            const previewBox = document.getElementById('previewArea');
-            
-            let imgArray = p.images ? p.images : [p.image];
-            let isHabis = (!p.stock || p.stock <= 0);
-            let sliderHtml = `<div class="preview-slider">`;
-            imgArray.forEach(img => { sliderHtml += `<img src="${img}" style="${isHabis ? 'filter: grayscale(100%); opacity: 0.5;' : ''}">`; });
-            sliderHtml += `</div>`;
+            document.getElementById('modalTitle').innerText = p.category; const previewBox = document.getElementById('previewArea');
+            let imgArray = p.images ? p.images : [p.image]; let isHabis = (!p.stock || p.stock <= 0);
+            let sliderHtml = `<div class="preview-slider">`; imgArray.forEach(img => { sliderHtml += `<img src="${img}" style="${isHabis ? 'filter: grayscale(100%); opacity: 0.5;' : ''}">`; }); sliderHtml += `</div>`;
             if(imgArray.length > 1) sliderHtml += `<div style="text-align:center; font-size:10px; color:var(--text-dim); margin-top:-10px; margin-bottom:15px;">⟵ Geser Gambar ⟶</div>`;
-
-            let sizeHtml = p.category !== 'Accessories' 
-                ? `<div class="form-group"><label>Pilih Ukuran</label><select id="previewSize"><option value="S">Size: S</option><option value="M" selected>Size: M</option><option value="L">Size: L</option><option value="XL">Size: XL</option><option value="XXL">Size: XXL</option></select></div>`
-                : `<input type="hidden" id="previewSize" value="All Size"><div style="font-size:12px; color:var(--text-dim); margin-bottom:15px;">Ukuran: All Size</div>`;
-            
+            let sizeHtml = p.category !== 'Accessories' ? `<div class="form-group"><label>Pilih Ukuran</label><select id="previewSize"><option value="S">Size: S</option><option value="M" selected>Size: M</option><option value="L">Size: L</option><option value="XL">Size: XL</option><option value="XXL">Size: XXL</option></select></div>` : `<input type="hidden" id="previewSize" value="All Size"><div style="font-size:12px; color:var(--text-dim); margin-bottom:15px;">Ukuran: All Size</div>`;
             let stockHtml = isHabis ? `<div class="stock-warn" style="color:#ef4444; border-color:rgba(239,68,68,0.2); background:rgba(239,68,68,0.1);">Stok Habis Terjual!</div>` : `<div class="stock-warn">🔥 Tersisa ${p.stock} pcs lagi di gudang.</div>`;
             let btnHtml = isHabis ? `<button class="btn-main" disabled>SOLD OUT</button>` : `<button class="btn-main" onclick="addToCart('${p.id}')">ADD TO CART - Rp ${p.price.toLocaleString('id-ID')}</button>`;
-
             previewBox.innerHTML = `${sliderHtml}<h3 style="font-size: 18px; color: white; margin-bottom: 5px; line-height: 1.3;">${p.name}</h3><p style="font-size: 16px; font-weight: bold; color: var(--primary); margin-bottom: 15px; font-family: 'Oswald';">Rp ${p.price.toLocaleString('id-ID')}</p>${stockHtml}${sizeHtml}${btnHtml}`;
             previewBox.style.display = 'block'; document.getElementById('mainModal').style.display = 'flex';
         }
 
         function addToCart(id) {
-            const product = globalProducts.find(p => p.id === id);
-            const selectedSize = document.getElementById('previewSize').value;
-            const cartItemId = id + '-' + selectedSize;
-            
+            const product = globalProducts.find(p => p.id === id); const selectedSize = document.getElementById('previewSize').value; const cartItemId = id + '-' + selectedSize;
             const totalQtyInCart = cart.filter(c => c.id === id).reduce((sum, item) => sum + item.qty, 0);
-            if (totalQtyInCart + 1 > product.stock) {
-                showToast(`Maaf, batas sisa stok ${product.name} tercapai.`, 'warning');
-                return;
-            }
-
+            if (totalQtyInCart + 1 > product.stock) { showToast(`Maaf, batas sisa stok ${product.name} tercapai.`, 'warning'); return; }
             const existing = cart.find(c => c.cartItemId === cartItemId);
             if(existing) { existing.qty += 1; } else { cart.push({ ...product, cartItemId: cartItemId, name: `${product.name} (${selectedSize})`, qty: 1 }); }
-            
-            localStorage.setItem('ganketiCart', JSON.stringify(cart)); 
-            updateCartCount(); 
-            
-            // Tutup preview & tampilkan notif modern!
-            closeModal();
-            showToast('Barang berhasil dimasukkan ke keranjang! 🛒', 'success');
+            localStorage.setItem('ganketiCart', JSON.stringify(cart)); updateCartCount(); 
+            closeModal(); showToast('Barang berhasil dimasukkan ke keranjang! 🛒', 'success');
         }
 
         function updateCartCount() { document.getElementById('cartCount').innerText = cart.reduce((sum, item) => sum + item.qty, 0); }
 
         function openCart() {
-            hideAllAreas(); document.getElementById('modalTitle').innerText = "YOUR CART";
-            document.getElementById('cartArea').style.display = 'block'; document.getElementById('mainModal').style.display = 'flex';
+            hideAllAreas(); document.getElementById('modalTitle').innerText = "YOUR CART"; document.getElementById('cartArea').style.display = 'block'; document.getElementById('mainModal').style.display = 'flex';
             const list = document.getElementById('cartItemsList'); let total = 0;
-            
             if (cart.length === 0) { list.innerHTML = '<p style="color:var(--text-dim); text-align:center; padding: 20px 0;">Keranjang kosong.</p>'; } 
             else {
                 list.innerHTML = cart.map((item, index) => {
@@ -377,38 +314,89 @@
 
         function removeItem(index) { cart.splice(index, 1); localStorage.setItem('ganketiCart', JSON.stringify(cart)); updateCartCount(); openCart(); }
         
-        function goToShipping() { 
-            if(cart.length === 0) {
-                showToast("Keranjangmu masih kosong, yuk belanja dulu!", 'warning');
-                return;
+        // ==========================================
+        // 🔥 ENGINE API WILAYAH INDONESIA 🔥
+        // ==========================================
+        async function fetchAPI(url, selectId, defaultText) {
+            const selectEl = document.getElementById(selectId);
+            selectEl.innerHTML = `<option value="">Memuat...</option>`;
+            try {
+                const response = await fetch(url);
+                const data = await response.json();
+                selectEl.innerHTML = `<option value="">${defaultText}</option>`;
+                data.forEach(item => {
+                    selectEl.innerHTML += `<option value="${item.id}" data-name="${item.name}">${item.name}</option>`;
+                });
+                selectEl.disabled = false;
+            } catch (err) {
+                selectEl.innerHTML = `<option value="">Gagal memuat API</option>`;
             }
-            
-            if(!currentUser) {
-                closeModal();
-                showToast("Wajib Login pakai akun Google dulu sebelum Checkout ya Kak!", 'warning');
-                setTimeout(() => handleAuth(), 1500); // Tunda dikit biar dia baca toast-nya dulu
-                return;
-            }
+        }
 
-            hideAllAreas(); 
-            document.getElementById('modalTitle').innerText = "SHIPPING INFO"; 
-            
+        function loadProvinces() { fetchAPI('https://www.emsifa.com/api-wilayah-indonesia/api/provinces.json', 'cProv', 'Pilih Provinsi...'); }
+        
+        function loadCities() {
+            const provId = document.getElementById('cProv').value;
+            document.getElementById('cDist').innerHTML = '<option value="">Pilih Kota Dahulu</option>'; document.getElementById('cDist').disabled = true;
+            document.getElementById('cVill').innerHTML = '<option value="">Pilih Kecamatan Dahulu</option>'; document.getElementById('cVill').disabled = true;
+            if(!provId) return; fetchAPI(`https://www.emsifa.com/api-wilayah-indonesia/api/regencies/${provId}.json`, 'cCity', 'Pilih Kota/Kabupaten...');
+        }
+
+        function loadDistricts() {
+            const cityId = document.getElementById('cCity').value;
+            document.getElementById('cVill').innerHTML = '<option value="">Pilih Kecamatan Dahulu</option>'; document.getElementById('cVill').disabled = true;
+            if(!cityId) return; fetchAPI(`https://www.emsifa.com/api-wilayah-indonesia/api/districts/${cityId}.json`, 'cDist', 'Pilih Kecamatan...');
+        }
+
+        function loadVillages() {
+            const distId = document.getElementById('cDist').value;
+            if(!distId) return; fetchAPI(`https://www.emsifa.com/api-wilayah-indonesia/api/villages/${distId}.json`, 'cVill', 'Pilih Kelurahan/Desa...');
+        }
+
+        // ==========================================
+        // PROSES PENGIRIMAN & CHECKOUT
+        // ==========================================
+        function goToShipping() { 
+            if(cart.length === 0) { showToast("Keranjangmu masih kosong!", 'warning'); return; }
+            if(!currentUser) { closeModal(); showToast("Wajib Login pakai akun Google dulu ya Kak!", 'warning'); setTimeout(() => handleAuth(), 1500); return; }
+
+            hideAllAreas(); document.getElementById('modalTitle').innerText = "SHIPPING INFO"; 
             document.getElementById('cEmail').value = currentUser.email;
             if(document.getElementById('cName').value === "") document.getElementById('cName').value = currentUser.displayName;
 
             document.getElementById('shippingArea').style.display = 'block'; 
+            
+            // Panggil API Provinsi saat form pengiriman dibuka
+            if(document.getElementById('cProv').options.length <= 1) { loadProvinces(); }
         }
 
         function buatPesananSekarang() {
-            const cEmail = document.getElementById('cEmail').value.trim();
+            const cEmail = document.getElementById('cEmail').value;
             const cName = document.getElementById('cName').value.trim(); 
             const cPhone = document.getElementById('cPhone').value.trim(); 
-            const cAddress = document.getElementById('cAddress').value.trim();
-            
-            if(!cEmail || !cName || !cPhone || !cAddress) {
-                showToast("Harap isi Nama, WA, dan Alamat Lengkap!", 'error');
+            const cStreet = document.getElementById('cStreet').value.trim();
+            const cRT = document.getElementById('cRT').value.trim();
+            const cRW = document.getElementById('cRW').value.trim();
+            const cZip = document.getElementById('cZip').value.trim();
+
+            const provEl = document.getElementById('cProv');
+            const cityEl = document.getElementById('cCity');
+            const distEl = document.getElementById('cDist');
+            const villEl = document.getElementById('cVill');
+
+            if(!cName || !cPhone || !cStreet || !cRT || !cRW || !cZip || !provEl.value || !cityEl.value || !distEl.value || !villEl.value) {
+                showToast("Harap isi seluruh detail alamat pengiriman!", 'error');
                 return;
             }
+
+            // Ambil teks nama daerah dari opsi yang dipilih
+            const provName = provEl.options[provEl.selectedIndex].getAttribute('data-name');
+            const cityName = cityEl.options[cityEl.selectedIndex].getAttribute('data-name');
+            const distName = distEl.options[distEl.selectedIndex].getAttribute('data-name');
+            const villName = villEl.options[villEl.selectedIndex].getAttribute('data-name');
+
+            // Rangkai Alamat Sempurna
+            const cAddress = `${cStreet}, RT ${cRT}/RW ${cRW}, Kel. ${villName}, Kec. ${distName}, ${cityName}, Prov. ${provName} - ${cZip}`;
 
             const invoiceNumber = "INV-GKT-" + Date.now();
             const orderDate = new Date().toLocaleString('id-ID');
@@ -433,49 +421,23 @@
             });
 
             let itemsHtml = cart.map(i => `${i.qty}x ${i.name.substring(0,20)} <span style="float:right;">${(i.price * i.qty).toLocaleString('id-ID')}</span>`).join('<br>');
-            document.getElementById('invoicePaper').innerHTML = `<div style="text-align:center; font-weight:bold; font-size:16px; margin-bottom:10px; border-bottom:2px dashed #000; padding-bottom:10px;">GANKETI OFFICIAL</div>INV NO : <b style="color:blue;">${invoiceNumber}</b><br>DATE   : ${orderDate}<br>EMAIL  : ${cEmail}<br>NAME   : ${cName}<br><hr style="border-top:1px dashed #000; margin:10px 0;">${itemsHtml}<hr style="border-top:1px dashed #000; margin:10px 0;"><b style="font-size: 14px;">GRAND TOTAL : <span style="float:right;">Rp ${grandTotal.toLocaleString('id-ID')}</span></b><div style="margin-top:20px; text-align:center; font-size:10px; color:#666;">Silakan selesaikan pembayaran sesuai instruksi admin.</div>`;
+            document.getElementById('invoicePaper').innerHTML = `<div style="text-align:center; font-weight:bold; font-size:16px; margin-bottom:10px; border-bottom:2px dashed #000; padding-bottom:10px;">GANKETI OFFICIAL</div>INV NO : <b style="color:blue;">${invoiceNumber}</b><br>DATE   : ${orderDate}<br>NAME   : ${cName}<br><hr style="border-top:1px dashed #000; margin:10px 0;">${itemsHtml}<hr style="border-top:1px dashed #000; margin:10px 0;"><b style="font-size: 14px;">GRAND TOTAL : <span style="float:right;">Rp ${grandTotal.toLocaleString('id-ID')}</span></b><div style="margin-top:20px; text-align:center; font-size:10px; color:#666;">Silakan selesaikan pembayaran sesuai instruksi admin.</div>`;
 
             cart = []; localStorage.setItem('ganketiCart', JSON.stringify(cart)); updateCartCount();
             hideAllAreas(); document.getElementById('modalTitle').innerText = "ORDER PLACED"; document.getElementById('invoiceArea').style.display = 'block';
+            showToast("Pesanan sukses dibuat!", "success");
         }
 
         function openMyOrders() {
-            if(!currentUser) {
-                showToast("Login pakai akun Google dulu untuk melihat riwayat pesananmu Kak!", 'warning');
-                setTimeout(() => handleAuth(), 1500);
-                return;
-            }
-
+            if(!currentUser) { showToast("Silakan Login dulu untuk melihat pesanan!", 'warning'); setTimeout(() => handleAuth(), 1500); return; }
             hideAllAreas(); document.getElementById('modalTitle').innerText = "PESANAN SAYA";
-            const list = document.getElementById('historyList');
-            list.innerHTML = `<p style="text-align:center; color:var(--text-dim); padding:20px;">Memuat data dari server...</p>`;
+            const list = document.getElementById('historyList'); list.innerHTML = `<p style="text-align:center; color:var(--text-dim); padding:20px;">Memuat data...</p>`;
             document.getElementById('historyArea').style.display = 'block'; document.getElementById('mainModal').style.display = 'flex';
-
-            db.ref('orders').orderByChild('customer/email').equalTo(currentUser.email).once('value')
-            .then(snapshot => {
+            db.ref('orders').orderByChild('customer/email').equalTo(currentUser.email).once('value').then(snapshot => {
                 const data = snapshot.val();
-                if(!data) {
-                    list.innerHTML = `<p style="text-align:center; color:var(--text-dim); padding:20px;">Belum ada pesanan untuk akun ini.</p>`;
-                    return;
-                }
-
-                let historyHtml = '';
-                const orders = Object.keys(data).map(k => data[k]).sort((a,b) => b.timestamp - a.timestamp);
-                
-                orders.forEach(order => {
-                    historyHtml += `
-                    <div class="invoice-card">
-                        <div style="display:flex; justify-content:space-between; margin-bottom:10px; border-bottom:1px dashed var(--border); padding-bottom:5px;">
-                            <b style="color:white; font-size:12px;">${order.invoice_no}</b>
-                            <span class="status-badge status-${order.status}">${order.status}</span>
-                        </div>
-                        <div style="font-size:12px; color:var(--text-dim); line-height:1.5;">
-                            Tgl: ${order.date}<br>
-                            Dikirim ke: ${order.customer.name}<br>
-                            Total Tagihan: <b style="color:var(--primary);">Rp ${order.total.toLocaleString('id-ID')}</b>
-                        </div>
-                    </div>`;
-                });
+                if(!data) { list.innerHTML = `<p style="text-align:center; color:var(--text-dim); padding:20px;">Belum ada pesanan untuk akun ini.</p>`; return; }
+                let historyHtml = ''; const orders = Object.keys(data).map(k => data[k]).sort((a,b) => b.timestamp - a.timestamp);
+                orders.forEach(order => { historyHtml += `<div class="invoice-card"><div style="display:flex; justify-content:space-between; margin-bottom:10px; border-bottom:1px dashed var(--border); padding-bottom:5px;"><b style="color:white; font-size:12px;">${order.invoice_no}</b><span class="status-badge status-${order.status}">${order.status}</span></div><div style="font-size:12px; color:var(--text-dim); line-height:1.5;">Tgl: ${order.date}<br>Dikirim ke: ${order.customer.name}<br>Total Tagihan: <b style="color:var(--primary);">Rp ${order.total.toLocaleString('id-ID')}</b></div></div>`; });
                 list.innerHTML = historyHtml;
             });
         }
