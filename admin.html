@@ -1,217 +1,114 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GANKETI | Admin Command Center</title>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
-    <style>
-        body { font-family: 'Poppins', sans-serif; background: #0a0a0a; color: #fff; display: flex; justify-content: center; min-height: 100vh; margin: 0; padding: 20px;}
-        .container { background: #141414; padding: 30px; border-radius: 12px; width: 100%; max-width: 800px; border: 1px solid #333; }
-        h2 { text-align: center; margin-bottom: 20px; letter-spacing: 2px; font-weight: 700; }
-        
-        .tabs { display: flex; gap: 10px; margin-bottom: 20px; }
-        .tab-btn { flex: 1; padding: 12px; background: #222; color: #aaa; border: 1px solid #333; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.3s; }
-        .tab-btn.active { background: #fff; color: #000; }
-        
-        .form-group { margin-bottom: 15px; }
-        label { display: block; font-size: 12px; color: #aaa; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px;}
-        input, select { width: 100%; padding: 12px; border: 1px solid #444; background: #222; color: white; border-radius: 8px; box-sizing: border-box; font-family: 'Poppins', sans-serif;}
-        .btn-action { width: 100%; padding: 15px; background: #fff; color: #000; border: none; border-radius: 8px; font-weight: 800; cursor: pointer; margin-top: 10px; text-transform: uppercase; letter-spacing: 1px;}
-        .btn-action:hover { background: #ccc; }
-        
-        /* ORDER LIST DESIGN */
-        .order-card { background: #222; border: 1px solid #333; border-radius: 8px; padding: 15px; margin-bottom: 15px; font-size: 13px; }
-        .order-header { display: flex; justify-content: space-between; border-bottom: 1px dashed #444; padding-bottom: 10px; margin-bottom: 10px; font-weight: bold; }
-        .badge-status { padding: 4px 8px; border-radius: 4px; font-size: 10px; font-weight: 800; }
-        .status-UNPAID { background: #ef4444; color: white; }
-        .status-PAID { background: #f59e0b; color: #000; }
-        .status-SHIPPED { background: #4ade80; color: #000; }
-        .btn-status { background: transparent; border: 1px solid #fff; color: #fff; padding: 5px 10px; font-size: 11px; cursor: pointer; margin-top: 10px; border-radius: 4px; font-weight: 600;}
+    const firebaseConfig = {
+        apiKey: "AIzaSyDoh1VBH6YEicKHPyViPi0NUsnILaTin8g",
+        authDomain: "ganketi.firebaseapp.com",
+        databaseURL: "https://ganketi-default-rtdb.firebaseio.com",
+        projectId: "ganketi",
+        storageBucket: "ganketi.firebasestorage.app",
+        messagingSenderId: "61078873925",
+        appId: "1:61078873925:web:c5bf3bdf7cc18f11d6002c"
+    };
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    const auth = firebase.auth();
+    const db = firebase.database();
 
-        #loginWorkspace { text-align: center; max-width: 400px; margin: 100px auto; }
-    </style>
-</head>
-<body>
+    function switchTab(tabName) {
+        document.getElementById('tabUpload').style.display = tabName === 'upload' ? 'block' : 'none';
+        document.getElementById('tabOrders').style.display = tabName === 'orders' ? 'block' : 'none';
+        document.getElementById('tabUploadBtn').className = tabName === 'upload' ? 'tab-btn active' : 'tab-btn';
+        document.getElementById('tabOrdersBtn').className = tabName === 'orders' ? 'tab-btn active' : 'tab-btn';
+    }
 
-    <div class="container">
-        <h2>GANKETI <span style="font-weight:300;">COMMAND CENTER</span></h2>
+    // 1. RADAR PENDETEKSI KEMBALIAN DARI GOOGLE
+    const statusEl = document.getElementById('loginStatus');
+    statusEl.innerText = "Memeriksa sesi login...";
 
-        <div id="loginWorkspace">
-            <button class="btn-action" style="background:#4285F4; color:white; border:none;" onclick="loginGoogle()">🔒 LOGIN VIA GOOGLE</button>
-            <p style="font-size: 11px; color: #666; margin-top: 10px;">Gunakan akun: ganketistore@gmail.com</p>
-            <div id="loginStatus" style="color:#ef4444; margin-top:15px; font-size:13px;"></div>
-        </div>
-
-        <div id="adminWorkspace" style="display:none;">
-            <div style="text-align:right; font-size:11px; color:#ef4444; cursor:pointer; margin-bottom:15px; font-weight: 600;" onclick="logout()">[ Keluar Sistem ]</div>
-            
-            <div class="tabs">
-                <button class="tab-btn active" id="tabUploadBtn" onclick="switchTab('upload')">📦 UPLOAD PRODUK</button>
-                <button class="tab-btn" id="tabOrdersBtn" onclick="switchTab('orders')">🛒 PESANAN MASUK</button>
-            </div>
-
-            <div id="tabUpload">
-                <div class="form-group"><label>Nama Produk</label><input type="text" id="pName" placeholder="Contoh: GANKETI Boxy Fit T-Shirt"></div>
-                <div class="form-group"><label>Kategori</label>
-                    <select id="pCategory">
-                        <option value="T-Shirt">T-Shirt</option>
-                        <option value="Hoodie">Hoodie</option>
-                        <option value="Jacket">Jacket</option>
-                        <option value="Pants">Pants</option>
-                        <option value="Accessories">Accessories</option>
-                    </select>
-                </div>
-                <div class="form-group"><label>Harga Jual (Rp)</label><input type="number" id="pPrice" placeholder="Tanpa titik/koma"></div>
-                <div class="form-group"><label>Foto Produk (Maks 1MB)</label><input type="file" id="pImage" accept="image/*" style="padding: 9px;"></div>
-                <button class="btn-action" onclick="uploadProduct()">UPLOAD KE ETALASE</button>
-                <div id="statusMessage" style="text-align:center; margin-top:15px; font-size:13px; font-weight: 600;"></div>
-            </div>
-
-            <div id="tabOrders" style="display:none;">
-                <div id="ordersList"><p style="color:#aaa; text-align:center;">Memuat data pesanan...</p></div>
-            </div>
-        </div>
-    </div>
-
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-
-    <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyDoh1VBH6YEicKHPyViPi0NUsnILaTin8g",
-            authDomain: "ganketi.firebaseapp.com",
-            databaseURL: "https://ganketi-default-rtdb.firebaseio.com",
-            projectId: "ganketi",
-            storageBucket: "ganketi.firebasestorage.app",
-            messagingSenderId: "61078873925",
-            appId: "1:61078873925:web:c5bf3bdf7cc18f11d6002c"
-        };
-        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.database();
-
-        // LOGIKA PINDAH TAB
-        function switchTab(tabName) {
-            document.getElementById('tabUpload').style.display = tabName === 'upload' ? 'block' : 'none';
-            document.getElementById('tabOrders').style.display = tabName === 'orders' ? 'block' : 'none';
-            document.getElementById('tabUploadBtn').className = tabName === 'upload' ? 'tab-btn active' : 'tab-btn';
-            document.getElementById('tabOrdersBtn').className = tabName === 'orders' ? 'tab-btn active' : 'tab-btn';
+    auth.getRedirectResult().then((result) => {
+        if (result.user) {
+            statusEl.innerText = "✅ Autentikasi berhasil! Sedang memuat Dapur Admin...";
         }
+    }).catch((error) => {
+        alert("❌ ERROR DARI GOOGLE:\n" + error.message);
+        statusEl.innerText = "Gagal: " + error.message;
+    });
 
-        // ==========================================
-        // SISTEM LOGIN REDIRECT (ANTI ERROR DI HP)
-        // ==========================================
-        auth.getRedirectResult().then((result) => {
-            if (result.user) { document.getElementById('loginStatus').innerText = "Berhasil masuk, memuat data..."; }
-        }).catch((error) => {
-            document.getElementById('loginStatus').innerText = "⛔ Error: " + error.message;
-        });
-
-        auth.onAuthStateChanged(user => {
-            if (user) {
-                if (user.email === "ganketistore@gmail.com") {
-                    document.getElementById('loginWorkspace').style.display = 'none';
-                    document.getElementById('adminWorkspace').style.display = 'block';
-                    loadOrders(); 
-                } else {
-                    document.getElementById('loginStatus').innerText = "⛔ Akses Ditolak! Gunakan email ganketistore@gmail.com";
-                    auth.signOut();
-                }
+    // 2. CEK STATUS SAAT INI
+    auth.onAuthStateChanged(user => {
+        if (user) {
+            if (user.email === "ganketistore@gmail.com") {
+                document.getElementById('loginWorkspace').style.display = 'none';
+                document.getElementById('adminWorkspace').style.display = 'block';
+                loadOrders(); 
             } else {
-                document.getElementById('loginWorkspace').style.display = 'block';
-                document.getElementById('adminWorkspace').style.display = 'none';
+                alert("⛔ AKSES DITOLAK: Kamu login menggunakan email " + user.email + "\nHarap gunakan ganketistore@gmail.com");
+                auth.signOut();
             }
-        });
-
-        function loginGoogle() { 
-            document.getElementById('loginStatus').innerText = "Mengarahkan ke Google...";
-            document.getElementById('loginStatus').style.color = "white";
-            auth.signInWithRedirect(new firebase.auth.GoogleAuthProvider()); 
+        } else {
+            statusEl.innerText = "Silakan klik tombol login di atas.";
+            document.getElementById('loginWorkspace').style.display = 'block';
+            document.getElementById('adminWorkspace').style.display = 'none';
         }
+    });
 
-        function logout() { auth.signOut(); }
+    // 3. FUNGSI LOGIN (Menggunakan Redirect agar tidak diblokir Pop-up Blocker)
+    function loginGoogle() { 
+        statusEl.innerText = "Mengarahkan ke Google...";
+        statusEl.style.color = "white";
+        const provider = new firebase.auth.GoogleAuthProvider();
+        auth.signInWithRedirect(provider); 
+    }
 
-        // ==========================================
-        // FUNGSI UPLOAD PRODUK KE FIREBASE
-        // ==========================================
-        function uploadProduct() {
-            const name = document.getElementById('pName').value; 
-            const category = document.getElementById('pCategory').value;
-            const price = document.getElementById('pPrice').value; 
-            const file = document.getElementById('pImage').files[0];
-            const msg = document.getElementById('statusMessage');
+    function logout() { auth.signOut(); }
 
-            if(!name || !price || !file) return msg.innerHTML = "<span style='color:#ef4444;'>Data belum lengkap!</span>";
-            if(file.size > 1024 * 1024) return msg.innerHTML = "<span style='color:#ef4444;'>Foto kebesaran! Maksimal 1MB.</span>";
-            
-            msg.innerHTML = "<span style='color:white;'>Mengunggah ke Etalase...</span>";
+    function uploadProduct() {
+        const name = document.getElementById('pName').value; const category = document.getElementById('pCategory').value;
+        const price = document.getElementById('pPrice').value; const file = document.getElementById('pImage').files[0];
+        const msg = document.getElementById('statusMessage');
 
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                db.ref('products').push({ 
-                    name: name, 
-                    category: category, 
-                    price: parseInt(price), 
-                    image: e.target.result, 
-                    timestamp: Date.now() 
-                }).then(() => {
-                    msg.innerHTML = "<span style='color:#4ade80;'>✅ Upload Sukses! Produk langsung tampil di web depan.</span>";
-                    document.getElementById('pName').value = ''; 
-                    document.getElementById('pPrice').value = ''; 
-                    document.getElementById('pImage').value = '';
-                    
-                    // Hilangkan pesan sukses setelah 3 detik
-                    setTimeout(() => { msg.innerHTML = ""; }, 3000);
-                });
-            }; 
-            reader.readAsDataURL(file);
-        }
+        if(!name || !price || !file) return msg.innerHTML = "<span style='color:#ef4444;'>Data belum lengkap!</span>";
+        if(file.size > 1024 * 1024) return msg.innerHTML = "<span style='color:#ef4444;'>Foto maksimal 1MB!</span>";
+        msg.innerHTML = "<span style='color:white;'>Mengunggah ke Etalase...</span>";
 
-        // ==========================================
-        // FUNGSI TARIK DATA PESANAN PEMBELI
-        // ==========================================
-        function loadOrders() {
-            db.ref('orders').on('value', snapshot => {
-                const data = snapshot.val();
-                const list = document.getElementById('ordersList');
-                if(!data) return list.innerHTML = '<p style="color:#aaa; text-align:center;">Belum ada pesanan masuk.</p>';
-
-                let ordersHtml = '';
-                const ordersArray = Object.keys(data).map(key => ({ id: key, ...data[key] })).sort((a,b) => b.timestamp - a.timestamp);
-                
-                ordersArray.forEach(o => {
-                    let itemsStr = o.items.map(i => `- ${i.qty}x ${i.name}`).join('<br>');
-                    ordersHtml += `
-                        <div class="order-card">
-                            <div class="order-header">
-                                <span>${o.invoice_no}</span>
-                                <span class="badge-status status-${o.status}">${o.status}</span>
-                            </div>
-                            <div style="margin-bottom:10px; color:#ccc;">
-                                <b style="color:white;">Penerima:</b> ${o.customer.name} (WA: ${o.customer.phone})<br>
-                                <b style="color:white;">Alamat:</b> ${o.customer.address}<br>
-                                <b style="color:white;">Tanggal:</b> ${o.date}
-                            </div>
-                            <div style="background:#0a0a0a; padding:10px; border-radius:6px; margin-bottom:10px; border: 1px solid #333;">
-                                ${itemsStr}<br>
-                                <b style="display:block; margin-top:10px; color:#4ade80;">Total Tagihan: Rp ${o.total.toLocaleString('id-ID')}</b>
-                            </div>
-                            <div style="text-align:right;">
-                                ${o.status === 'UNPAID' ? `<button class="btn-status" onclick="updateStatus('${o.id}', 'PAID')">✅ Tandai LUNAS (PAID)</button>` : ''}
-                                ${o.status === 'PAID' ? `<button class="btn-status" onclick="updateStatus('${o.id}', 'SHIPPED')">📦 Tandai DIKIRIM (SHIPPED)</button>` : ''}
-                            </div>
-                        </div>
-                    `;
-                });
-                list.innerHTML = ordersHtml;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            db.ref('products').push({ name, category, price: parseInt(price), image: e.target.result, timestamp: Date.now() })
+            .then(() => {
+                msg.innerHTML = "<span style='color:#4ade80;'>✅ Upload Sukses!</span>";
+                document.getElementById('pName').value = ''; document.getElementById('pPrice').value = ''; document.getElementById('pImage').value = '';
+                setTimeout(() => { msg.innerHTML = ""; }, 3000);
             });
-        }
+        }; reader.readAsDataURL(file);
+    }
 
-        function updateStatus(orderId, newStatus) {
-            db.ref('orders/' + orderId).update({ status: newStatus });
-        }
-    </script>
-</body>
-</html>
+    function loadOrders() {
+        db.ref('orders').on('value', snapshot => {
+            const data = snapshot.val();
+            const list = document.getElementById('ordersList');
+            if(!data) return list.innerHTML = '<p style="color:#aaa; text-align:center;">Belum ada pesanan masuk.</p>';
+
+            let ordersHtml = '';
+            const ordersArray = Object.keys(data).map(key => ({ id: key, ...data[key] })).sort((a,b) => b.timestamp - a.timestamp);
+            
+            ordersArray.forEach(o => {
+                let itemsStr = o.items.map(i => `- ${i.qty}x ${i.name}`).join('<br>');
+                ordersHtml += `
+                    <div class="order-card">
+                        <div class="order-header"><span>${o.invoice_no}</span><span class="badge-status status-${o.status}">${o.status}</span></div>
+                        <div style="margin-bottom:10px; color:#ccc;">
+                            <b style="color:white;">Penerima:</b> ${o.customer.name} (WA: ${o.customer.phone})<br>
+                            <b style="color:white;">Alamat:</b> ${o.customer.address}<br><b style="color:white;">Tanggal:</b> ${o.date}
+                        </div>
+                        <div style="background:#0a0a0a; padding:10px; border-radius:6px; margin-bottom:10px; border: 1px solid #333;">
+                            ${itemsStr}<br><b style="display:block; margin-top:10px; color:#4ade80;">Total Tagihan: Rp ${o.total.toLocaleString('id-ID')}</b>
+                        </div>
+                        <div style="text-align:right;">
+                            ${o.status === 'UNPAID' ? `<button class="btn-status" onclick="updateStatus('${o.id}', 'PAID')">✅ Tandai LUNAS</button>` : ''}
+                            ${o.status === 'PAID' ? `<button class="btn-status" onclick="updateStatus('${o.id}', 'SHIPPED')">📦 Tandai DIKIRIM</button>` : ''}
+                        </div>
+                    </div>
+                `;
+            });
+            list.innerHTML = ordersHtml;
+        });
+    }
+
+    function updateStatus(orderId, newStatus) { db.ref('orders/' + orderId).update({ status: newStatus }); }
