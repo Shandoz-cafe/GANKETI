@@ -3,7 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    
     <title>GANKETI | ERP Command Center</title>
+    <link rel="icon" href="ganketiweb.png" type="image/png">
+    
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
@@ -21,7 +24,6 @@
         .btn-action { width: 100%; padding: 15px; background: #fff; color: #000; border: none; border-radius: 8px; font-weight: 800; cursor: pointer; margin-top: 10px; text-transform: uppercase; letter-spacing: 1px; transition: 0.2s;}
         .btn-action:hover { opacity: 0.8; }
         
-        /* CSS KARTU ORDER & RESI */
         .order-card { background: #1a1a1a; border: 1px solid #333; border-radius: 10px; padding: 20px; margin-bottom: 20px; font-size: 13px; box-shadow: 0 4px 6px rgba(0,0,0,0.3);}
         .order-header { display: flex; justify-content: space-between; border-bottom: 1px dashed #444; padding-bottom: 12px; margin-bottom: 15px; align-items: flex-start;}
         .badge-status { padding: 6px 12px; border-radius: 6px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;}
@@ -39,7 +41,6 @@
         .modal-content { background: #141414; padding: 25px; border-radius: 12px; width: 90%; max-width: 500px; border: 1px solid #444; max-height: 90vh; overflow-y: auto; }
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 10px; }
 
-        /* FINANCE DASHBOARD */
         .fin-filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; background: #1a1a1a; padding: 15px; border-radius: 8px; border: 1px solid #333; align-items: center; justify-content: space-between;}
         .btn-filter { background: #222; color: #aaa; border: 1px solid #444; padding: 8px 15px; border-radius: 6px; font-size: 11px; font-weight: bold; cursor: pointer; transition: 0.3s; }
         .btn-filter.active { background: #3b82f6; color: white; border-color: #3b82f6; }
@@ -54,7 +55,6 @@
         .data-table th { text-align: left; padding: 10px; border-bottom: 1px solid #444; color: #aaa; }
         .data-table td { padding: 10px; border-bottom: 1px solid #222; }
 
-        /* PRINT LAYER (PDF) */
         #printLayer { display: none; }
         @media print {
             @page { size: A4 portrait; margin: 15mm; }
@@ -316,7 +316,6 @@
             if(allOrdersData.length === 0) return list.innerHTML = '<p style="color:#aaa; text-align:center;">Belum ada pesanan.</p>';
             
             list.innerHTML = allOrdersData.sort((a,b)=>b.timestamp-a.timestamp).map(o => {
-                // Generate Detail Item Gambar
                 let itemsHtml = o.items.map(i => {
                     let imgUrl = i.images ? i.images[0] : (i.image ? i.image : 'https://via.placeholder.com/45');
                     return `
@@ -373,15 +372,10 @@
         
         function updateStatus(orderId, newStatus) { db.ref('orders/' + orderId).update({ status: newStatus }); }
 
-        // FUNGSI KHUSUS KIRIM PESANAN + RESI
         function kirimPesanan(orderId) {
             const resiVal = document.getElementById('resi-' + orderId).value.trim();
             if(!resiVal) return alert("Wajib masukkan Nomor Resi sebelum mengirim pesanan!");
-            
-            db.ref('orders/' + orderId).update({ 
-                status: 'SHIPPED', 
-                resi: resiVal 
-            }).then(() => alert('Pesanan Berhasil Dikirim dengan Resi: ' + resiVal));
+            db.ref('orders/' + orderId).update({ status: 'SHIPPED', resi: resiVal }).then(() => alert('Pesanan Berhasil Dikirim dengan Resi: ' + resiVal));
         }
 
         // =========================================================
