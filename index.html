@@ -10,7 +10,10 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { background: var(--bg); color: var(--text); font-family: 'Poppins', sans-serif; }
         header { padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; background: #0a0a0a; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid #222;}
-        .logo { font-family: 'Montserrat', sans-serif; font-size: 24px; font-weight: 900; letter-spacing: 2px; cursor: pointer; user-select: none; }
+        
+        /* 🔥 FIX ANTI-ZOOM DI HP (Biar klik 5x gampang) */
+        .logo { font-family: 'Montserrat', sans-serif; font-size: 24px; font-weight: 900; letter-spacing: 2px; cursor: pointer; user-select: none; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
+        
         .nav-actions { display: flex; gap: 10px; }
         .action-btn { background: transparent; color: white; border: 1px solid #444; padding: 8px 15px; border-radius: 30px; font-weight: 600; cursor: pointer; transition: 0.3s; font-size: 12px; }
         .action-btn.primary { background: #fff; color: #000; border-color: #fff; }
@@ -23,9 +26,14 @@
         .container { padding: 30px 20px; max-width: 1200px; margin: 0 auto; min-height: 50vh;}
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
         .card { background: var(--card); border: 1px solid #222; transition: 0.3s; }
-        .img-box { width: 100%; height: 200px; background: #222; position: relative; }
-        .img-box img { width: 100%; height: 100%; object-fit: cover; }
-        .badge { position: absolute; top: 10px; left: 10px; background: white; color: black; font-size: 10px; font-weight: 800; padding: 3px 8px; text-transform: uppercase; }
+        
+        .img-box { width: 100%; height: 200px; background: #222; position: relative; overflow: hidden; }
+        .img-slider { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; height: 100%; width: 100%; }
+        .img-slider::-webkit-scrollbar { display: none; }
+        .img-slider img { width: 100%; height: 100%; object-fit: cover; flex-shrink: 0; scroll-snap-align: start; }
+        .slide-hint { position: absolute; bottom: 8px; right: 8px; background: rgba(0,0,0,0.7); color: white; font-size: 9px; padding: 4px 8px; border-radius: 12px; z-index: 10; font-weight: bold; pointer-events: none;}
+        
+        .badge { position: absolute; top: 10px; left: 10px; background: white; color: black; font-size: 10px; font-weight: 800; padding: 3px 8px; text-transform: uppercase; z-index: 10; }
         .info { padding: 15px; }
         .cat { font-size: 10px; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
         .name { font-size: 13px; font-weight: 600; margin-bottom: 10px; line-height: 1.4; }
@@ -104,11 +112,20 @@
         let globalProducts = []; let activeCategory = 'ALL'; let cart = JSON.parse(localStorage.getItem('ganketiCart') || '[]');
         updateCartCount();
 
+        // 🔥 FIX WAKTU KLIK DIPERPANJANG JADI 3 DETIK
         let clickCount = 0; let lastClickTime = 0;
         function secretAdminLogin() {
-            const now = Date.now(); if (now - lastClickTime > 2000) clickCount = 0;
-            lastClickTime = now; clickCount++;
-            if (clickCount >= 5) { document.body.style.opacity = '0'; document.body.style.transition = '0.5s'; setTimeout(() => { window.location.href = 'admin.html'; }, 500); }
+            const now = Date.now(); 
+            if (now - lastClickTime > 3000) clickCount = 0; 
+            lastClickTime = now; 
+            clickCount++;
+            if (clickCount >= 5) { 
+                // Biar ketahuan berhasil, saya kasih alert dulu
+                alert("Memasuki Dapur Admin! 🚀");
+                document.body.style.opacity = '0'; 
+                document.body.style.transition = '0.5s'; 
+                setTimeout(() => { window.location.href = 'admin.html'; }, 500); 
+            }
         }
 
         db.ref('products').on('value', (snapshot) => {
@@ -137,18 +154,25 @@
                     ? `<select id="size-${p.id}" style="width:100%; padding:8px; margin-bottom:10px; background:#222; color:white; border:1px solid #444; border-radius:4px; font-size:11px;"><option value="S">Size: S</option><option value="M" selected>Size: M</option><option value="L">Size: L</option><option value="XL">Size: XL</option><option value="XXL">Size: XXL</option></select>`
                     : `<input type="hidden" id="size-${p.id}" value="All Size"><div style="font-size:11px; color:#888; margin-bottom:10px; padding:8px 0;">All Size</div>`;
                 
-                // TAMPILAN SISA STOK
-                let stockDisplay = (p.stock && p.stock > 0) 
-                    ? `<div style="font-size:11px; color:#f59e0b; margin-bottom:10px; font-weight:bold;">🔥 Sisa Stok: ${p.stock} pcs</div>` 
-                    : `<div style="font-size:11px; color:#ef4444; margin-bottom:10px; font-weight:bold;">Stok Habis!</div>`;
+                let stockDisplay = (p.stock && p.stock > 0) ? `<div style="font-size:11px; color:#f59e0b; margin-bottom:10px; font-weight:bold;">🔥 Sisa Stok: ${p.stock} pcs</div>` : `<div style="font-size:11px; color:#ef4444; margin-bottom:10px; font-weight:bold;">Stok Habis!</div>`;
+                let buttonHtml = (!p.stock || p.stock <= 0) ? `<button class="btn-add" style="background: #333; color: #888; border-color: #333; cursor: not-allowed;" disabled>SOLD OUT</button>` : `<button class="btn-add" onclick="addToCart('${p.id}')">+ ADD TO CART</button>`;
 
-                let buttonHtml = (!p.stock || p.stock <= 0) 
-                    ? `<button class="btn-add" style="background: #333; color: #888; border-color: #333; cursor: not-allowed;" disabled>SOLD OUT</button>`
-                    : `<button class="btn-add" onclick="addToCart('${p.id}')">+ ADD TO CART</button>`;
+                let imgArray = p.images ? p.images : [p.image]; 
+                let isHabis = (!p.stock || p.stock <= 0) ? 'filter: grayscale(100%); opacity: 0.5;' : '';
+                
+                let sliderHtml = `<div class="img-slider">`;
+                imgArray.forEach(img => { sliderHtml += `<img src="${img}" style="${isHabis}">`; });
+                sliderHtml += `</div>`;
+                
+                let hintHtml = imgArray.length > 1 ? `<div class="slide-hint">GESER ➔</div>` : '';
 
                 return `
                 <div class="card">
-                    <div class="img-box"><div class="badge">${(!p.stock || p.stock <= 0) ? 'HABIS' : 'Original'}</div><img src="${p.image}" style="${(!p.stock || p.stock <= 0) ? 'filter: grayscale(100%); opacity: 0.5;' : ''}"></div>
+                    <div class="img-box">
+                        <div class="badge">${(!p.stock || p.stock <= 0) ? 'HABIS' : 'Original'}</div>
+                        ${sliderHtml}
+                        ${hintHtml}
+                    </div>
                     <div class="info">
                         <div class="cat">${p.category}</div><div class="name">${p.name}</div>
                         <div class="price">Rp ${p.price.toLocaleString('id-ID')}</div>
@@ -169,7 +193,6 @@
             const selectedSize = sizeElement ? sizeElement.value : 'All Size';
             const cartItemId = id + '-' + selectedSize;
             
-            // CEK APAKAH MELEBIHI SISA STOK?
             const totalQtyInCart = cart.filter(c => c.id === id).reduce((sum, item) => sum + item.qty, 0);
             if (totalQtyInCart + 1 > product.stock) return alert(`Maaf Bos! Sisa stok ${product.name} cuma tinggal ${product.stock} pcs.`);
 
@@ -198,7 +221,6 @@
         function removeItem(index) { cart.splice(index, 1); localStorage.setItem('ganketiCart', JSON.stringify(cart)); updateCartCount(); openCart(); }
         function goToShipping() { if(cart.length === 0) return alert("Cart is empty!"); hideAllAreas(); document.getElementById('modalTitle').innerText = "SHIPPING DETAILS"; document.getElementById('shippingArea').style.display = 'block'; }
 
-        // CHECKOUT & PEMOTONGAN STOK OTOMATIS
         function buatPesananSekarang() {
             const cName = document.getElementById('cName').value; const cPhone = document.getElementById('cPhone').value; const cAddress = document.getElementById('cAddress').value;
             if(!cName || !cPhone || !cAddress) return alert("Mohon lengkapi data pengiriman!");
@@ -209,7 +231,6 @@
 
             db.ref('orders').push({ invoice_no: invoiceNumber, date: orderDate, customer: { name: cName, phone: cPhone, address: cAddress }, items: cart, total: grandTotal, status: "UNPAID", timestamp: Date.now() }); 
 
-            // ENGINE PEMOTONG STOK
             cart.forEach(item => {
                 const prodRef = db.ref('products/' + item.id);
                 prodRef.once('value').then(snap => {
@@ -229,7 +250,6 @@
             hideAllAreas(); document.getElementById('modalTitle').innerText = "ORDER SUMMARY"; document.getElementById('invoiceArea').style.display = 'block';
         }
 
-        // TRACKING
         function openTrackModal() { hideAllAreas(); document.getElementById('modalTitle').innerText = "TRACK YOUR ORDER"; document.getElementById('trackResult').style.display = 'none'; document.getElementById('trackInv').value = ''; document.getElementById('trackArea').style.display = 'block'; document.getElementById('mainModal').style.display = 'flex'; }
         function lacakPesanan() {
             const invQuery = document.getElementById('trackInv').value.trim(); if(!invQuery) return alert("Masukkan Nomor Invoice!");
