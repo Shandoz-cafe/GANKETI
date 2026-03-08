@@ -22,7 +22,6 @@
         .btn-action { width: 100%; padding: 15px; background: #fff; color: #000; border: none; border-radius: 8px; font-weight: 800; cursor: pointer; margin-top: 10px; text-transform: uppercase; letter-spacing: 1px; transition: 0.2s;}
         .btn-action:hover { opacity: 0.8; }
         
-        /* CSS KARTU ORDER & RESI */
         .order-card { background: #1a1a1a; border: 1px solid #333; border-radius: 10px; padding: 20px; margin-bottom: 20px; font-size: 13px; box-shadow: 0 4px 6px rgba(0,0,0,0.3);}
         .order-header { display: flex; justify-content: space-between; border-bottom: 1px dashed #444; padding-bottom: 12px; margin-bottom: 15px; align-items: flex-start;}
         .badge-status { padding: 6px 12px; border-radius: 6px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;}
@@ -127,13 +126,19 @@
             <div id="tabManage" style="display:none;"><div id="manageProductsList"></div></div>
 
             <div id="tabDesign" style="display:none;">
-                <h3 style="font-size: 14px; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 5px;">1. Promo Banner</h3>
-                <div class="form-group"><input type="file" id="promoBanners" accept="image/*" multiple style="padding: 9px;"><button onclick="uploadBanners()" class="btn-action" style="padding:10px; font-size:11px;">Upload Banner</button></div>
+                <h3 style="font-size: 14px; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 5px;">1. Promo Banner (Slide Otomatis)</h3>
+                <div class="form-group">
+                    <input type="file" id="promoBanners" accept="image/*" multiple style="padding: 9px;">
+                    <button onclick="uploadBanners()" class="btn-action" style="padding:10px; font-size:11px;">Upload Banner</button>
+                </div>
                 <div id="bannerList" style="margin-bottom: 30px;"></div>
                 
-                <h3 style="font-size: 14px; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 5px;">2. Menu Kategori (Bisa Diurutkan & Edit)</h3>
-                <div style="display: flex; gap: 10px;"><div class="form-group" style="flex:1;"><input type="text" id="catName" placeholder="Nama Kategori (Cth: Jaket)"></div><div class="form-group" style="flex:1;"><input type="file" id="catIcon" accept="image/*" style="padding: 9px;"></div></div>
-                <button onclick="uploadCategoryBubble()" class="btn-action" style="padding:10px; font-size:11px; background:#4ade80;">Tambah Kategori Baru</button>
+                <h3 style="font-size: 14px; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 5px;">2. Menu Kategori (Visual)</h3>
+                <div style="display: flex; gap: 10px;">
+                    <div class="form-group" style="flex:1;"><input type="text" id="catName" placeholder="Nama Kategori (Cth: Jaket)"></div>
+                    <div class="form-group" style="flex:1;"><input type="file" id="catIcon" accept="image/*" style="padding: 9px;"></div>
+                </div>
+                <button onclick="uploadCategoryBubble()" class="btn-action" style="padding:10px; font-size:11px; background:#4ade80;">Tambah Kategori</button>
                 <div id="categoryBubbleList" style="margin-top: 15px;"></div>
             </div>
 
