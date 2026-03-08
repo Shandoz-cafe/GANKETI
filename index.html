@@ -8,7 +8,7 @@
     <style>
         :root { --bg: #050505; --surface: #121212; --primary: #ffffff; --text: #e5e5e5; --text-dim: #888888; --border: #262626; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
-        body { background: var(--bg); color: var(--text); -webkit-font-smoothing: antialiased; }
+        body { background: var(--bg); color: var(--text); -webkit-font-smoothing: antialiased; overflow-x: hidden;}
 
         /* NAVBAR SUPER PREMIUM */
         header { background: rgba(5,5,5,0.85); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; }
@@ -84,11 +84,24 @@
         .status-UNPAID { background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid #ef4444; }
         .status-PAID { background: rgba(245, 158, 11, 0.2); color: #f59e0b; border: 1px solid #f59e0b; }
         .status-SHIPPED { background: rgba(74, 222, 128, 0.2); color: #4ade80; border: 1px solid #4ade80; }
-
         .receipt { background: #fff; color: #000; padding: 20px; font-family: monospace; font-size: 13px; border-radius: 8px; margin-top: 15px; border-top: 5px solid #000; box-shadow: 0 4px 6px rgba(0,0,0,0.3);}
+
+        /* 🔥 CUSTOM MODERN TOAST NOTIFICATIONS 🔥 */
+        .toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 99999; display: flex; flex-direction: column; gap: 10px; pointer-events: none; width: 90%; max-width: 400px; }
+        .modern-toast { background: var(--surface); border: 1px solid var(--border); color: white; padding: 16px 20px; border-radius: 12px; font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.8); animation: toastSlideDown 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        .modern-toast.success { border-left: 4px solid #4ade80; }
+        .modern-toast.error { border-left: 4px solid #ef4444; }
+        .modern-toast.warning { border-left: 4px solid #f59e0b; }
+        .modern-toast.info { border-left: 4px solid #3b82f6; }
+        .toast-icon { font-size: 18px; }
+        @keyframes toastSlideDown { from { transform: translateY(-50px) scale(0.9); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
+        @keyframes toastFadeOut { from { transform: translateY(0) scale(1); opacity: 1; } to { transform: translateY(-20px) scale(0.9); opacity: 0; } }
+
     </style>
 </head>
 <body>
+
+    <div id="toast-container" class="toast-container"></div>
 
     <header>
         <div class="logo" onclick="secretAdminLogin()">GANKETI</div>
@@ -156,6 +169,15 @@
                 <div id="historyList"></div>
             </div>
 
+            <div id="logoutConfirmArea" style="display:none; text-align:center;">
+                <h3 style="font-size: 16px; margin-bottom: 10px;">Keluar dari Akun?</h3>
+                <p style="font-size: 12px; color: var(--text-dim); margin-bottom: 20px;">Anda harus login kembali untuk melihat riwayat pesanan.</p>
+                <div style="display:flex; gap:10px;">
+                    <button class="btn-main" style="background:#333; color:white;" onclick="closeModal()">BATAL</button>
+                    <button class="btn-main" style="background:#ef4444;" onclick="executeLogout()">YA, KELUAR</button>
+                </div>
+            </div>
+
         </div>
     </div>
 
@@ -165,23 +187,38 @@
     <script>
         const firebaseConfig = { apiKey: "AIzaSyDoh1VBH6YEicKHPyViPi0NUsnILaTin8g", authDomain: "ganketi.firebaseapp.com", databaseURL: "https://ganketi-default-rtdb.firebaseio.com", projectId: "ganketi", storageBucket: "ganketi.firebasestorage.app", messagingSenderId: "61078873925", appId: "1:61078873925:web:c5bf3bdf7cc18f11d6002c" };
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth();
-        const db = firebase.database();
+        const auth = firebase.auth(); const db = firebase.database();
 
         let globalProducts = []; let activeCategory = 'ALL'; 
         let cart = JSON.parse(localStorage.getItem('ganketiCart') || '[]');
-        let currentUser = null; // Menyimpan data user yang login
-        
+        let currentUser = null; 
         updateCartCount();
 
-        // ==========================================
-        // 1. SISTEM AUTENTIKASI PELANGGAN (NEW!)
-        // ==========================================
+        // 🔥 ENGINE MODERN TOAST NOTIFICATION (PENGGANTI ALERT JADUL) 🔥
+        function showToast(message, type = 'info') {
+            const container = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `modern-toast ${type}`;
+            
+            let icon = '💡';
+            if(type === 'success') icon = '✅';
+            if(type === 'error') icon = '❌';
+            if(type === 'warning') icon = '⚠️';
+
+            toast.innerHTML = `<span class="toast-icon">${icon}</span> <div>${message}</div>`;
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.style.animation = 'toastFadeOut 0.4s forwards';
+                setTimeout(() => toast.remove(), 400);
+            }, 3500);
+        }
+
+        // SISTEM AUTENTIKASI
         auth.onAuthStateChanged(user => {
             if (user) {
-                // Kalau admin (ganketistore) masuk toko depan, tetap dianggap sebagai pembeli biasa di sini
                 currentUser = user;
-                document.getElementById('loginBtn').innerHTML = `👤 HI, ${user.displayName.split(' ')[0].toUpperCase()}`;
+                document.getElementById('loginBtn').innerHTML = `👤 ${user.displayName.split(' ')[0].toUpperCase()}`;
             } else {
                 currentUser = null;
                 document.getElementById('loginBtn').innerHTML = `👤 LOGIN`;
@@ -190,22 +227,28 @@
 
         function handleAuth() {
             if(currentUser) {
-                if(confirm("Apakah kamu ingin Logout (Keluar) dari akun ini?")) {
-                    auth.signOut().then(() => alert("Berhasil Logout!"));
-                }
+                // Munculin Custom Modal buat nanya Yakin Logout, bukan pakai confirm() bawaan
+                hideAllAreas();
+                document.getElementById('modalTitle').innerText = "AKUN SAYA";
+                document.getElementById('logoutConfirmArea').style.display = 'block';
+                document.getElementById('mainModal').style.display = 'flex';
             } else {
                 const provider = new firebase.auth.GoogleAuthProvider();
                 auth.signInWithPopup(provider).then((result) => {
-                    alert(`Selamat datang di GANKETI, ${result.user.displayName}!`);
+                    showToast(`Selamat datang, ${result.user.displayName}!`, 'success');
                 }).catch(err => {
-                    alert("Gagal Login: " + err.message);
+                    showToast("Gagal Login: " + err.message, 'error');
                 });
             }
         }
 
-        // ==========================================
-        // 2. SECRET ADMIN LOGIN (TETAP AMAN)
-        // ==========================================
+        function executeLogout() {
+            auth.signOut().then(() => {
+                closeModal();
+                showToast("Berhasil keluar dari akun.", 'info');
+            });
+        }
+
         let clickCount = 0; let lastClickTime = 0;
         function secretAdminLogin() {
             const now = Date.now(); 
@@ -213,16 +256,13 @@
             lastClickTime = now; 
             clickCount++;
             if (clickCount >= 5) { 
-                alert("Memasuki Dapur Admin! 🚀"); 
+                showToast("Mengakses sistem rahasia... 🚀", 'success'); 
                 document.body.style.opacity = '0'; 
                 document.body.style.transition = '0.5s'; 
-                setTimeout(() => { window.location.assign('https://shandoz-cafe.github.io/GANKETI/admin.html?v=' + Date.now()); }, 500); 
+                setTimeout(() => { window.location.assign('https://shandoz-cafe.github.io/GANKETI/admin.html?v=' + Date.now()); }, 800); 
             }
         }
 
-        // ==========================================
-        // 3. RENDER PRODUK DAN KATEGORI
-        // ==========================================
         db.ref('products').on('value', (snapshot) => {
             const data = snapshot.val(); const grid = document.getElementById('productGrid');
             if(!data) return grid.innerHTML = '<p style="text-align:center; width:100%; color:var(--text-dim);">Belum ada koleksi yang dirilis.</p>';
@@ -271,7 +311,7 @@
         }
 
         function closeModal() { document.getElementById('mainModal').style.display = 'none'; }
-        function hideAllAreas() { ['previewArea', 'cartArea', 'shippingArea', 'invoiceArea', 'historyArea'].forEach(id => document.getElementById(id).style.display = 'none'); }
+        function hideAllAreas() { ['previewArea', 'cartArea', 'shippingArea', 'invoiceArea', 'historyArea', 'logoutConfirmArea'].forEach(id => document.getElementById(id).style.display = 'none'); }
 
         function openPreview(id) {
             hideAllAreas(); const p = globalProducts.find(x => x.id === id); if(!p) return;
@@ -302,12 +342,20 @@
             const cartItemId = id + '-' + selectedSize;
             
             const totalQtyInCart = cart.filter(c => c.id === id).reduce((sum, item) => sum + item.qty, 0);
-            if (totalQtyInCart + 1 > product.stock) return alert(`Maaf, batas stok ${product.name} tercapai.`);
+            if (totalQtyInCart + 1 > product.stock) {
+                showToast(`Maaf, batas sisa stok ${product.name} tercapai.`, 'warning');
+                return;
+            }
 
             const existing = cart.find(c => c.cartItemId === cartItemId);
             if(existing) { existing.qty += 1; } else { cart.push({ ...product, cartItemId: cartItemId, name: `${product.name} (${selectedSize})`, qty: 1 }); }
             
-            localStorage.setItem('ganketiCart', JSON.stringify(cart)); updateCartCount(); openCart();
+            localStorage.setItem('ganketiCart', JSON.stringify(cart)); 
+            updateCartCount(); 
+            
+            // Tutup preview & tampilkan notif modern!
+            closeModal();
+            showToast('Barang berhasil dimasukkan ke keranjang! 🛒', 'success');
         }
 
         function updateCartCount() { document.getElementById('cartCount').innerText = cart.reduce((sum, item) => sum + item.qty, 0); }
@@ -329,27 +377,24 @@
 
         function removeItem(index) { cart.splice(index, 1); localStorage.setItem('ganketiCart', JSON.stringify(cart)); updateCartCount(); openCart(); }
         
-        // ==========================================
-        // 4. CHECKOUT (HANYA UNTUK USER LOGIN)
-        // ==========================================
         function goToShipping() { 
-            if(cart.length === 0) return alert("Keranjang kosong!"); 
+            if(cart.length === 0) {
+                showToast("Keranjangmu masih kosong, yuk belanja dulu!", 'warning');
+                return;
+            }
             
-            // CEK LOGIN SEBELUM CHECKOUT
             if(!currentUser) {
-                alert("Wajib Login pakai akun Google dulu sebelum Checkout ya Kak, biar Invoicenya aman!");
-                handleAuth();
+                closeModal();
+                showToast("Wajib Login pakai akun Google dulu sebelum Checkout ya Kak!", 'warning');
+                setTimeout(() => handleAuth(), 1500); // Tunda dikit biar dia baca toast-nya dulu
                 return;
             }
 
             hideAllAreas(); 
             document.getElementById('modalTitle').innerText = "SHIPPING INFO"; 
             
-            // AUTO FILL DATA DARI GOOGLE ACCOUNT
             document.getElementById('cEmail').value = currentUser.email;
-            if(document.getElementById('cName').value === "") {
-                document.getElementById('cName').value = currentUser.displayName;
-            }
+            if(document.getElementById('cName').value === "") document.getElementById('cName').value = currentUser.displayName;
 
             document.getElementById('shippingArea').style.display = 'block'; 
         }
@@ -360,13 +405,15 @@
             const cPhone = document.getElementById('cPhone').value.trim(); 
             const cAddress = document.getElementById('cAddress').value.trim();
             
-            if(!cEmail || !cName || !cPhone || !cAddress) return alert("Semua kolom data wajib diisi!");
+            if(!cEmail || !cName || !cPhone || !cAddress) {
+                showToast("Harap isi Nama, WA, dan Alamat Lengkap!", 'error');
+                return;
+            }
 
             const invoiceNumber = "INV-GKT-" + Date.now();
             const orderDate = new Date().toLocaleString('id-ID');
             let grandTotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
 
-            // SIMPAN KE FIREBASE DENGAN EMAIL USER
             db.ref('orders').push({ 
                 invoice_no: invoiceNumber, date: orderDate, 
                 customer: { email: cEmail, name: cName, phone: cPhone, address: cAddress }, 
@@ -392,22 +439,18 @@
             hideAllAreas(); document.getElementById('modalTitle').innerText = "ORDER PLACED"; document.getElementById('invoiceArea').style.display = 'block';
         }
 
-        // ==========================================
-        // 5. RIWAYAT PESANAN CLOUD (ANTI HILANG)
-        // ==========================================
         function openMyOrders() {
             if(!currentUser) {
-                alert("Silakan Login akun Google dulu untuk melihat riwayat pesananmu Kak!");
-                handleAuth();
+                showToast("Login pakai akun Google dulu untuk melihat riwayat pesananmu Kak!", 'warning');
+                setTimeout(() => handleAuth(), 1500);
                 return;
             }
 
             hideAllAreas(); document.getElementById('modalTitle').innerText = "PESANAN SAYA";
             const list = document.getElementById('historyList');
-            list.innerHTML = `<p style="text-align:center; color:var(--text-dim); padding:20px;">Mengambil data pesanan dari server...</p>`;
+            list.innerHTML = `<p style="text-align:center; color:var(--text-dim); padding:20px;">Memuat data dari server...</p>`;
             document.getElementById('historyArea').style.display = 'block'; document.getElementById('mainModal').style.display = 'flex';
 
-            // TARIK DATA DARI FIREBASE BERDASARKAN EMAIL LOGIN
             db.ref('orders').orderByChild('customer/email').equalTo(currentUser.email).once('value')
             .then(snapshot => {
                 const data = snapshot.val();
