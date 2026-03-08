@@ -34,6 +34,7 @@
 <body>
     <div class="container">
         <h2>GANKETI <span style="font-weight:300;">ERP SYSTEM</span></h2>
+        
         <div id="loginWorkspace">
             <button class="btn-action" style="background:#4285F4; color:white; border:none;" onclick="loginGoogle()">🔒 LOGIN VIA GOOGLE</button>
             <div id="loginStatus" style="color:#ef4444; margin-top:15px; font-size:13px;"></div>
@@ -59,7 +60,10 @@
                     <div class="form-group" style="flex:1;"><label>Harga Jual</label><input type="number" id="pPrice"></div>
                     <div class="form-group" style="flex:1;"><label>Jumlah Stok</label><input type="number" id="pStock" placeholder="Contoh: 50"></div>
                 </div>
-                <div class="form-group"><label>Foto (Maks 1MB)</label><input type="file" id="pImage" accept="image/*" style="padding: 9px;"></div>
+                <div class="form-group">
+                    <label>Foto Produk (Pilih 1 - 5 Foto Sekaligus | Maks 1MB/foto)</label>
+                    <input type="file" id="pImages" accept="image/*" multiple style="padding: 9px;">
+                </div>
                 <button class="btn-action" onclick="uploadProduct()">UPLOAD KE ETALASE</button>
                 <div id="statusMessage" style="text-align:center; margin-top:15px; font-size:13px; font-weight: 600;"></div>
             </div>
@@ -108,26 +112,45 @@
         function loginGoogle() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
         function logout() { auth.signOut(); }
 
+        // FUNGSI UPLOAD MULTI-GAMBAR
         function uploadProduct() {
             const name = document.getElementById('pName').value; const category = document.getElementById('pCategory').value;
             const cost = document.getElementById('pCost').value; const price = document.getElementById('pPrice').value; 
-            const stock = document.getElementById('pStock').value; const file = document.getElementById('pImage').files[0]; 
+            const stock = document.getElementById('pStock').value; 
+            const files = document.getElementById('pImages').files; 
             const msg = document.getElementById('statusMessage');
 
-            if(!name || !cost || !price || !stock || !file) return msg.innerHTML = "<span style='color:#ef4444;'>Lengkapi semua data & stok!</span>";
-            msg.innerHTML = "<span style='color:white;'>Mengunggah...</span>";
+            if(!name || !cost || !price || !stock || files.length === 0) return msg.innerHTML = "<span style='color:#ef4444;'>Lengkapi semua data & pilih minimal 1 foto!</span>";
+            if(files.length > 5) return msg.innerHTML = "<span style='color:#ef4444;'>Maksimal hanya 5 foto!</span>";
 
-            const reader = new FileReader();
-            reader.onload = function(e) {
+            // Validasi ukuran semua file
+            for(let i=0; i<files.length; i++) {
+                if(files[i].size > 1024 * 1024) return msg.innerHTML = `<span style='color:#ef4444;'>Foto ke-${i+1} kebesaran! Maks 1MB.</span>`;
+            }
+
+            msg.innerHTML = "<span style='color:white;'>Mengunggah foto & data...</span>";
+
+            // Proses semua gambar jadi Base64
+            const readFiles = Array.from(files).map(file => {
+                return new Promise((resolve) => {
+                    const reader = new FileReader();
+                    reader.onload = e => resolve(e.target.result);
+                    reader.readAsDataURL(file);
+                });
+            });
+
+            // Setelah semua gambar selesai dibaca, masukkan ke Firebase
+            Promise.all(readFiles).then(base64Images => {
                 db.ref('products').push({ 
                     name: name, category: category, cost: parseInt(cost), price: parseInt(price), stock: parseInt(stock),
-                    image: e.target.result, timestamp: Date.now() 
+                    images: base64Images, // Simpan sebagai array gambar
+                    timestamp: Date.now() 
                 }).then(() => {
-                    msg.innerHTML = "<span style='color:#4ade80;'>✅ Produk & Stok Berhasil Diupload!</span>";
-                    document.getElementById('pName').value=''; document.getElementById('pCost').value=''; document.getElementById('pPrice').value=''; document.getElementById('pStock').value=''; document.getElementById('pImage').value='';
+                    msg.innerHTML = "<span style='color:#4ade80;'>✅ Produk dengan Slide Gambar Berhasil Diupload!</span>";
+                    document.getElementById('pName').value=''; document.getElementById('pCost').value=''; document.getElementById('pPrice').value=''; document.getElementById('pStock').value=''; document.getElementById('pImages').value='';
                     setTimeout(() => { msg.innerHTML = ""; }, 3000);
                 });
-            }; reader.readAsDataURL(file);
+            });
         }
 
         function loadManageProducts() {
@@ -136,10 +159,13 @@
                 if(!data) return list.innerHTML = '<p style="color:#aaa; text-align:center;">Belum ada produk.</p>';
                 let prodHtml = '';
                 Object.keys(data).map(key => ({ id: key, ...data[key] })).sort((a,b) => b.timestamp - a.timestamp).forEach(p => {
+                    // Cek jika produk lama (cuma 1 gambar) atau baru (array gambar)
+                    const thumbImg = p.images ? p.images[0] : p.image;
+                    
                     prodHtml += `
                         <div style="background: #1a1a1a; padding: 15px; border: 1px solid #333; margin-bottom: 10px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center;">
                             <div style="display: flex; gap: 15px; align-items: center;">
-                                <img src="${p.image}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;">
+                                <img src="${thumbImg}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;">
                                 <div><b style="color:#fff;">${p.name}</b> <span style="font-size:10px; color:#888;">(${p.category})</span><br><span style="color:#4ade80; font-size:12px;">Jual: Rp ${p.price.toLocaleString('id-ID')}</span></div>
                             </div>
                             <div style="text-align: right; min-width: 120px;">
@@ -155,12 +181,10 @@
             });
         }
 
-        function updateStock(id) {
-            const newStock = document.getElementById('edit-stock-' + id).value;
-            db.ref('products/' + id).update({ stock: parseInt(newStock) }).then(() => alert('Stok berhasil diupdate!'));
-        }
+        function updateStock(id) { const newStock = document.getElementById('edit-stock-' + id).value; db.ref('products/' + id).update({ stock: parseInt(newStock) }).then(() => alert('Stok berhasil diupdate!')); }
         function deleteProduct(id) { if(confirm("Yakin hapus produk?")) { db.ref('products/' + id).remove(); } }
 
+        // ORDERS & FINANCE
         let allOrdersData = [];
         function loadOrders() {
             db.ref('orders').on('value', snapshot => {
