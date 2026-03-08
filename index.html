@@ -11,7 +11,7 @@
         body { background: var(--bg); color: var(--text); font-family: 'Poppins', sans-serif; }
         header { padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; background: #0a0a0a; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid #222;}
         
-        /* 🔥 ANTI-ZOOM DI HP (Biar klik 5x gampang) */
+        /* 🔥 FIX ANTI-ZOOM DI HP (Biar klik 5x gampang) */
         .logo { font-family: 'Montserrat', sans-serif; font-size: 24px; font-weight: 900; letter-spacing: 2px; cursor: pointer; user-select: none; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
         
         .nav-actions { display: flex; gap: 10px; }
@@ -27,7 +27,6 @@
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
         .card { background: var(--card); border: 1px solid #222; transition: 0.3s; }
         
-        /* CSS IMAGE SLIDER */
         .img-box { width: 100%; height: 200px; background: #222; position: relative; overflow: hidden; }
         .img-slider { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; height: 100%; width: 100%; }
         .img-slider::-webkit-scrollbar { display: none; }
@@ -113,7 +112,7 @@
         let globalProducts = []; let activeCategory = 'ALL'; let cart = JSON.parse(localStorage.getItem('ganketiCart') || '[]');
         updateCartCount();
 
-        // 🔥 INI DIA KODE PENGHANCUR CACHE & ALERT NYA 🔥
+        // 🔥 INI DIA KODE PENGHANCUR CACHE & JALUR VIP YANG BENAR 🔥
         let clickCount = 0; let lastClickTime = 0;
         function secretAdminLogin() {
             const now = Date.now(); 
@@ -121,14 +120,13 @@
             lastClickTime = now; 
             clickCount++;
             if (clickCount >= 5) { 
-                alert("Memasuki Dapur Admin! 🚀"); // Munculin pesan ini biar ketahuan kliknya sukses
+                alert("Memasuki Dapur Admin! 🚀"); 
                 document.body.style.opacity = '0'; 
                 document.body.style.transition = '0.5s'; 
                 
-                // Trik Jitu: Menambahkan waktu acak di belakang link 
-                // Biar browser HP dipaksa mengambil file admin yang 100% Baru!
+                // JALUR VIP LENGKAP: Mencegah nyasar di browser HP
                 setTimeout(() => { 
-                    window.location.href = 'admin.html?v=' + new Date().getTime(); 
+                    window.location.href = 'https://shandoz-cafe.github.io/GANKETI/admin.html?v=' + new Date().getTime(); 
                 }, 500); 
             }
         }
