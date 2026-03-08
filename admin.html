@@ -86,6 +86,15 @@
         </div>
     </div>
 
+    <div class="modal-overlay" id="editCatModal">
+        <div class="modal-content">
+            <div class="modal-header"><h3 style="margin:0; font-size: 16px;">✏️ Edit Kategori</h3><span style="font-size:20px; cursor:pointer; color:#ef4444;" onclick="closeEditCatModal()">×</span></div>
+            <div class="form-group"><label>Nama Kategori</label><input type="text" id="eCatName"></div>
+            <div class="form-group"><label>Ganti Ikon / Foto (Opsional)</label><input type="file" id="eCatIcon" accept="image/*" style="padding: 9px;"></div>
+            <button class="btn-action" style="background:#4ade80; color:black;" onclick="saveEditedCategory()">💾 SIMPAN KATEGORI</button>
+        </div>
+    </div>
+
     <div class="container">
         <h2>GANKETI <span style="font-weight:300;">ERP SYSTEM</span></h2>
         
@@ -118,19 +127,13 @@
             <div id="tabManage" style="display:none;"><div id="manageProductsList"></div></div>
 
             <div id="tabDesign" style="display:none;">
-                <h3 style="font-size: 14px; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 5px;">1. Promo Banner (Slide Otomatis)</h3>
-                <div class="form-group">
-                    <input type="file" id="promoBanners" accept="image/*" multiple style="padding: 9px;">
-                    <button onclick="uploadBanners()" class="btn-action" style="padding:10px; font-size:11px;">Upload Banner</button>
-                </div>
+                <h3 style="font-size: 14px; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 5px;">1. Promo Banner</h3>
+                <div class="form-group"><input type="file" id="promoBanners" accept="image/*" multiple style="padding: 9px;"><button onclick="uploadBanners()" class="btn-action" style="padding:10px; font-size:11px;">Upload Banner</button></div>
                 <div id="bannerList" style="margin-bottom: 30px;"></div>
                 
-                <h3 style="font-size: 14px; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 5px;">2. Menu Kategori (Visual)</h3>
-                <div style="display: flex; gap: 10px;">
-                    <div class="form-group" style="flex:1;"><input type="text" id="catName" placeholder="Nama Kategori (Cth: Jaket)"></div>
-                    <div class="form-group" style="flex:1;"><input type="file" id="catIcon" accept="image/*" style="padding: 9px;"></div>
-                </div>
-                <button onclick="uploadCategoryBubble()" class="btn-action" style="padding:10px; font-size:11px; background:#4ade80;">Tambah Kategori</button>
+                <h3 style="font-size: 14px; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 5px;">2. Menu Kategori (Bisa Diurutkan & Edit)</h3>
+                <div style="display: flex; gap: 10px;"><div class="form-group" style="flex:1;"><input type="text" id="catName" placeholder="Nama Kategori (Cth: Jaket)"></div><div class="form-group" style="flex:1;"><input type="file" id="catIcon" accept="image/*" style="padding: 9px;"></div></div>
+                <button onclick="uploadCategoryBubble()" class="btn-action" style="padding:10px; font-size:11px; background:#4ade80;">Tambah Kategori Baru</button>
                 <div id="categoryBubbleList" style="margin-top: 15px;"></div>
             </div>
 
@@ -242,6 +245,9 @@
         let allOrdersData = []; let allExpensesData = [];
         let currentFinFilter = 'hari'; let customFinDate = ''; let finChart = null;
 
+        // VARIABEL KATEGORI
+        let currentCategoriesData = []; let currentEditCatId = null;
+
         function switchTab(tabName) {
             ['upload', 'manage', 'orders', 'finance', 'design'].forEach(t => {
                 document.getElementById('tab' + t.charAt(0).toUpperCase() + t.slice(1)).style.display = tabName === t ? 'block' : 'none';
@@ -261,19 +267,80 @@
         function loginGoogle() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
         function logout() { auth.signOut(); }
 
-        // UMUM (SINKRON KATEGORI KE DROPDOWN)
+        // =========================================================
+        // 🔥 ENGINE KATEGORI: EDIT & URUTAN SINKRON 🔥
+        // =========================================================
         db.ref('ui_categories').on('value', snap => {
             const data = snap.val(); const pCat = document.getElementById('pCategory'); const eCat = document.getElementById('eCategory'); const bList = document.getElementById('categoryBubbleList');
+            
             if(!data) {
-                if(bList) bList.innerHTML = '';
+                currentCategoriesData = [];
+                if(bList) bList.innerHTML = '<p style="color:#888; font-size:11px;">Belum ada kategori. Silakan tambah di atas.</p>';
                 if(pCat) pCat.innerHTML = '<option value="">Bikin Kategori di tab TAMPILAN dulu!</option>';
                 if(eCat) eCat.innerHTML = '<option value="">Bikin Kategori di tab TAMPILAN dulu!</option>';
                 return;
             }
-            if(bList) bList.innerHTML = Object.keys(data).map(key => `<div class="list-item-admin"><div style="display:flex; align-items:center; gap:10px;"><img src="${data[key].icon}" style="width:30px; height:30px; border-radius:50%; object-fit:cover;"> <span>${data[key].name}</span></div> <button onclick="db.ref('ui_categories/${key}').remove()" style="background:none; border:1px solid #ef4444; color:#ef4444; cursor:pointer; padding:5px; border-radius:4px;">Hapus</button></div>`).join('');
-            let opts = Object.keys(data).map(k => `<option value="${data[k].name}">${data[k].name}</option>`).join('');
+
+            currentCategoriesData = Object.keys(data).map(key => ({ id: key, ...data[key] }));
+            currentCategoriesData.sort((a,b) => (a.order || a.timestamp) - (b.order || b.timestamp));
+
+            if(bList) {
+                bList.innerHTML = currentCategoriesData.map((c, index) => `
+                <div class="list-item-admin">
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <img src="${c.icon || 'https://via.placeholder.com/30'}" style="width:30px; height:30px; border-radius:50%; object-fit:cover; background:#222;"> 
+                        <span style="font-weight:bold;">${c.name}</span>
+                    </div> 
+                    <div style="display:flex; gap:5px;">
+                        <button onclick="moveCategory(${index}, -1)" style="background:#333; color:white; border:none; padding:5px 8px; border-radius:4px; cursor:pointer;" title="Naik">⬆️</button>
+                        <button onclick="moveCategory(${index}, 1)" style="background:#333; color:white; border:none; padding:5px 8px; border-radius:4px; cursor:pointer;" title="Turun">⬇️</button>
+                        <button onclick="openEditCatModal('${c.id}')" style="background:#3b82f6; color:white; border:none; cursor:pointer; padding:5px; border-radius:4px;">✏️ Edit</button>
+                        <button onclick="if(confirm('Hapus kategori ini?')) db.ref('ui_categories/${c.id}').remove()" style="background:none; border:1px solid #ef4444; color:#ef4444; cursor:pointer; padding:5px; border-radius:4px;">Hapus</button>
+                    </div>
+                </div>`).join('');
+            }
+            
+            let opts = currentCategoriesData.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
             if(pCat) pCat.innerHTML = opts; if(eCat) eCat.innerHTML = opts;
         });
+
+        function moveCategory(index, direction) {
+            if(index + direction < 0 || index + direction >= currentCategoriesData.length) return;
+            let item1 = currentCategoriesData[index]; let item2 = currentCategoriesData[index + direction];
+            let order1 = item1.order || item1.timestamp; let order2 = item2.order || item2.timestamp;
+            if(order1 === order2) { if(direction === -1) order2++; else order2--; }
+            db.ref('ui_categories/' + item1.id).update({ order: order2 }); db.ref('ui_categories/' + item2.id).update({ order: order1 });
+        }
+
+        function openEditCatModal(id) {
+            currentEditCatId = id; const c = currentCategoriesData.find(x => x.id === id);
+            document.getElementById('eCatName').value = c.name; document.getElementById('eCatIcon').value = '';
+            document.getElementById('editCatModal').style.display = 'flex';
+        }
+        function closeEditCatModal() { document.getElementById('editCatModal').style.display = 'none'; currentEditCatId = null; }
+        
+        function saveEditedCategory() {
+            if(!currentEditCatId) return;
+            const newName = document.getElementById('eCatName').value.trim(); const file = document.getElementById('eCatIcon').files[0];
+            if(!newName) return alert("Nama kategori tidak boleh kosong!");
+            let updates = { name: newName };
+            if(file) {
+                const reader = new FileReader();
+                reader.onload = function(e) { updates.icon = e.target.result; db.ref('ui_categories/' + currentEditCatId).update(updates).then(() => { closeEditCatModal(); alert("Kategori berhasil diupdate!"); }); }; 
+                reader.readAsDataURL(file);
+            } else { db.ref('ui_categories/' + currentEditCatId).update(updates).then(() => { closeEditCatModal(); alert("Kategori berhasil diupdate!"); }); }
+        }
+
+        function uploadCategoryBubble() { 
+            const name = document.getElementById('catName').value.trim(); const file = document.getElementById('catIcon').files[0];
+            if(!name) return alert("Isi nama kategori!");
+            const baseData = { name: name, timestamp: Date.now(), order: Date.now() };
+            if(file) {
+                const reader = new FileReader();
+                reader.onload = function(e) { baseData.icon = e.target.result; db.ref('ui_categories').push(baseData); document.getElementById('catName').value = ''; document.getElementById('catIcon').value = ''; }; 
+                reader.readAsDataURL(file);
+            } else { db.ref('ui_categories').push(baseData); document.getElementById('catName').value = ''; document.getElementById('catIcon').value = ''; }
+        }
 
         // =========================================================
         // 🔥 MESIN UPLOAD & MANAGE PRODUK 🔥
@@ -317,24 +384,15 @@
         }
 
         // =========================================================
-        // 🔥 MESIN UPLOAD BANNER & KATEGORI (FIXED) 🔥
+        // 🔥 MESIN BANNER 🔥
         // =========================================================
         function uploadBanners() { 
             const files = document.getElementById('promoBanners').files;
             if(files.length === 0) return alert("Pilih gambar banner dulu!");
-            
-            const readFiles = Array.from(files).map(file => new Promise(resolve => { 
-                const reader = new FileReader(); 
-                reader.onload = e => resolve(e.target.result); 
-                reader.readAsDataURL(file); 
-            }));
-            
+            const readFiles = Array.from(files).map(file => new Promise(resolve => { const reader = new FileReader(); reader.onload = e => resolve(e.target.result); reader.readAsDataURL(file); }));
             Promise.all(readFiles).then(base64Images => {
-                base64Images.forEach(img => { 
-                    db.ref('ui_banners').push({ image: img, timestamp: Date.now() }); 
-                });
-                document.getElementById('promoBanners').value = '';
-                alert("Banner berhasil diupload!");
+                base64Images.forEach(img => { db.ref('ui_banners').push({ image: img, timestamp: Date.now() }); });
+                document.getElementById('promoBanners').value = ''; alert("Banner berhasil diupload!");
             });
         }
         
@@ -343,20 +401,6 @@
             if(!data) return list.innerHTML = '<p style="color:#888; font-size:11px;">Belum ada banner.</p>';
             list.innerHTML = Object.keys(data).map(key => `<div class="list-item-admin"><img src="${data[key].image}" style="height:40px; border-radius:4px;"> <button onclick="if(confirm('Hapus banner ini?')) db.ref('ui_banners/${key}').remove()" style="background:none; border:1px solid #ef4444; color:#ef4444; cursor:pointer; padding:5px; border-radius:4px;">Hapus</button></div>`).join('');
         });
-
-        function uploadCategoryBubble() { 
-            const name = document.getElementById('catName').value.trim(); 
-            const file = document.getElementById('catIcon').files[0];
-            if(!name || !file) return alert("Isi nama dan pilih ikon kategori!");
-            
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                db.ref('ui_categories').push({ name: name, icon: e.target.result, timestamp: Date.now() });
-                document.getElementById('catName').value = ''; document.getElementById('catIcon').value = '';
-                alert("Kategori berhasil ditambahkan!");
-            }; 
-            reader.readAsDataURL(file);
-        }
 
         // =========================================================
         // 🔥 ENGINE RENDER PESANAN & TRACKING (RESI) 🔥
