@@ -3,116 +3,209 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>GANKETI | Premium Original Streetwear</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@400;800;900&family=Poppins:wght@300;500;600&display=swap" rel="stylesheet">
+    <title>GANKETI | Authentic Streetwear</title>
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        :root { --bg: #0a0a0a; --text: #ffffff; --card: #141414; }
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        body { background: var(--bg); color: var(--text); font-family: 'Poppins', sans-serif; }
-        header { padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; background: #0a0a0a; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid #222;}
-        
-        /* 🔥 FIX ANTI-ZOOM DI HP (Biar klik 5x gampang) */
-        .logo { font-family: 'Montserrat', sans-serif; font-size: 24px; font-weight: 900; letter-spacing: 2px; cursor: pointer; user-select: none; touch-action: manipulation; -webkit-tap-highlight-color: transparent; }
-        
-        .nav-actions { display: flex; gap: 10px; }
-        .action-btn { background: transparent; color: white; border: 1px solid #444; padding: 8px 15px; border-radius: 30px; font-weight: 600; cursor: pointer; transition: 0.3s; font-size: 12px; }
-        .action-btn.primary { background: #fff; color: #000; border-color: #fff; }
-        .category-nav { display: flex; gap: 10px; padding: 12px 20px; overflow-x: auto; white-space: nowrap; background: rgba(10,10,10,0.95); position: sticky; top: 62px; z-index: 99; border-bottom: 1px solid #222; backdrop-filter: blur(10px); scrollbar-width: none; }
+        :root { --bg: #050505; --surface: #121212; --primary: #ffffff; --text: #e5e5e5; --text-dim: #888888; --border: #262626; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background: var(--bg); color: var(--text); -webkit-font-smoothing: antialiased; }
+
+        /* NAVBAR SUPER PREMIUM */
+        header { background: rgba(5,5,5,0.85); backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); position: sticky; top: 0; z-index: 100; display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; }
+        .logo { font-family: 'Oswald', sans-serif; font-size: 26px; font-weight: 700; letter-spacing: 2px; color: var(--primary); cursor: pointer; text-transform: uppercase; user-select: none; touch-action: manipulation; -webkit-tap-highlight-color: transparent;}
+        .nav-icons { display: flex; gap: 15px; align-items: center; }
+        .icon-btn { background: none; border: none; color: var(--text); font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px; transition: 0.2s;}
+        .icon-btn:hover { color: var(--primary); }
+        .cart-badge { background: var(--primary); color: var(--bg); font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 20px; }
+
+        /* KATEGORI LENGKET DI BAWAH NAVBAR */
+        .category-nav { display: flex; gap: 10px; padding: 12px 20px; overflow-x: auto; white-space: nowrap; background: var(--bg); position: sticky; top: 64px; z-index: 99; border-bottom: 1px solid var(--border); scrollbar-width: none; }
         .category-nav::-webkit-scrollbar { display: none; }
-        .cat-chip { background: #1a1a1a; color: #888; border: 1px solid #333; padding: 8px 20px; border-radius: 30px; font-size: 11px; font-weight: 600; cursor: pointer; transition: 0.3s; text-transform: uppercase; }
-        .cat-chip.active { background: #fff; color: #000; border-color: #fff; }
-        .hero { text-align: center; padding: 50px 20px; background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1556821840-3a63f95609a7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80') center/cover; }
-        .hero h1 { font-family: 'Montserrat', sans-serif; font-size: 32px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px;}
-        .container { padding: 30px 20px; max-width: 1200px; margin: 0 auto; min-height: 50vh;}
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
-        .card { background: var(--card); border: 1px solid #222; transition: 0.3s; }
+        .cat-chip { background: transparent; color: var(--text-dim); border: 1px solid var(--border); padding: 8px 16px; border-radius: 20px; font-size: 12px; font-weight: 500; cursor: pointer; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; }
+        .cat-chip.active { background: var(--primary); color: var(--bg); border-color: var(--primary); font-weight: 600; }
+
+        /* HERO BANNER */
+        .hero { position: relative; width: 100%; height: 35vh; background: url('https://images.unsplash.com/photo-1556821840-3a63f95609a7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80') center/cover; display: flex; align-items: center; justify-content: center; text-align: center; }
+        .hero::after { content: ''; position: absolute; top:0; left:0; width:100%; height:100%; background: linear-gradient(to bottom, rgba(0,0,0,0.4), var(--bg)); }
+        .hero-content { position: relative; z-index: 10; }
+        .hero h1 { font-family: 'Oswald', sans-serif; font-size: 40px; letter-spacing: 2px; color: var(--primary); text-transform: uppercase; margin-bottom: 5px;}
+        .hero p { color: var(--text-dim); font-size: 14px; }
+
+        /* PRODUCT GRID */
+        .container { padding: 40px 20px; max-width: 1200px; margin: 0 auto; min-height: 50vh; }
+        .section-title { font-family: 'Oswald', sans-serif; font-size: 20px; letter-spacing: 1px; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px; }
         
-        .img-box { width: 100%; height: 200px; background: #222; position: relative; overflow: hidden; }
-        .img-slider { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; height: 100%; width: 100%; }
-        .img-slider::-webkit-scrollbar { display: none; }
-        .img-slider img { width: 100%; height: 100%; object-fit: cover; flex-shrink: 0; scroll-snap-align: start; }
-        .slide-hint { position: absolute; bottom: 8px; right: 8px; background: rgba(0,0,0,0.7); color: white; font-size: 9px; padding: 4px 8px; border-radius: 12px; z-index: 10; font-weight: bold; pointer-events: none;}
+        .card { background: var(--surface); border-radius: 8px; overflow: hidden; border: 1px solid var(--border); cursor: pointer; transition: 0.3s; display: flex; flex-direction: column; }
+        .card:hover { border-color: #555; transform: translateY(-3px); }
+        .img-box { width: 100%; aspect-ratio: 1 / 1; background: #1a1a1a; position: relative; overflow: hidden; }
+        .img-box img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
+        .card:hover .img-box img { transform: scale(1.05); }
+        .badge { position: absolute; top: 10px; left: 10px; background: var(--primary); color: var(--bg); font-size: 10px; font-weight: 800; padding: 4px 8px; text-transform: uppercase; border-radius: 2px;}
         
-        .badge { position: absolute; top: 10px; left: 10px; background: white; color: black; font-size: 10px; font-weight: 800; padding: 3px 8px; text-transform: uppercase; z-index: 10; }
-        .info { padding: 15px; }
-        .cat { font-size: 10px; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; }
-        .name { font-size: 13px; font-weight: 600; margin-bottom: 10px; line-height: 1.4; }
-        .price { font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 15px; margin-bottom: 15px; }
-        .btn-add { background: transparent; color: white; border: 1px solid white; width: 100%; padding: 10px; font-weight: 600; cursor: pointer; text-transform: uppercase; font-size: 11px; transition: 0.2s;}
-        .btn-add:hover { background: white; color: black; }
-        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
-        .modal-box { background: #141414; width: 90%; max-width: 450px; border-radius: 12px; border: 1px solid #333; padding: 25px; max-height: 90vh; overflow-y: auto; }
-        .modal-header { display: flex; justify-content: space-between; font-weight: 800; font-size: 18px; border-bottom: 1px solid #333; padding-bottom: 15px; margin-bottom: 15px; font-family: 'Montserrat', sans-serif; }
-        .close-btn { color: #ef4444; cursor: pointer; font-size: 14px; }
+        .info { padding: 15px; display: flex; flex-direction: column; flex-grow: 1; }
+        .cat { font-size: 10px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; font-weight: 600; }
+        .name { font-size: 14px; font-weight: 600; margin-bottom: 10px; line-height: 1.4; color: var(--primary); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .price { font-family: 'Oswald', sans-serif; font-weight: 500; font-size: 16px; margin-top: auto; color: var(--primary); }
+
+        /* MODAL */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: flex-end; backdrop-filter: blur(5px); }
+        @media (min-width: 768px) { .modal { align-items: center; } }
+        .modal-box { background: var(--surface); width: 100%; max-width: 500px; border-radius: 20px 20px 0 0; border: 1px solid var(--border); border-bottom: none; padding: 25px; max-height: 90vh; overflow-y: auto; display: flex; flex-direction: column; animation: slideUp 0.3s ease-out; }
+        @media (min-width: 768px) { .modal-box { border-radius: 12px; border-bottom: 1px solid var(--border); animation: popIn 0.3s ease-out; } }
+        
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 15px; margin-bottom: 20px; }
+        .modal-title { font-family: 'Oswald', sans-serif; font-size: 18px; letter-spacing: 1px; text-transform: uppercase; }
+        .close-btn { color: var(--text-dim); font-size: 24px; cursor: pointer; line-height: 1; }
+        .close-btn:hover { color: white; }
+
+        .preview-slider { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 15px; aspect-ratio: 1/1;}
+        .preview-slider::-webkit-scrollbar { display: none; }
+        .preview-slider img { width: 100%; height: 100%; object-fit: cover; flex-shrink: 0; scroll-snap-align: start; }
+        .stock-warn { font-size: 12px; font-weight: 600; padding: 8px; background: rgba(245, 158, 11, 0.1); color: #f59e0b; border-radius: 6px; margin-bottom: 15px; border: 1px solid rgba(245, 158, 11, 0.2);}
+
         .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; font-size: 11px; color: #aaa; margin-bottom: 5px; text-transform: uppercase;}
-        .form-group input, .form-group textarea { width: 100%; padding: 12px; background: #222; border: 1px solid #444; color: white; font-family: 'Poppins', sans-serif; border-radius: 6px; box-sizing: border-box;}
-        .btn-checkout { background: #fff; color: #000; width: 100%; padding: 15px; border: none; font-weight: 800; font-family: 'Montserrat', sans-serif; margin-top: 10px; cursor: pointer; text-transform: uppercase;}
-        .cart-item { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 15px; border-bottom: 1px dashed #333; padding-bottom: 10px; }
-        .invoice-box { background: #fff; color: #000; padding: 20px; font-family: monospace; font-size: 12px; border-radius: 8px; margin-top: 15px;}
-        .track-result { background: #222; padding: 15px; border-radius: 8px; margin-top: 15px; border: 1px solid #444; display: none; }
-        .status-badge { display: inline-block; padding: 5px 15px; border-radius: 30px; font-size: 12px; font-weight: bold; margin-bottom: 10px;}
-        .status-UNPAID { background: #ef4444; color: white; }
-        .status-PAID { background: #f59e0b; color: #000; }
-        .status-SHIPPED { background: #4ade80; color: #000; }
+        .form-group label { display: block; font-size: 12px; color: var(--text-dim); margin-bottom: 5px; font-weight: 500;}
+        .form-group input, .form-group textarea, .form-group select { width: 100%; padding: 12px; background: #0a0a0a; border: 1px solid var(--border); color: white; font-family: 'Inter', sans-serif; font-size: 14px; border-radius: 8px; box-sizing: border-box; outline: none; transition: 0.3s;}
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus { border-color: var(--primary); }
+        .form-group input:read-only { background: #1a1a1a; color: #888; cursor: not-allowed; }
+        
+        .btn-main { background: var(--primary); color: var(--bg); width: 100%; padding: 15px; border: none; font-weight: 700; font-family: 'Inter', sans-serif; font-size: 14px; border-radius: 8px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: 0.2s;}
+        .btn-main:hover { opacity: 0.8; }
+        .btn-main:disabled { background: #333; color: #666; cursor: not-allowed; }
+
+        .list-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px dashed var(--border); }
+        .list-item:last-child { border-bottom: none; }
+        .invoice-card { background: #1a1a1a; border: 1px solid var(--border); padding: 15px; border-radius: 8px; margin-bottom: 15px; }
+        .status-badge { display: inline-block; padding: 4px 10px; border-radius: 4px; font-size: 10px; font-weight: 700; letter-spacing: 1px; }
+        .status-UNPAID { background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid #ef4444; }
+        .status-PAID { background: rgba(245, 158, 11, 0.2); color: #f59e0b; border: 1px solid #f59e0b; }
+        .status-SHIPPED { background: rgba(74, 222, 128, 0.2); color: #4ade80; border: 1px solid #4ade80; }
+
+        .receipt { background: #fff; color: #000; padding: 20px; font-family: monospace; font-size: 13px; border-radius: 8px; margin-top: 15px; border-top: 5px solid #000; box-shadow: 0 4px 6px rgba(0,0,0,0.3);}
     </style>
 </head>
 <body>
 
     <header>
         <div class="logo" onclick="secretAdminLogin()">GANKETI</div>
-        <div class="nav-actions">
-            <button class="action-btn" onclick="openTrackModal()">🔍 TRACK</button>
-            <button class="action-btn primary" onclick="openCart()">🛒 CART [<span id="cartCount">0</span>]</button>
+        <div class="nav-icons">
+            <button class="icon-btn" id="loginBtn" onclick="handleAuth()">👤 LOGIN</button>
+            <button class="icon-btn" onclick="openMyOrders()">📝 PESANAN</button>
+            <button class="icon-btn" onclick="openCart()">
+                🛒 <span class="cart-badge" id="cartCount">0</span>
+            </button>
         </div>
     </header>
 
-    <div class="category-nav" id="categoryNav"><div class="cat-chip active" onclick="filterCategory('ALL')">ALL COLLECTION</div></div>
-    <div class="hero"><h1>Authentic Streetwear</h1><p style="font-size: 13px; color: #ccc;">Premium Original Collection.</p></div>
-    <div class="container"><div class="grid" id="productGrid"><p style="text-align: center; width: 100%; color: #888;">Memuat koleksi...</p></div></div>
+    <div class="category-nav" id="categoryNav">
+        <button class="cat-chip active" onclick="filterCategory('ALL')">ALL</button>
+    </div>
+
+    <div class="hero">
+        <div class="hero-content">
+            <h1>Authentic Streetwear</h1>
+            <p>Premium Original Collection. Est. 2026</p>
+        </div>
+    </div>
+
+    <div class="container">
+        <h2 class="section-title" id="secTitle">LATEST DROP</h2>
+        <div class="grid" id="productGrid">
+            <p style="text-align: center; width: 100%; color: var(--text-dim);">Memuat etalase...</p>
+        </div>
+    </div>
 
     <div class="modal" id="mainModal">
         <div class="modal-box">
-            <div class="modal-header"><span id="modalTitle">MODAL TITLE</span><span class="close-btn" onclick="closeModal()">✕ CLOSE</span></div>
+            <div class="modal-header">
+                <div class="modal-title" id="modalTitle">MODAL</div>
+                <div class="close-btn" onclick="closeModal()">×</div>
+            </div>
             
+            <div id="previewArea" style="display:none;"></div>
+
             <div id="cartArea" style="display:none;">
                 <div id="cartItemsList"></div>
-                <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 16px; margin-top: 20px;"><span>SUBTOTAL:</span><span id="cartTotalDisplay">Rp 0</span></div>
-                <button class="btn-checkout" onclick="goToShipping()">PROCEED TO CHECKOUT ➔</button>
+                <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 16px; margin: 20px 0; border-top: 1px solid var(--border); padding-top: 15px;">
+                    <span>SUBTOTAL</span><span id="cartTotalDisplay" style="color: var(--primary);">Rp 0</span>
+                </div>
+                <button class="btn-main" onclick="goToShipping()">PROCEED TO CHECKOUT ➔</button>
             </div>
 
             <div id="shippingArea" style="display:none;">
-                <div class="form-group"><label>Nama Lengkap</label><input type="text" id="cName"></div>
-                <div class="form-group"><label>No. WhatsApp</label><input type="number" id="cPhone"></div>
-                <div class="form-group"><label>Alamat & Kode Pos</label><textarea id="cAddress" rows="3"></textarea></div>
-                <button class="btn-checkout" onclick="buatPesananSekarang()">PLACE SECURE ORDER 🔒</button>
+                <p style="font-size: 12px; color: #4ade80; margin-bottom: 15px;">✅ Akun tertaut. Invoice otomatis disimpan ke akun Anda.</p>
+                <div class="form-group"><label>Email Akun</label><input type="email" id="cEmail" readonly></div>
+                <div class="form-group"><label>Nama Lengkap Penerima</label><input type="text" id="cName" placeholder="Nama Lengkap"></div>
+                <div class="form-group"><label>No. WhatsApp Aktif</label><input type="number" id="cPhone" placeholder="08..."></div>
+                <div class="form-group"><label>Alamat Lengkap & Kode Pos</label><textarea id="cAddress" rows="3" placeholder="Jalan, RT/RW, Kecamatan, Kota, Kode Pos..."></textarea></div>
+                <button class="btn-main" onclick="buatPesananSekarang()">PLACE SECURE ORDER 🔒</button>
             </div>
 
             <div id="invoiceArea" style="display:none;">
-                <p style="text-align:center; color:#4ade80; font-weight:bold;">✅ ORDER CREATED!</p>
-                <p style="text-align:center; font-size:12px; color:#aaa;">Simpan Nomor Invoice ini untuk melacak pesanan.</p>
-                <div class="invoice-box" id="invoicePaper"></div>
+                <p style="text-align:center; color:#4ade80; font-weight:bold; margin-bottom:5px;">✅ PESANAN BERHASIL DIBUAT!</p>
+                <p style="text-align:center; font-size:12px; color:var(--text-dim);">Aman! Invoice ini telah disimpan di akun Anda (Menu Pesanan).</p>
+                <div class="receipt" id="invoicePaper"></div>
+                <button class="btn-main" style="margin-top: 15px; background: #25D366; color: white;" onclick="closeModal()">SELESAI</button>
             </div>
 
-            <div id="trackArea" style="display:none;">
-                <div class="form-group"><label>Nomor Invoice</label><input type="text" id="trackInv" placeholder="INV-GKT-..."></div>
-                <button class="btn-checkout" onclick="lacakPesanan()">TRACK NOW 🔍</button>
-                <div class="track-result" id="trackResult"><div id="trackStatus" class="status-badge status-UNPAID">UNPAID</div><div style="font-size:12px; color:#aaa; line-height:1.6;" id="trackDetails"></div></div>
+            <div id="historyArea" style="display:none;">
+                <div id="historyList"></div>
             </div>
+
         </div>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-auth.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     <script>
         const firebaseConfig = { apiKey: "AIzaSyDoh1VBH6YEicKHPyViPi0NUsnILaTin8g", authDomain: "ganketi.firebaseapp.com", databaseURL: "https://ganketi-default-rtdb.firebaseio.com", projectId: "ganketi", storageBucket: "ganketi.firebasestorage.app", messagingSenderId: "61078873925", appId: "1:61078873925:web:c5bf3bdf7cc18f11d6002c" };
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        const auth = firebase.auth();
         const db = firebase.database();
 
-        let globalProducts = []; let activeCategory = 'ALL'; let cart = JSON.parse(localStorage.getItem('ganketiCart') || '[]');
+        let globalProducts = []; let activeCategory = 'ALL'; 
+        let cart = JSON.parse(localStorage.getItem('ganketiCart') || '[]');
+        let currentUser = null; // Menyimpan data user yang login
+        
         updateCartCount();
 
-        // 🔥 INI DIA KODE PENGHANCUR CACHE & JALUR VIP YANG BENAR 🔥
+        // ==========================================
+        // 1. SISTEM AUTENTIKASI PELANGGAN (NEW!)
+        // ==========================================
+        auth.onAuthStateChanged(user => {
+            if (user) {
+                // Kalau admin (ganketistore) masuk toko depan, tetap dianggap sebagai pembeli biasa di sini
+                currentUser = user;
+                document.getElementById('loginBtn').innerHTML = `👤 HI, ${user.displayName.split(' ')[0].toUpperCase()}`;
+            } else {
+                currentUser = null;
+                document.getElementById('loginBtn').innerHTML = `👤 LOGIN`;
+            }
+        });
+
+        function handleAuth() {
+            if(currentUser) {
+                if(confirm("Apakah kamu ingin Logout (Keluar) dari akun ini?")) {
+                    auth.signOut().then(() => alert("Berhasil Logout!"));
+                }
+            } else {
+                const provider = new firebase.auth.GoogleAuthProvider();
+                auth.signInWithPopup(provider).then((result) => {
+                    alert(`Selamat datang di GANKETI, ${result.user.displayName}!`);
+                }).catch(err => {
+                    alert("Gagal Login: " + err.message);
+                });
+            }
+        }
+
+        // ==========================================
+        // 2. SECRET ADMIN LOGIN (TETAP AMAN)
+        // ==========================================
         let clickCount = 0; let lastClickTime = 0;
         function secretAdminLogin() {
             const now = Date.now(); 
@@ -123,84 +216,96 @@
                 alert("Memasuki Dapur Admin! 🚀"); 
                 document.body.style.opacity = '0'; 
                 document.body.style.transition = '0.5s'; 
-                
-                // JALUR VIP LENGKAP: Mencegah nyasar di browser HP
-                setTimeout(() => { 
-                    window.location.href = 'https://shandoz-cafe.github.io/GANKETI/admin.html?v=' + new Date().getTime(); 
-                }, 500); 
+                setTimeout(() => { window.location.assign('https://shandoz-cafe.github.io/GANKETI/admin.html?v=' + Date.now()); }, 500); 
             }
         }
 
+        // ==========================================
+        // 3. RENDER PRODUK DAN KATEGORI
+        // ==========================================
         db.ref('products').on('value', (snapshot) => {
             const data = snapshot.val(); const grid = document.getElementById('productGrid');
-            if(!data) return grid.innerHTML = '<p style="text-align:center; width:100%; color:#888;">Belum ada koleksi.</p>';
+            if(!data) return grid.innerHTML = '<p style="text-align:center; width:100%; color:var(--text-dim);">Belum ada koleksi yang dirilis.</p>';
+            
             globalProducts = Object.keys(data).map(key => ({ id: key, ...data[key] })).sort((a, b) => b.timestamp - a.timestamp);
             let uniqueCategories = [...new Set(globalProducts.map(p => p.category))];
-            renderCategoryNav(uniqueCategories); renderProducts();
+            renderCategoryNav(uniqueCategories); 
+            renderProducts();
         });
 
         function renderCategoryNav(categories) {
-            let navHtml = `<div class="cat-chip ${activeCategory === 'ALL' ? 'active' : ''}" onclick="filterCategory('ALL')">ALL COLLECTION</div>`;
-            categories.forEach(cat => { navHtml += `<div class="cat-chip ${activeCategory === cat ? 'active' : ''}" onclick="filterCategory('${cat}')">${cat}</div>`; });
+            let navHtml = `<button class="cat-chip ${activeCategory === 'ALL' ? 'active' : ''}" onclick="filterCategory('ALL')">ALL</button>`;
+            categories.forEach(cat => { navHtml += `<button class="cat-chip ${activeCategory === cat ? 'active' : ''}" onclick="filterCategory('${cat}')">${cat}</button>`; });
             document.getElementById('categoryNav').innerHTML = navHtml;
         }
 
-        function filterCategory(cat) { activeCategory = cat; renderCategoryNav([...new Set(globalProducts.map(p => p.category))]); renderProducts(); }
+        function filterCategory(cat) { 
+            activeCategory = cat; 
+            document.getElementById('secTitle').innerText = cat === 'ALL' ? 'LATEST DROP' : cat;
+            renderCategoryNav([...new Set(globalProducts.map(p => p.category))]); 
+            renderProducts(); 
+        }
 
         function renderProducts() {
             const grid = document.getElementById('productGrid');
             let filteredProducts = activeCategory === 'ALL' ? globalProducts : globalProducts.filter(p => p.category === activeCategory);
-            if(filteredProducts.length === 0) return grid.innerHTML = '<p style="text-align:center; width:100%; color:#888;">Kategori kosong.</p>';
+            if(filteredProducts.length === 0) return grid.innerHTML = '<p style="text-align:center; width:100%; color:var(--text-dim);">Kategori kosong.</p>';
 
             grid.innerHTML = filteredProducts.map(p => {
-                let sizeHtml = p.category !== 'Accessories' 
-                    ? `<select id="size-${p.id}" style="width:100%; padding:8px; margin-bottom:10px; background:#222; color:white; border:1px solid #444; border-radius:4px; font-size:11px;"><option value="S">Size: S</option><option value="M" selected>Size: M</option><option value="L">Size: L</option><option value="XL">Size: XL</option><option value="XXL">Size: XXL</option></select>`
-                    : `<input type="hidden" id="size-${p.id}" value="All Size"><div style="font-size:11px; color:#888; margin-bottom:10px; padding:8px 0;">All Size</div>`;
+                let imgThumb = p.images ? p.images[0] : p.image; 
+                let isHabis = (!p.stock || p.stock <= 0);
                 
-                let stockDisplay = (p.stock && p.stock > 0) ? `<div style="font-size:11px; color:#f59e0b; margin-bottom:10px; font-weight:bold;">🔥 Sisa Stok: ${p.stock} pcs</div>` : `<div style="font-size:11px; color:#ef4444; margin-bottom:10px; font-weight:bold;">Stok Habis!</div>`;
-                let buttonHtml = (!p.stock || p.stock <= 0) ? `<button class="btn-add" style="background: #333; color: #888; border-color: #333; cursor: not-allowed;" disabled>SOLD OUT</button>` : `<button class="btn-add" onclick="addToCart('${p.id}')">+ ADD TO CART</button>`;
-
-                let imgArray = p.images ? p.images : [p.image]; 
-                let isHabis = (!p.stock || p.stock <= 0) ? 'filter: grayscale(100%); opacity: 0.5;' : '';
-                
-                let sliderHtml = `<div class="img-slider">`;
-                imgArray.forEach(img => { sliderHtml += `<img src="${img}" style="${isHabis}">`; });
-                sliderHtml += `</div>`;
-                
-                let hintHtml = imgArray.length > 1 ? `<div class="slide-hint">GESER ➔</div>` : '';
-
                 return `
-                <div class="card">
+                <div class="card" onclick="openPreview('${p.id}')">
                     <div class="img-box">
-                        <div class="badge">${(!p.stock || p.stock <= 0) ? 'HABIS' : 'Original'}</div>
-                        ${sliderHtml}
-                        ${hintHtml}
+                        <div class="badge" style="background: ${isHabis ? '#ef4444' : 'var(--primary)'}; color: ${isHabis ? 'white' : 'black'};">${isHabis ? 'SOLD OUT' : 'ORIGINAL'}</div>
+                        <img src="${imgThumb}" style="${isHabis ? 'filter: grayscale(100%); opacity: 0.5;' : ''}">
                     </div>
                     <div class="info">
-                        <div class="cat">${p.category}</div><div class="name">${p.name}</div>
+                        <div class="cat">${p.category}</div>
+                        <div class="name">${p.name}</div>
                         <div class="price">Rp ${p.price.toLocaleString('id-ID')}</div>
-                        ${stockDisplay}
-                        ${sizeHtml}
-                        ${buttonHtml}
                     </div>
                 </div>`;
             }).join('');
         }
 
         function closeModal() { document.getElementById('mainModal').style.display = 'none'; }
-        function hideAllAreas() { ['cartArea', 'shippingArea', 'invoiceArea', 'trackArea'].forEach(id => document.getElementById(id).style.display = 'none'); }
+        function hideAllAreas() { ['previewArea', 'cartArea', 'shippingArea', 'invoiceArea', 'historyArea'].forEach(id => document.getElementById(id).style.display = 'none'); }
+
+        function openPreview(id) {
+            hideAllAreas(); const p = globalProducts.find(x => x.id === id); if(!p) return;
+            document.getElementById('modalTitle').innerText = p.category;
+            const previewBox = document.getElementById('previewArea');
+            
+            let imgArray = p.images ? p.images : [p.image];
+            let isHabis = (!p.stock || p.stock <= 0);
+            let sliderHtml = `<div class="preview-slider">`;
+            imgArray.forEach(img => { sliderHtml += `<img src="${img}" style="${isHabis ? 'filter: grayscale(100%); opacity: 0.5;' : ''}">`; });
+            sliderHtml += `</div>`;
+            if(imgArray.length > 1) sliderHtml += `<div style="text-align:center; font-size:10px; color:var(--text-dim); margin-top:-10px; margin-bottom:15px;">⟵ Geser Gambar ⟶</div>`;
+
+            let sizeHtml = p.category !== 'Accessories' 
+                ? `<div class="form-group"><label>Pilih Ukuran</label><select id="previewSize"><option value="S">Size: S</option><option value="M" selected>Size: M</option><option value="L">Size: L</option><option value="XL">Size: XL</option><option value="XXL">Size: XXL</option></select></div>`
+                : `<input type="hidden" id="previewSize" value="All Size"><div style="font-size:12px; color:var(--text-dim); margin-bottom:15px;">Ukuran: All Size</div>`;
+            
+            let stockHtml = isHabis ? `<div class="stock-warn" style="color:#ef4444; border-color:rgba(239,68,68,0.2); background:rgba(239,68,68,0.1);">Stok Habis Terjual!</div>` : `<div class="stock-warn">🔥 Tersisa ${p.stock} pcs lagi di gudang.</div>`;
+            let btnHtml = isHabis ? `<button class="btn-main" disabled>SOLD OUT</button>` : `<button class="btn-main" onclick="addToCart('${p.id}')">ADD TO CART - Rp ${p.price.toLocaleString('id-ID')}</button>`;
+
+            previewBox.innerHTML = `${sliderHtml}<h3 style="font-size: 18px; color: white; margin-bottom: 5px; line-height: 1.3;">${p.name}</h3><p style="font-size: 16px; font-weight: bold; color: var(--primary); margin-bottom: 15px; font-family: 'Oswald';">Rp ${p.price.toLocaleString('id-ID')}</p>${stockHtml}${sizeHtml}${btnHtml}`;
+            previewBox.style.display = 'block'; document.getElementById('mainModal').style.display = 'flex';
+        }
 
         function addToCart(id) {
             const product = globalProducts.find(p => p.id === id);
-            const sizeElement = document.getElementById('size-' + id);
-            const selectedSize = sizeElement ? sizeElement.value : 'All Size';
+            const selectedSize = document.getElementById('previewSize').value;
             const cartItemId = id + '-' + selectedSize;
             
             const totalQtyInCart = cart.filter(c => c.id === id).reduce((sum, item) => sum + item.qty, 0);
-            if (totalQtyInCart + 1 > product.stock) return alert(`Maaf Bos! Sisa stok ${product.name} cuma tinggal ${product.stock} pcs.`);
+            if (totalQtyInCart + 1 > product.stock) return alert(`Maaf, batas stok ${product.name} tercapai.`);
 
             const existing = cart.find(c => c.cartItemId === cartItemId);
-            if(existing) { existing.qty += 1; } else { cart.push({ ...product, cartItemId: cartItemId, name: `${product.name} (Size: ${selectedSize})`, qty: 1 }); }
+            if(existing) { existing.qty += 1; } else { cart.push({ ...product, cartItemId: cartItemId, name: `${product.name} (${selectedSize})`, qty: 1 }); }
             
             localStorage.setItem('ganketiCart', JSON.stringify(cart)); updateCartCount(); openCart();
         }
@@ -211,28 +316,62 @@
             hideAllAreas(); document.getElementById('modalTitle').innerText = "YOUR CART";
             document.getElementById('cartArea').style.display = 'block'; document.getElementById('mainModal').style.display = 'flex';
             const list = document.getElementById('cartItemsList'); let total = 0;
-            if (cart.length === 0) { list.innerHTML = '<p style="color:#666; text-align:center;">Cart is empty.</p>'; } 
+            
+            if (cart.length === 0) { list.innerHTML = '<p style="color:var(--text-dim); text-align:center; padding: 20px 0;">Keranjang kosong.</p>'; } 
             else {
                 list.innerHTML = cart.map((item, index) => {
                     total += (item.price * item.qty);
-                    return `<div class="cart-item"><div style="width:70%;"><b>${item.name}</b><br><span style="color:#888;">${item.qty} x Rp ${item.price.toLocaleString('id-ID')}</span></div><div style="text-align:right; font-weight:bold;">Rp ${(item.price * item.qty).toLocaleString('id-ID')}<br><span style="color:#ef4444; cursor:pointer;" onclick="removeItem(${index})">Remove</span></div></div>`;
+                    return `<div class="list-item"><div style="flex-grow:1; padding-right:15px;"><b style="color:white; font-size:14px;">${item.name}</b><br><span style="color:var(--text-dim); font-size:12px;">${item.qty} x Rp ${item.price.toLocaleString('id-ID')}</span></div><div style="text-align:right;"><b style="color:var(--primary); font-size:14px;">Rp ${(item.price * item.qty).toLocaleString('id-ID')}</b><br><span style="color:#ef4444; font-size:11px; cursor:pointer; font-weight:bold;" onclick="removeItem(${index})">REMOVE</span></div></div>`;
                 }).join('');
             }
             document.getElementById('cartTotalDisplay').innerText = `Rp ${total.toLocaleString('id-ID')}`;
         }
 
         function removeItem(index) { cart.splice(index, 1); localStorage.setItem('ganketiCart', JSON.stringify(cart)); updateCartCount(); openCart(); }
-        function goToShipping() { if(cart.length === 0) return alert("Cart is empty!"); hideAllAreas(); document.getElementById('modalTitle').innerText = "SHIPPING DETAILS"; document.getElementById('shippingArea').style.display = 'block'; }
+        
+        // ==========================================
+        // 4. CHECKOUT (HANYA UNTUK USER LOGIN)
+        // ==========================================
+        function goToShipping() { 
+            if(cart.length === 0) return alert("Keranjang kosong!"); 
+            
+            // CEK LOGIN SEBELUM CHECKOUT
+            if(!currentUser) {
+                alert("Wajib Login pakai akun Google dulu sebelum Checkout ya Kak, biar Invoicenya aman!");
+                handleAuth();
+                return;
+            }
+
+            hideAllAreas(); 
+            document.getElementById('modalTitle').innerText = "SHIPPING INFO"; 
+            
+            // AUTO FILL DATA DARI GOOGLE ACCOUNT
+            document.getElementById('cEmail').value = currentUser.email;
+            if(document.getElementById('cName').value === "") {
+                document.getElementById('cName').value = currentUser.displayName;
+            }
+
+            document.getElementById('shippingArea').style.display = 'block'; 
+        }
 
         function buatPesananSekarang() {
-            const cName = document.getElementById('cName').value; const cPhone = document.getElementById('cPhone').value; const cAddress = document.getElementById('cAddress').value;
-            if(!cName || !cPhone || !cAddress) return alert("Mohon lengkapi data pengiriman!");
+            const cEmail = document.getElementById('cEmail').value.trim();
+            const cName = document.getElementById('cName').value.trim(); 
+            const cPhone = document.getElementById('cPhone').value.trim(); 
+            const cAddress = document.getElementById('cAddress').value.trim();
+            
+            if(!cEmail || !cName || !cPhone || !cAddress) return alert("Semua kolom data wajib diisi!");
 
             const invoiceNumber = "INV-GKT-" + Date.now();
             const orderDate = new Date().toLocaleString('id-ID');
             let grandTotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
 
-            db.ref('orders').push({ invoice_no: invoiceNumber, date: orderDate, customer: { name: cName, phone: cPhone, address: cAddress }, items: cart, total: grandTotal, status: "UNPAID", timestamp: Date.now() }); 
+            // SIMPAN KE FIREBASE DENGAN EMAIL USER
+            db.ref('orders').push({ 
+                invoice_no: invoiceNumber, date: orderDate, 
+                customer: { email: cEmail, name: cName, phone: cPhone, address: cAddress }, 
+                items: cart, total: grandTotal, status: "UNPAID", timestamp: Date.now() 
+            }); 
 
             cart.forEach(item => {
                 const prodRef = db.ref('products/' + item.id);
@@ -246,24 +385,55 @@
                 });
             });
 
-            let itemsHtml = cart.map(i => `${i.qty}x ${i.name.substring(0,25)}... <span style="float:right;">${(i.price * i.qty).toLocaleString('id-ID')}</span>`).join('<br>');
-            document.getElementById('invoicePaper').innerHTML = `<div style="text-align:center; font-weight:bold; font-size:16px; margin-bottom:10px; border-bottom:2px dashed #000; padding-bottom:10px;">GANKETI OFFICIAL</div>INV NO : <b style="color:blue;">${invoiceNumber}</b><br>DATE   : ${orderDate}<br>NAME   : ${cName}<br><hr style="border-top:1px dashed #000; margin:10px 0;">${itemsHtml}<hr style="border-top:1px dashed #000; margin:10px 0;"><b>GRAND TOTAL : <span style="float:right; font-size:14px;">Rp ${grandTotal.toLocaleString('id-ID')}</span></b>`;
+            let itemsHtml = cart.map(i => `${i.qty}x ${i.name.substring(0,20)} <span style="float:right;">${(i.price * i.qty).toLocaleString('id-ID')}</span>`).join('<br>');
+            document.getElementById('invoicePaper').innerHTML = `<div style="text-align:center; font-weight:bold; font-size:16px; margin-bottom:10px; border-bottom:2px dashed #000; padding-bottom:10px;">GANKETI OFFICIAL</div>INV NO : <b style="color:blue;">${invoiceNumber}</b><br>DATE   : ${orderDate}<br>EMAIL  : ${cEmail}<br>NAME   : ${cName}<br><hr style="border-top:1px dashed #000; margin:10px 0;">${itemsHtml}<hr style="border-top:1px dashed #000; margin:10px 0;"><b style="font-size: 14px;">GRAND TOTAL : <span style="float:right;">Rp ${grandTotal.toLocaleString('id-ID')}</span></b><div style="margin-top:20px; text-align:center; font-size:10px; color:#666;">Silakan selesaikan pembayaran sesuai instruksi admin.</div>`;
 
             cart = []; localStorage.setItem('ganketiCart', JSON.stringify(cart)); updateCartCount();
-            hideAllAreas(); document.getElementById('modalTitle').innerText = "ORDER SUMMARY"; document.getElementById('invoiceArea').style.display = 'block';
+            hideAllAreas(); document.getElementById('modalTitle').innerText = "ORDER PLACED"; document.getElementById('invoiceArea').style.display = 'block';
         }
 
-        function openTrackModal() { hideAllAreas(); document.getElementById('modalTitle').innerText = "TRACK YOUR ORDER"; document.getElementById('trackResult').style.display = 'none'; document.getElementById('trackInv').value = ''; document.getElementById('trackArea').style.display = 'block'; document.getElementById('mainModal').style.display = 'flex'; }
-        function lacakPesanan() {
-            const invQuery = document.getElementById('trackInv').value.trim(); if(!invQuery) return alert("Masukkan Nomor Invoice!");
-            const resultBox = document.getElementById('trackResult'); const statusBadge = document.getElementById('trackStatus'); const detailsText = document.getElementById('trackDetails');
-            detailsText.innerHTML = "Mencari data..."; resultBox.style.display = 'block';
-            db.ref('orders').orderByChild('invoice_no').equalTo(invQuery).once('value', snapshot => {
+        // ==========================================
+        // 5. RIWAYAT PESANAN CLOUD (ANTI HILANG)
+        // ==========================================
+        function openMyOrders() {
+            if(!currentUser) {
+                alert("Silakan Login akun Google dulu untuk melihat riwayat pesananmu Kak!");
+                handleAuth();
+                return;
+            }
+
+            hideAllAreas(); document.getElementById('modalTitle').innerText = "PESANAN SAYA";
+            const list = document.getElementById('historyList');
+            list.innerHTML = `<p style="text-align:center; color:var(--text-dim); padding:20px;">Mengambil data pesanan dari server...</p>`;
+            document.getElementById('historyArea').style.display = 'block'; document.getElementById('mainModal').style.display = 'flex';
+
+            // TARIK DATA DARI FIREBASE BERDASARKAN EMAIL LOGIN
+            db.ref('orders').orderByChild('customer/email').equalTo(currentUser.email).once('value')
+            .then(snapshot => {
                 const data = snapshot.val();
-                if(!data) { statusBadge.className = "status-badge status-UNPAID"; statusBadge.innerText = "NOT FOUND"; detailsText.innerHTML = "Pesanan tidak ditemukan."; return; }
-                const orderData = data[Object.keys(data)[0]]; statusBadge.className = `status-badge status-${orderData.status}`; statusBadge.innerText = orderData.status;
-                let message = orderData.status === "UNPAID" ? "Menunggu konfirmasi pembayaran." : orderData.status === "PAID" ? "Pembayaran diterima. Sedang dikemas." : "Pesanan sedang dalam pengiriman.";
-                detailsText.innerHTML = `<b>Penerima:</b> ${orderData.customer.name}<br><b>Tanggal:</b> ${orderData.date}<br><b>Total:</b> Rp ${orderData.total.toLocaleString('id-ID')}<br><br><span style="color:white;">${message}</span>`;
+                if(!data) {
+                    list.innerHTML = `<p style="text-align:center; color:var(--text-dim); padding:20px;">Belum ada pesanan untuk akun ini.</p>`;
+                    return;
+                }
+
+                let historyHtml = '';
+                const orders = Object.keys(data).map(k => data[k]).sort((a,b) => b.timestamp - a.timestamp);
+                
+                orders.forEach(order => {
+                    historyHtml += `
+                    <div class="invoice-card">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:10px; border-bottom:1px dashed var(--border); padding-bottom:5px;">
+                            <b style="color:white; font-size:12px;">${order.invoice_no}</b>
+                            <span class="status-badge status-${order.status}">${order.status}</span>
+                        </div>
+                        <div style="font-size:12px; color:var(--text-dim); line-height:1.5;">
+                            Tgl: ${order.date}<br>
+                            Dikirim ke: ${order.customer.name}<br>
+                            Total Tagihan: <b style="color:var(--primary);">Rp ${order.total.toLocaleString('id-ID')}</b>
+                        </div>
+                    </div>`;
+                });
+                list.innerHTML = historyHtml;
             });
         }
     </script>
