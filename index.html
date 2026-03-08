@@ -18,19 +18,18 @@
     <meta name="twitter:title" content="GANKETI | Authentic Streetwear">
     <meta name="twitter:description" content="GANKETI represents modern elegance, authentic fashion, and timeless style">
     <meta name="twitter:image" content="https://shandoz-cafe.github.io/GANKETI/ganketiweb.png">
+
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
         :root { --bg: #050505; --surface: #121212; --primary: #ffffff; --text: #e5e5e5; --text-dim: #888888; --border: #262626; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
         body { background: var(--bg); color: var(--text); -webkit-font-smoothing: antialiased; overflow-x: hidden;}
 
-        /* HEADER & SEARCH BAR */
         header { background: rgba(5,5,5,0.95); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--border); }
-        .head-top { display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; } /* Padding disesuaikan biar logo muat */
+        .head-top { display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; } 
         
-        /* 🔥 LOGO POJOK KIRI ATAS DIPERBESAR 🔥 */
         .logo { cursor: pointer; user-select: none; touch-action: manipulation; -webkit-tap-highlight-color: transparent; display: flex; align-items: center;}
-        .logo img { max-height: 45px; width: auto; object-fit: contain; } /* max-height dinaikkan jadi 45px */
+        .logo img { max-height: 45px; width: auto; object-fit: contain; } 
         
         .nav-icons { display: flex; gap: 15px; align-items: center; }
         .icon-btn { background: none; border: none; color: var(--text); font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px; }
@@ -40,7 +39,6 @@
         .search-box { width: 100%; padding: 10px 15px; background: #1a1a1a; border: 1px solid #333; border-radius: 8px; color: white; outline: none; font-family: 'Inter'; font-size: 13px; }
         .search-box:focus { border-color: var(--primary); }
 
-        /* BUBBLE CATEGORY UI */
         .icon-nav-container { display: flex; gap: 15px; padding: 15px 20px; overflow-x: auto; scrollbar-width: none; background: var(--bg); border-bottom: 1px solid var(--border); }
         .icon-nav-container::-webkit-scrollbar { display: none; }
         .icon-item { display: flex; flex-direction: column; align-items: center; gap: 8px; min-width: 60px; cursor: pointer; }
@@ -50,7 +48,6 @@
         .icon-item.active .icon-circle { border-color: var(--primary); }
         .icon-item.active .icon-text { color: var(--primary); }
 
-        /* 🔥 SUPER HERO PROMO BANNER 🔥 */
         .promo-hero { position: relative; width: 100%; height: 40vh; overflow: hidden; background: #111; display: flex; align-items: center; justify-content: center; text-align: center;}
         .carousel-track { display: flex; position: absolute; top:0; left:0; width: 100%; height: 100%; transition: transform 0.5s ease-in-out; z-index: 1; }
         .carousel-slide { min-width: 100%; height: 100%; position: relative; }
@@ -66,7 +63,6 @@
         .dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.3); transition: 0.3s; cursor: pointer; }
         .dot.active { background: white; width: 20px; border-radius: 4px; }
 
-        /* PRODUCT GRID */
         .container { padding: 30px 20px; max-width: 1200px; margin: 0 auto; min-height: 50vh; }
         .section-title { font-family: 'Oswald', sans-serif; font-size: 20px; letter-spacing: 1px; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px; display:flex; justify-content: space-between; align-items:center;}
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px; }
@@ -81,7 +77,6 @@
         .price { font-family: 'Oswald', sans-serif; font-weight: 500; font-size: 16px; margin-top: auto; color: var(--primary); display: flex; flex-direction: column; }
         .price-strike { font-family: 'Inter', sans-serif; font-size: 11px; text-decoration: line-through; color: #ef4444; font-weight: 400; margin-bottom: 2px;}
 
-        /* MODALS & FORMS */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: flex-end; backdrop-filter: blur(5px); }
         @media (min-width: 768px) { .modal { align-items: center; } }
         .modal-box { background: var(--surface); width: 100%; max-width: 500px; border-radius: 20px 20px 0 0; border: 1px solid var(--border); border-bottom: none; padding: 25px; max-height: 90vh; overflow-y: auto; display: flex; flex-direction: column; animation: slideUp 0.3s ease-out; }
@@ -301,8 +296,11 @@
             const data = snap.val(); const nav = document.getElementById('categoryIconNav');
             let baseHtml = `<div class="icon-item ${activeCategory === 'ALL' ? 'active' : ''}" onclick="filterCategory('ALL')"><div class="icon-circle" style="background:#fff; color:black; font-weight:bold; font-size:12px;">ALL</div><div class="icon-text">Semua</div></div>`;
             if(data) {
-                let cats = Object.keys(data).map(k => data[k]).sort((a,b) => a.timestamp - b.timestamp);
-                cats.forEach(c => { baseHtml += `<div class="icon-item ${activeCategory === c.name ? 'active' : ''}" onclick="filterCategory('${c.name}')"><div class="icon-circle"><img src="${c.icon}"></div><div class="icon-text">${c.name.substring(0,8)}</div></div>`; });
+                let cats = Object.keys(data).map(k => data[k]).sort((a,b) => (a.order || a.timestamp) - (b.order || b.timestamp));
+                cats.forEach(c => { 
+                    let iconImg = c.icon ? `<img src="${c.icon}">` : `<span style="color:#555; font-size:10px;">IMG</span>`;
+                    baseHtml += `<div class="icon-item ${activeCategory === c.name ? 'active' : ''}" onclick="filterCategory('${c.name}')"><div class="icon-circle">${iconImg}</div><div class="icon-text">${c.name.substring(0,8)}</div></div>`; 
+                });
             }
             nav.innerHTML = baseHtml;
         });
