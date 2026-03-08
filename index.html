@@ -66,7 +66,7 @@
         .form-group label { display: block; font-size: 12px; color: var(--text-dim); margin-bottom: 5px; font-weight: 500;}
         .form-group input, .form-group select { width: 100%; padding: 12px; background: #0a0a0a; border: 1px solid var(--border); color: white; font-family: 'Inter', sans-serif; font-size: 14px; border-radius: 8px; box-sizing: border-box; outline: none; transition: 0.3s;}
         .form-group input:focus, .form-group select:focus { border-color: var(--primary); }
-        .form-group input:disabled, .form-group input:read-only { background: #1a1a1a; color: #888; cursor: not-allowed; }
+        .form-group input:disabled, .form-group input:read-only { background: #1a1a1a; color: #555; cursor: not-allowed; border-color: #222; }
         
         .btn-main { background: var(--primary); color: var(--bg); width: 100%; padding: 15px; border: none; font-weight: 700; font-family: 'Inter', sans-serif; font-size: 14px; border-radius: 8px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: 0.2s;}
         .btn-main:hover { opacity: 0.8; }
@@ -81,7 +81,6 @@
         .status-SHIPPED { background: rgba(74, 222, 128, 0.2); color: #4ade80; border: 1px solid #4ade80; }
         .receipt { background: #fff; color: #000; padding: 20px; font-family: monospace; font-size: 13px; border-radius: 8px; margin-top: 15px; border-top: 5px solid #000; box-shadow: 0 4px 6px rgba(0,0,0,0.3);}
 
-        /* TOAST NOTIFICATIONS */
         .toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 99999; display: flex; flex-direction: column; gap: 10px; pointer-events: none; width: 90%; max-width: 400px; }
         .modern-toast { background: var(--surface); border: 1px solid var(--border); color: white; padding: 16px 20px; border-radius: 12px; font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.8); animation: toastSlideDown 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
         .modern-toast.success { border-left: 4px solid #4ade80; }
@@ -92,6 +91,14 @@
         @keyframes toastSlideDown { from { transform: translateY(-50px) scale(0.9); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
         @keyframes toastFadeOut { from { transform: translateY(0) scale(1); opacity: 1; } to { transform: translateY(-20px) scale(0.9); opacity: 0; } }
 
+        /* 🔥 CSS UNTUK SMART SEARCH DROPDOWN 🔥 */
+        .custom-select-wrapper { position: relative; width: 100%; }
+        .custom-select-wrapper input { padding-right: 30px; }
+        .custom-select-wrapper::after { content: '▼'; position: absolute; right: 12px; top: 14px; color: var(--text-dim); font-size: 10px; pointer-events: none; }
+        .custom-options { display: none; position: absolute; top: 100%; left: 0; right: 0; background: #1a1a1a; border: 1px solid var(--border); max-height: 220px; overflow-y: auto; z-index: 100; border-radius: 8px; margin-top: 5px; box-shadow: 0 10px 30px rgba(0,0,0,0.8); }
+        .custom-option { padding: 12px 15px; font-size: 13px; color: white; cursor: pointer; border-bottom: 1px solid #222; transition: 0.2s;}
+        .custom-option:last-child { border-bottom: none; }
+        .custom-option:hover { background: var(--primary); color: black; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -155,23 +162,34 @@
 
                 <div class="form-group">
                     <label>Provinsi</label>
-                    <input type="text" id="cProvInput" list="provList" placeholder="Ketik nama provinsi..." onchange="loadCities()" autocomplete="off">
-                    <datalist id="provList"></datalist>
+                    <div class="custom-select-wrapper">
+                        <input type="text" id="cProvInput" placeholder="Ketik/Pilih Provinsi..." autocomplete="off" oninput="filterOptions('prov')" onclick="toggleOptions('prov')">
+                        <div id="provList" class="custom-options"></div>
+                    </div>
                 </div>
+                
                 <div class="form-group">
                     <label>Kota / Kabupaten</label>
-                    <input type="text" id="cCityInput" list="cityList" placeholder="Pilih provinsi dahulu" onchange="loadDistricts()" autocomplete="off" disabled>
-                    <datalist id="cityList"></datalist>
+                    <div class="custom-select-wrapper">
+                        <input type="text" id="cCityInput" placeholder="Pilih Provinsi Dahulu" autocomplete="off" oninput="filterOptions('city')" onclick="toggleOptions('city')" disabled>
+                        <div id="cityList" class="custom-options"></div>
+                    </div>
                 </div>
+
                 <div class="form-group">
                     <label>Kecamatan</label>
-                    <input type="text" id="cDistInput" list="distList" placeholder="Pilih kota/kabupaten dahulu" onchange="loadVillages()" autocomplete="off" disabled>
-                    <datalist id="distList"></datalist>
+                    <div class="custom-select-wrapper">
+                        <input type="text" id="cDistInput" placeholder="Pilih Kota Dahulu" autocomplete="off" oninput="filterOptions('dist')" onclick="toggleOptions('dist')" disabled>
+                        <div id="distList" class="custom-options"></div>
+                    </div>
                 </div>
+
                 <div class="form-group">
                     <label>Kelurahan / Desa</label>
-                    <input type="text" id="cVillInput" list="villList" placeholder="Pilih kecamatan dahulu" autocomplete="off" disabled>
-                    <datalist id="villList"></datalist>
+                    <div class="custom-select-wrapper">
+                        <input type="text" id="cVillInput" placeholder="Pilih Kecamatan Dahulu" autocomplete="off" oninput="filterOptions('vill')" onclick="toggleOptions('vill')" disabled>
+                        <div id="villList" class="custom-options"></div>
+                    </div>
                 </div>
                 
                 <div class="form-group">
@@ -214,10 +232,8 @@
         let globalProducts = []; let activeCategory = 'ALL'; 
         let cart = JSON.parse(localStorage.getItem('ganketiCart') || '[]');
         let currentUser = null; 
+        let apiRegionData = { prov: [], city: [], dist: [], vill: [] }; // Cache Data Wilayah
         
-        // Cache data wilayah biar gampang dicari ID-nya
-        let apiRegionData = { prov: [], city: [], dist: [], vill: [] };
-
         updateCartCount();
 
         function showToast(message, type = 'info') {
@@ -298,7 +314,7 @@
             const existing = cart.find(c => c.cartItemId === cartItemId);
             if(existing) { existing.qty += 1; } else { cart.push({ ...product, cartItemId: cartItemId, name: `${product.name} (${selectedSize})`, qty: 1 }); }
             localStorage.setItem('ganketiCart', JSON.stringify(cart)); updateCartCount(); 
-            closeModal(); showToast('Barang berhasil dimasukkan ke keranjang! 🛒', 'success');
+            closeModal(); showToast('Barang dimasukkan ke keranjang! 🛒', 'success');
         }
 
         function updateCartCount() { document.getElementById('cartCount').innerText = cart.reduce((sum, item) => sum + item.qty, 0); }
@@ -320,66 +336,85 @@
         function removeItem(index) { cart.splice(index, 1); localStorage.setItem('ganketiCart', JSON.stringify(cart)); updateCartCount(); openCart(); }
         
         // ==========================================
-        // 🔥 ENGINE API AUTOCOMPLETE (DATALIST) 🔥
+        // 🔥 MESIN SMART SEARCH DROPDOWN 🔥
         // ==========================================
-        async function fetchDatalistAPI(url, listId, inputId, placeholderText, type) {
+        async function loadRegionData(level, parentId = null) {
+            let url = '', listId = '', inputId = '';
+            if (level === 'prov') { url = 'https://www.emsifa.com/api-wilayah-indonesia/api/provinces.json'; listId = 'provList'; inputId = 'cProvInput'; }
+            else if (level === 'city') { url = `https://www.emsifa.com/api-wilayah-indonesia/api/regencies/${parentId}.json`; listId = 'cityList'; inputId = 'cCityInput'; }
+            else if (level === 'dist') { url = `https://www.emsifa.com/api-wilayah-indonesia/api/districts/${parentId}.json`; listId = 'distList'; inputId = 'cDistInput'; }
+            else if (level === 'vill') { url = `https://www.emsifa.com/api-wilayah-indonesia/api/villages/${parentId}.json`; listId = 'villList'; inputId = 'cVillInput'; }
+
             const inputEl = document.getElementById(inputId);
-            const listEl = document.getElementById(listId);
-            inputEl.placeholder = "Memuat data..."; inputEl.disabled = true;
-            
+            inputEl.placeholder = "Sedang mengambil data..."; inputEl.disabled = true;
+
             try {
-                const response = await fetch(url);
-                const data = await response.json();
-                apiRegionData[type] = data; // Simpan data ke memori
-                
-                listEl.innerHTML = '';
-                data.forEach(item => {
-                    let option = document.createElement('option');
-                    option.value = item.name;
-                    listEl.appendChild(option);
-                });
-                
-                inputEl.placeholder = placeholderText;
-                inputEl.disabled = false;
-                inputEl.value = ''; 
-            } catch (err) {
-                inputEl.placeholder = "Gagal memuat API";
+                const response = await fetch(url); const data = await response.json();
+                apiRegionData[level] = data; 
+                renderCustomList(level, listId);
+                inputEl.disabled = false; inputEl.placeholder = "Ketik atau pilih...";
+            } catch (err) { inputEl.placeholder = "Gagal memuat sistem."; }
+        }
+
+        function renderCustomList(level, listId) {
+            const listEl = document.getElementById(listId);
+            listEl.innerHTML = apiRegionData[level].map(item => 
+                `<div class="custom-option" data-level="${level}" data-id="${item.id}" data-name="${item.name}">${item.name}</div>`
+            ).join('');
+        }
+
+        function filterOptions(level) {
+            const listId = level + 'List'; const inputId = 'c' + level.charAt(0).toUpperCase() + level.slice(1) + 'Input';
+            const val = document.getElementById(inputId).value.toLowerCase();
+            const listEl = document.getElementById(listId);
+            listEl.style.display = 'block'; 
+            
+            const options = listEl.getElementsByClassName('custom-option');
+            for (let opt of options) {
+                opt.style.display = opt.getAttribute('data-name').toLowerCase().includes(val) ? 'block' : 'none';
             }
         }
 
-        function resetInput(inputId, placeholder) {
+        function toggleOptions(level) {
+            const listId = level + 'List';
+            document.querySelectorAll('.custom-options').forEach(el => { if(el.id !== listId) el.style.display = 'none'; });
+            const listEl = document.getElementById(listId);
+            listEl.style.display = listEl.style.display === 'block' ? 'none' : 'block';
+        }
+
+        // Tangkap klik pada pilihan daerah
+        document.addEventListener('click', function(e) {
+            if(e.target.classList.contains('custom-option')) {
+                const level = e.target.getAttribute('data-level');
+                const id = e.target.getAttribute('data-id');
+                const name = e.target.getAttribute('data-name');
+                
+                if(level === 'prov') {
+                    document.getElementById('cProvInput').value = name; document.getElementById('provList').style.display = 'none';
+                    resetInput('cCityInput'); resetInput('cDistInput'); resetInput('cVillInput'); loadRegionData('city', id);
+                } else if (level === 'city') {
+                    document.getElementById('cCityInput').value = name; document.getElementById('cityList').style.display = 'none';
+                    resetInput('cDistInput'); resetInput('cVillInput'); loadRegionData('dist', id);
+                } else if (level === 'dist') {
+                    document.getElementById('cDistInput').value = name; document.getElementById('distList').style.display = 'none';
+                    resetInput('cVillInput'); loadRegionData('vill', id);
+                } else if (level === 'vill') {
+                    document.getElementById('cVillInput').value = name; document.getElementById('villList').style.display = 'none';
+                }
+            } else if (!e.target.closest('.custom-select-wrapper')) {
+                // Tutup semua pop-up list kalau klik area kosong
+                document.querySelectorAll('.custom-options').forEach(el => el.style.display = 'none');
+            }
+        });
+
+        function resetInput(inputId) {
             const el = document.getElementById(inputId);
-            el.value = ''; el.disabled = true; el.placeholder = placeholder;
+            el.value = ''; el.disabled = true; el.placeholder = "Menunggu pilihan di atasnya...";
             document.getElementById(inputId.replace('Input', 'List')).innerHTML = '';
         }
 
-        function loadProvinces() { 
-            fetchDatalistAPI('https://www.emsifa.com/api-wilayah-indonesia/api/provinces.json', 'provList', 'cProvInput', 'Ketik nama provinsi...', 'prov'); 
-        }
-        
-        function loadCities() {
-            const val = document.getElementById('cProvInput').value;
-            const selected = apiRegionData.prov.find(x => x.name === val);
-            resetInput('cCityInput', 'Pilih Provinsi Dahulu'); resetInput('cDistInput', 'Pilih Kota Dahulu'); resetInput('cVillInput', 'Pilih Kecamatan Dahulu');
-            if(selected) fetchDatalistAPI(`https://www.emsifa.com/api-wilayah-indonesia/api/regencies/${selected.id}.json`, 'cityList', 'cCityInput', 'Ketik nama kota...', 'city');
-        }
-
-        function loadDistricts() {
-            const val = document.getElementById('cCityInput').value;
-            const selected = apiRegionData.city.find(x => x.name === val);
-            resetInput('cDistInput', 'Pilih Kota Dahulu'); resetInput('cVillInput', 'Pilih Kecamatan Dahulu');
-            if(selected) fetchDatalistAPI(`https://www.emsifa.com/api-wilayah-indonesia/api/districts/${selected.id}.json`, 'distList', 'cDistInput', 'Ketik nama kecamatan...', 'dist');
-        }
-
-        function loadVillages() {
-            const val = document.getElementById('cDistInput').value;
-            const selected = apiRegionData.dist.find(x => x.name === val);
-            resetInput('cVillInput', 'Pilih Kecamatan Dahulu');
-            if(selected) fetchDatalistAPI(`https://www.emsifa.com/api-wilayah-indonesia/api/villages/${selected.id}.json`, 'villList', 'cVillInput', 'Ketik nama kelurahan...', 'vill');
-        }
-
         // ==========================================
-        // CHECKOUT LOGIC
+        // PROSES PENGIRIMAN & CHECKOUT
         // ==========================================
         function goToShipping() { 
             if(cart.length === 0) { showToast("Keranjangmu masih kosong!", 'warning'); return; }
@@ -390,9 +425,7 @@
             if(document.getElementById('cName').value === "") document.getElementById('cName').value = currentUser.displayName;
 
             document.getElementById('shippingArea').style.display = 'block'; 
-            
-            // Panggil API Provinsi saat form dibuka (jika belum diload)
-            if(document.getElementById('provList').options.length === 0) { loadProvinces(); }
+            if(apiRegionData.prov.length === 0) loadRegionData('prov'); // Panggil API Provinsi awal
         }
 
         function buatPesananSekarang() {
@@ -409,19 +442,10 @@
             const distName = document.getElementById('cDistInput').value;
             const villName = document.getElementById('cVillInput').value;
 
-            // Validasi kelengkapan
             if(!cName || !cPhone || !cStreet || !cRT || !cRW || !cZip || !provName || !cityName || !distName || !villName) {
-                showToast("Harap isi seluruh detail alamat pengiriman dengan lengkap!", 'error');
-                return;
+                showToast("Harap isi seluruh detail alamat pengiriman dengan lengkap!", 'error'); return;
             }
 
-            // Validasi apakah pilihan ada di dalam daftar (bukan asal ngetik ngawur)
-            if(!apiRegionData.prov.find(x => x.name === provName)) { showToast("Nama Provinsi tidak sesuai daftar!", 'error'); return; }
-            if(!apiRegionData.city.find(x => x.name === cityName)) { showToast("Nama Kota/Kab tidak sesuai daftar!", 'error'); return; }
-            if(!apiRegionData.dist.find(x => x.name === distName)) { showToast("Nama Kecamatan tidak sesuai daftar!", 'error'); return; }
-            if(!apiRegionData.vill.find(x => x.name === villName)) { showToast("Nama Kelurahan tidak sesuai daftar!", 'error'); return; }
-
-            // Rangkai Alamat
             const cAddress = `${cStreet}, RT ${cRT}/RW ${cRW}, Kel. ${villName}, Kec. ${distName}, ${cityName}, Prov. ${provName} - ${cZip}`;
 
             const invoiceNumber = "INV-GKT-" + Date.now();
