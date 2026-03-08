@@ -7,7 +7,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700;800&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Poppins', sans-serif; background: #0a0a0a; color: #fff; display: flex; justify-content: center; min-height: 100vh; margin: 0; padding: 20px;}
-        .container { background: #141414; padding: 30px; border-radius: 12px; width: 100%; max-width: 900px; border: 1px solid #333; }
+        .container { background: #141414; padding: 30px; border-radius: 12px; width: 100%; max-width: 900px; border: 1px solid #333; position: relative;}
         h2 { text-align: center; margin-bottom: 20px; letter-spacing: 2px; font-weight: 800; }
         .tabs { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;}
         .tab-btn { flex: 1; padding: 10px; min-width: 130px; background: #222; color: #aaa; border: 1px solid #333; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.3s; font-size: 11px;}
@@ -30,9 +30,44 @@
         .fin-val { font-size: 22px; font-weight: 800; }
         #loginWorkspace { text-align: center; max-width: 400px; margin: 100px auto; }
         .list-item-admin { display: flex; justify-content: space-between; align-items: center; background: #1a1a1a; padding: 10px; border-radius: 6px; border: 1px solid #333; margin-bottom: 5px; }
+        
+        /* MODAL UNTUK EDIT PRODUK */
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
+        .modal-content { background: #141414; padding: 25px; border-radius: 12px; width: 90%; max-width: 500px; border: 1px solid #444; max-height: 90vh; overflow-y: auto; }
+        .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 10px; }
     </style>
 </head>
 <body>
+
+    <div class="modal-overlay" id="editModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 style="margin:0; font-size: 16px;">✏️ Edit Produk</h3>
+                <span style="font-size:20px; cursor:pointer; color:#ef4444;" onclick="closeEditModal()">×</span>
+            </div>
+            
+            <div class="form-group"><label>Nama Produk</label><input type="text" id="eName"></div>
+            <div class="form-group"><label>Kategori</label>
+                <select id="eCategory"><option value="">Memuat...</option></select>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <div class="form-group" style="flex:1;"><label>Modal Supplier</label><input type="number" id="eCost"></div>
+                <div class="form-group" style="flex:1;"><label>Harga Jual</label><input type="number" id="ePrice"></div>
+            </div>
+            <div style="display: flex; gap: 10px;">
+                <div class="form-group" style="flex:1;"><label>Jumlah Stok</label><input type="number" id="eStock"></div>
+                <div class="form-group" style="flex:1;"><label>Harga Coret (Opsional)</label><input type="number" id="eOriginalPrice" placeholder="Kosongkan jika tdk diskon"></div>
+            </div>
+            <div class="form-group">
+                <label>Ganti Foto (Biarkan kosong jika tidak ingin ganti foto)</label>
+                <input type="file" id="eImages" accept="image/*" multiple style="padding: 9px;">
+                <p style="font-size: 10px; color: #888; margin-top: 5px;">*Maksimal 5 foto. Akan menimpa foto lama.</p>
+            </div>
+            
+            <button class="btn-action" style="background:#3b82f6; color:white;" onclick="saveEditedProduct()">💾 SIMPAN PERUBAHAN</button>
+        </div>
+    </div>
+
     <div class="container">
         <h2>GANKETI <span style="font-weight:300;">ERP SYSTEM</span></h2>
         
@@ -54,11 +89,9 @@
 
             <div id="tabUpload">
                 <div class="form-group"><label>Nama Produk</label><input type="text" id="pName"></div>
-                
                 <div class="form-group"><label>Kategori</label>
                     <select id="pCategory"><option value="">Memuat Kategori dari Menu Tampilan...</option></select>
                 </div>
-
                 <div style="display: flex; gap: 10px;">
                     <div class="form-group" style="flex:1;"><label>Modal Supplier</label><input type="number" id="pCost"></div>
                     <div class="form-group" style="flex:1;"><label>Harga Jual</label><input type="number" id="pPrice"></div>
@@ -76,12 +109,11 @@
             </div>
 
             <div id="tabManage" style="display:none;">
-                <h3 style="font-size: 14px; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 5px;">Manajemen Stok Etalase</h3>
+                <h3 style="font-size: 14px; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 5px;">Manajemen Stok & Data Etalase</h3>
                 <div id="manageProductsList"><p style="color:#aaa; text-align:center;">Memuat produk...</p></div>
             </div>
 
             <div id="tabDesign" style="display:none;">
-                
                 <h3 style="font-size: 14px; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 5px;">1. Promo Banner (Slide Otomatis)</h3>
                 <div class="form-group">
                     <label>Upload Gambar Banner (Bisa pilih banyak sekaligus)</label>
@@ -97,7 +129,6 @@
                 </div>
                 <button onclick="uploadCategoryBubble()" style="background:#4ade80; color:black; border:none; padding:8px 15px; margin-bottom:15px; border-radius:4px; font-weight:bold; cursor:pointer;">+ TAMBAH KATEGORI</button>
                 <div id="categoryBubbleList"></div>
-
             </div>
 
             <div id="tabOrders" style="display:none;"><div id="ordersList"></div></div>
@@ -122,6 +153,10 @@
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const auth = firebase.auth(); const db = firebase.database();
 
+        // Variabel penampung data produk untuk diedit
+        let adminProductsData = {}; 
+        let currentEditId = null;
+
         function switchTab(tabName) {
             ['upload', 'manage', 'orders', 'finance', 'design'].forEach(t => {
                 document.getElementById('tab' + t.charAt(0).toUpperCase() + t.slice(1)).style.display = tabName === t ? 'block' : 'none';
@@ -142,46 +177,44 @@
         function logout() { auth.signOut(); }
 
         // =========================================================
-        // 🔥 ENGINE SINKRONISASI KATEGORI (TAMPILAN <-> UPLOAD) 🔥
+        // ENGINE SINKRONISASI KATEGORI (TAMPILAN <-> UPLOAD <-> EDIT)
         // =========================================================
         db.ref('ui_categories').on('value', snap => {
             const data = snap.val(); 
             const pCategory = document.getElementById('pCategory');
+            const eCategory = document.getElementById('eCategory');
             const bubbleList = document.getElementById('categoryBubbleList');
             
             if(!data) { 
                 if(bubbleList) bubbleList.innerHTML = '<p style="color:#888; font-size:11px;">Belum ada kategori. Silakan tambah di atas.</p>';
                 if(pCategory) pCategory.innerHTML = '<option value="">Kosong! Buat kategori di Menu TAMPILAN dulu!</option>';
+                if(eCategory) eCategory.innerHTML = '<option value="">Kosong!</option>';
                 return; 
             }
 
-            // 1. Render List di tab "TAMPILAN"
             if(bubbleList) {
                 bubbleList.innerHTML = Object.keys(data).map(key => `<div class="list-item-admin"><div style="display:flex; align-items:center; gap:10px;"><img src="${data[key].icon}" style="width:30px; height:30px; border-radius:50%; object-fit:cover;"> <span>${data[key].name}</span></div> <button onclick="deleteItem('ui_categories', '${key}')" style="background:none; border:1px solid #ef4444; color:#ef4444; cursor:pointer; padding:5px; border-radius:4px;">Hapus</button></div>`).join('');
             }
 
-            // 2. Render Dropdown Options di tab "UPLOAD"
-            if(pCategory) {
-                let catOptions = '';
-                Object.keys(data).map(k => data[k]).sort((a,b) => a.timestamp - b.timestamp).forEach(c => {
-                    catOptions += `<option value="${c.name}">${c.name}</option>`;
-                });
-                pCategory.innerHTML = catOptions;
-            }
+            let catOptions = '';
+            Object.keys(data).map(k => data[k]).sort((a,b) => a.timestamp - b.timestamp).forEach(c => {
+                catOptions += `<option value="${c.name}">${c.name}</option>`;
+            });
+            if(pCategory) pCategory.innerHTML = catOptions;
+            if(eCategory) eCategory.innerHTML = catOptions;
         });
 
         // =========================================================
-
+        // UPLOAD & MANAGE PRODUK
+        // =========================================================
         function uploadProduct() {
             const name = document.getElementById('pName').value; const category = document.getElementById('pCategory').value;
             const cost = document.getElementById('pCost').value; const price = document.getElementById('pPrice').value; 
             const stock = document.getElementById('pStock').value; const origPrice = document.getElementById('pOriginalPrice').value;
             const files = document.getElementById('pImages').files; const msg = document.getElementById('statusMessage');
 
-            // Validasi Kategori (Cegah kalau belum ada kategori)
             if(!category) return msg.innerHTML = "<span style='color:#ef4444;'>Bikin Kategori dulu di menu TAMPILAN Bos!</span>";
             if(!name || !cost || !price || !stock || files.length === 0) return msg.innerHTML = "<span style='color:#ef4444;'>Lengkapi semua data & pilih foto!</span>";
-            if(files.length > 5) return msg.innerHTML = "<span style='color:#ef4444;'>Maksimal 5 foto!</span>";
             
             msg.innerHTML = "<span style='color:white;'>Mengunggah...</span>";
             const readFiles = Array.from(files).map(file => new Promise(resolve => { const reader = new FileReader(); reader.onload = e => resolve(e.target.result); reader.readAsDataURL(file); }));
@@ -199,20 +232,110 @@
 
         function loadManageProducts() {
             db.ref('products').on('value', snapshot => {
-                const data = snapshot.val(); const list = document.getElementById('manageProductsList');
+                const data = snapshot.val(); 
+                adminProductsData = data || {}; // Simpan ke variabel global buat diedit
+                const list = document.getElementById('manageProductsList');
+                
                 if(!data) return list.innerHTML = '<p style="color:#aaa; text-align:center;">Belum ada produk.</p>';
+                
                 let prodHtml = '';
                 Object.keys(data).map(key => ({ id: key, ...data[key] })).sort((a,b) => b.timestamp - a.timestamp).forEach(p => {
                     const thumbImg = p.images ? p.images[0] : p.image; const popBtnColor = p.isPopular ? '#f59e0b' : '#333'; const popBtnText = p.isPopular ? '⭐ HAPUS POPULER' : '⭐ SET POPULER';
-                    prodHtml += `<div style="background: #1a1a1a; padding: 15px; border: 1px solid #333; margin-bottom: 10px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center;"><div style="display: flex; gap: 15px; align-items: center;"><img src="${thumbImg}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;"><div><b style="color:#fff;">${p.name}</b> <span style="font-size:10px; color:#888;">(${p.category})</span><br><span style="color:#4ade80; font-size:12px;">Jual: Rp ${p.price.toLocaleString('id-ID')}</span></div></div><div style="text-align: right; min-width: 140px;"><button onclick="togglePopular('${p.id}', ${!p.isPopular})" style="background:${popBtnColor}; color:white; border:none; padding:5px; border-radius:4px; font-size:10px; font-weight:bold; cursor:pointer; width:100%; margin-bottom:5px;">${popBtnText}</button><div style="display:flex; align-items:center; gap:5px; margin-bottom:5px;"><input type="number" id="edit-stock-${p.id}" value="${p.stock || 0}" style="width:60px; padding:5px; text-align:center; font-weight:bold; border-radius:4px; border:none; color:black;"><button onclick="updateStock('${p.id}')" style="background:#4ade80; color:#000; border:none; padding:5px; border-radius:4px; font-size:10px; font-weight:bold; cursor:pointer; flex:1;">STOK</button></div><button onclick="deleteProduct('${p.id}')" style="background: transparent; color: #ef4444; border: 1px solid #ef4444; padding: 5px; border-radius: 4px; font-size: 10px; cursor: pointer; width: 100%; font-weight: bold;">🗑️ HAPUS</button></div></div>`;
+                    prodHtml += `
+                    <div style="background: #1a1a1a; padding: 15px; border: 1px solid #333; margin-bottom: 10px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center;">
+                        <div style="display: flex; gap: 15px; align-items: center;">
+                            <img src="${thumbImg}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;">
+                            <div>
+                                <b style="color:#fff;">${p.name}</b> <span style="font-size:10px; color:#888;">(${p.category})</span><br>
+                                <span style="color:#4ade80; font-size:12px;">Jual: Rp ${p.price.toLocaleString('id-ID')}</span>
+                                ${p.originalPrice ? `<span style="text-decoration:line-through; color:#ef4444; font-size:10px; margin-left:5px;">Rp ${p.originalPrice.toLocaleString('id-ID')}</span>` : ''}
+                            </div>
+                        </div>
+                        <div style="text-align: right; min-width: 140px;">
+                            <button onclick="togglePopular('${p.id}', ${!p.isPopular})" style="background:${popBtnColor}; color:white; border:none; padding:5px; border-radius:4px; font-size:10px; font-weight:bold; cursor:pointer; width:100%; margin-bottom:5px;">${popBtnText}</button>
+                            <div style="display:flex; gap:5px; margin-bottom:5px;">
+                                <button onclick="openEditModal('${p.id}')" style="background:#3b82f6; color:white; border:none; padding:5px; border-radius:4px; font-size:10px; font-weight:bold; cursor:pointer; flex:1;">✏️ EDIT</button>
+                                <button onclick="deleteProduct('${p.id}')" style="background:transparent; color:#ef4444; border:1px solid #ef4444; padding:5px; border-radius:4px; font-size:10px; font-weight:bold; cursor:pointer; flex:1;">🗑️ HAPUS</button>
+                            </div>
+                        </div>
+                    </div>`;
                 });
                 list.innerHTML = prodHtml;
             });
         }
+        
         function togglePopular(id, status) { db.ref('products/' + id).update({ isPopular: status }); }
-        function updateStock(id) { const newStock = document.getElementById('edit-stock-' + id).value; db.ref('products/' + id).update({ stock: parseInt(newStock) }).then(() => alert('Stok diupdate!')); }
         function deleteProduct(id) { if(confirm("Yakin hapus produk ini permanen?")) { db.ref('products/' + id).remove(); } }
 
+        // =========================================================
+        // 🔥 FITUR BARU: EDIT PRODUK 🔥
+        // =========================================================
+        function openEditModal(id) {
+            currentEditId = id;
+            const p = adminProductsData[id];
+            if(!p) return;
+
+            document.getElementById('eName').value = p.name;
+            document.getElementById('eCategory').value = p.category;
+            document.getElementById('eCost').value = p.cost;
+            document.getElementById('ePrice').value = p.price;
+            document.getElementById('eStock').value = p.stock;
+            document.getElementById('eOriginalPrice').value = p.originalPrice || '';
+            document.getElementById('eImages').value = ''; // Reset input file
+
+            document.getElementById('editModal').style.display = 'flex';
+        }
+
+        function closeEditModal() {
+            document.getElementById('editModal').style.display = 'none';
+            currentEditId = null;
+        }
+
+        function saveEditedProduct() {
+            if(!currentEditId) return;
+
+            const name = document.getElementById('eName').value;
+            const category = document.getElementById('eCategory').value;
+            const cost = document.getElementById('eCost').value;
+            const price = document.getElementById('ePrice').value;
+            const stock = document.getElementById('eStock').value;
+            const origPrice = document.getElementById('eOriginalPrice').value;
+            const files = document.getElementById('eImages').files;
+
+            let updates = {
+                name: name,
+                category: category,
+                cost: parseInt(cost),
+                price: parseInt(price),
+                stock: parseInt(stock)
+            };
+
+            // Firebase menghapus data jika di-set 'null'
+            if(origPrice) updates.originalPrice = parseInt(origPrice);
+            else updates.originalPrice = null; 
+
+            // Jika admin memilih foto baru, maka overwrite foto lama
+            if(files.length > 0) {
+                const readFiles = Array.from(files).map(file => new Promise(resolve => { const reader = new FileReader(); reader.onload = e => resolve(e.target.result); reader.readAsDataURL(file); }));
+                Promise.all(readFiles).then(base64Images => {
+                    updates.images = base64Images;
+                    db.ref('products/' + currentEditId).update(updates).then(() => {
+                        closeEditModal();
+                        alert("Perubahan produk berhasil disimpan!");
+                    });
+                });
+            } else {
+                // Jika tidak pilih foto baru, biarkan foto lama tetap ada
+                db.ref('products/' + currentEditId).update(updates).then(() => {
+                    closeEditModal();
+                    alert("Perubahan produk berhasil disimpan!");
+                });
+            }
+        }
+
+        // =========================================================
+        // ENGINE DESAIN WEB (BANNERS & BUBBLES)
+        // =========================================================
         function uploadBanners() {
             const files = document.getElementById('promoBanners').files;
             if(files.length === 0) return alert("Pilih gambar banner dulu!");
@@ -244,6 +367,9 @@
 
         function deleteItem(path, key) { if(confirm("Hapus item ini?")) db.ref(path + '/' + key).remove(); }
 
+        // =========================================================
+        // ENGINE ORDER & FINANCE
+        // =========================================================
         let allOrdersData = [];
         function loadOrders() {
             db.ref('orders').on('value', snapshot => {
