@@ -10,7 +10,7 @@
         .container { background: #141414; padding: 30px; border-radius: 12px; width: 100%; max-width: 900px; border: 1px solid #333; }
         h2 { text-align: center; margin-bottom: 20px; letter-spacing: 2px; font-weight: 800; }
         .tabs { display: flex; gap: 10px; margin-bottom: 20px; flex-wrap: wrap;}
-        .tab-btn { flex: 1; padding: 10px; min-width: 140px; background: #222; color: #aaa; border: 1px solid #333; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.3s; font-size: 12px;}
+        .tab-btn { flex: 1; padding: 10px; min-width: 130px; background: #222; color: #aaa; border: 1px solid #333; border-radius: 8px; font-weight: 700; cursor: pointer; transition: 0.3s; font-size: 11px;}
         .tab-btn.active { background: #fff; color: #000; }
         .form-group { margin-bottom: 15px; }
         label { display: block; font-size: 11px; color: #aaa; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px;}
@@ -44,10 +44,11 @@
             <div style="text-align:right; font-size:11px; color:#ef4444; cursor:pointer; margin-bottom:15px; font-weight: 600;" onclick="logout()">[ Keluar Sistem ]</div>
             
             <div class="tabs">
-                <button class="tab-btn active" id="tabUploadBtn" onclick="switchTab('upload')">📦 UPLOAD BARU</button>
-                <button class="tab-btn" id="tabManageBtn" onclick="switchTab('manage')">📝 KELOLA PRODUK</button>
+                <button class="tab-btn active" id="tabUploadBtn" onclick="switchTab('upload')">📦 UPLOAD</button>
+                <button class="tab-btn" id="tabManageBtn" onclick="switchTab('manage')">📝 KELOLA</button>
                 <button class="tab-btn" id="tabOrdersBtn" onclick="switchTab('orders')">🛒 PESANAN</button>
                 <button class="tab-btn" id="tabFinanceBtn" onclick="switchTab('finance')">📊 KEUANGAN</button>
+                <button class="tab-btn" id="tabDesignBtn" onclick="switchTab('design')" style="border-color:#4ade80; color:#4ade80;">🎨 TAMPILAN</button>
             </div>
 
             <div id="tabUpload">
@@ -58,7 +59,10 @@
                 <div style="display: flex; gap: 10px;">
                     <div class="form-group" style="flex:1;"><label>Modal Supplier</label><input type="number" id="pCost"></div>
                     <div class="form-group" style="flex:1;"><label>Harga Jual</label><input type="number" id="pPrice"></div>
+                </div>
+                <div style="display: flex; gap: 10px;">
                     <div class="form-group" style="flex:1;"><label>Jumlah Stok</label><input type="number" id="pStock" placeholder="Contoh: 50"></div>
+                    <div class="form-group" style="flex:1;"><label>Harga Asli/Coret (Opsional)</label><input type="number" id="pOriginalPrice" placeholder="Kosongkan jika tdk diskon"></div>
                 </div>
                 <div class="form-group">
                     <label>Foto Produk (Pilih 1 - 5 Foto | Maks 1MB/foto)</label>
@@ -71,6 +75,38 @@
             <div id="tabManage" style="display:none;">
                 <h3 style="font-size: 14px; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 5px;">Manajemen Stok Etalase</h3>
                 <div id="manageProductsList"><p style="color:#aaa; text-align:center;">Memuat produk...</p></div>
+            </div>
+
+            <div id="tabDesign" style="display:none;">
+                <h3 style="font-size: 14px; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 5px;">Pengaturan Logo & Header</h3>
+                
+                <div class="form-group">
+                    <label>Teks Logo (Kiri Atas)</label>
+                    <input type="text" id="uiLogoText" placeholder="Contoh: GANKETI">
+                </div>
+                <div class="form-group">
+                    <label>Atau Upload Gambar Logo PNG (Opsional, timpa teks)</label>
+                    <input type="file" id="uiLogoImg" accept="image/png, image/jpeg" style="padding: 9px;">
+                    <div id="currLogo" style="margin-top:5px;"></div>
+                </div>
+
+                <h3 style="font-size: 14px; margin-top: 30px; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 5px;">Pengaturan Banner (Gambar Besar)</h3>
+                <div class="form-group">
+                    <label>Judul Utama Banner</label>
+                    <input type="text" id="uiHeroTitle" placeholder="AUTHENTIC STREETWEAR">
+                </div>
+                <div class="form-group">
+                    <label>Sub-Judul (Teks kecil)</label>
+                    <input type="text" id="uiHeroSub" placeholder="Premium Original Collection">
+                </div>
+                <div class="form-group">
+                    <label>Upload Gambar Banner Utama (WAJIB LANDSCAPE)</label>
+                    <input type="file" id="uiHeroImg" accept="image/*" style="padding: 9px;">
+                    <div id="currHero" style="margin-top:5px;"></div>
+                </div>
+
+                <button class="btn-action" style="background:#4ade80;" onclick="saveUISettings()">💾 SIMPAN PERUBAHAN TAMPILAN</button>
+                <div id="designMessage" style="text-align:center; margin-top:15px; font-size:13px; font-weight: 600;"></div>
             </div>
 
             <div id="tabOrders" style="display:none;"><div id="ordersList"></div></div>
@@ -96,11 +132,13 @@
         const auth = firebase.auth(); const db = firebase.database();
 
         function switchTab(tabName) {
-            ['upload', 'manage', 'orders', 'finance'].forEach(t => {
+            ['upload', 'manage', 'orders', 'finance', 'design'].forEach(t => {
                 document.getElementById('tab' + t.charAt(0).toUpperCase() + t.slice(1)).style.display = tabName === t ? 'block' : 'none';
                 document.getElementById('tab' + t.charAt(0).toUpperCase() + t.slice(1) + 'Btn').className = tabName === t ? 'tab-btn active' : 'tab-btn';
             });
-            if(tabName === 'finance') loadFinanceReport(); if(tabName === 'manage') loadManageProducts();
+            if(tabName === 'finance') loadFinanceReport(); 
+            if(tabName === 'manage') loadManageProducts();
+            if(tabName === 'design') loadUISettings();
         }
 
         auth.onAuthStateChanged(user => {
@@ -112,10 +150,13 @@
         function loginGoogle() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
         function logout() { auth.signOut(); }
 
+        // ENGINE UPLOAD (SEKARANG MENDUKUNG HARGA CORET)
         function uploadProduct() {
             const name = document.getElementById('pName').value; const category = document.getElementById('pCategory').value;
             const cost = document.getElementById('pCost').value; const price = document.getElementById('pPrice').value; 
-            const stock = document.getElementById('pStock').value; const files = document.getElementById('pImages').files; 
+            const stock = document.getElementById('pStock').value; 
+            const origPrice = document.getElementById('pOriginalPrice').value; // HARGA CORET
+            const files = document.getElementById('pImages').files; 
             const msg = document.getElementById('statusMessage');
 
             if(!name || !cost || !price || !stock || files.length === 0) return msg.innerHTML = "<span style='color:#ef4444;'>Lengkapi semua data & pilih foto!</span>";
@@ -126,14 +167,21 @@
             const readFiles = Array.from(files).map(file => new Promise(resolve => { const reader = new FileReader(); reader.onload = e => resolve(e.target.result); reader.readAsDataURL(file); }));
 
             Promise.all(readFiles).then(base64Images => {
-                db.ref('products').push({ name: name, category: category, cost: parseInt(cost), price: parseInt(price), stock: parseInt(stock), images: base64Images, timestamp: Date.now() }).then(() => {
+                let productData = { 
+                    name: name, category: category, cost: parseInt(cost), price: parseInt(price), 
+                    stock: parseInt(stock), images: base64Images, timestamp: Date.now(), isPopular: false 
+                };
+                if(origPrice) productData.originalPrice = parseInt(origPrice); // Tambahkan jika ada
+
+                db.ref('products').push(productData).then(() => {
                     msg.innerHTML = "<span style='color:#4ade80;'>✅ Upload Sukses!</span>";
-                    document.getElementById('pName').value=''; document.getElementById('pCost').value=''; document.getElementById('pPrice').value=''; document.getElementById('pStock').value=''; document.getElementById('pImages').value='';
+                    document.getElementById('pName').value=''; document.getElementById('pCost').value=''; document.getElementById('pPrice').value=''; document.getElementById('pStock').value=''; document.getElementById('pOriginalPrice').value=''; document.getElementById('pImages').value='';
                     setTimeout(() => { msg.innerHTML = ""; }, 3000);
                 });
             });
         }
 
+        // ENGINE MANAGE (SEKARANG MENDUKUNG TOGGLE POPULER)
         function loadManageProducts() {
             db.ref('products').on('value', snapshot => {
                 const data = snapshot.val(); const list = document.getElementById('manageProductsList');
@@ -141,15 +189,84 @@
                 let prodHtml = '';
                 Object.keys(data).map(key => ({ id: key, ...data[key] })).sort((a,b) => b.timestamp - a.timestamp).forEach(p => {
                     const thumbImg = p.images ? p.images[0] : p.image;
-                    prodHtml += `<div style="background: #1a1a1a; padding: 15px; border: 1px solid #333; margin-bottom: 10px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center;"><div style="display: flex; gap: 15px; align-items: center;"><img src="${thumbImg}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;"><div><b style="color:#fff;">${p.name}</b> <span style="font-size:10px; color:#888;">(${p.category})</span><br><span style="color:#4ade80; font-size:12px;">Jual: Rp ${p.price.toLocaleString('id-ID')}</span></div></div><div style="text-align: right; min-width: 120px;"><div style="display:flex; align-items:center; gap:5px; margin-bottom:5px;"><input type="number" id="edit-stock-${p.id}" value="${p.stock || 0}" style="width:50px; padding:5px; text-align:center; font-weight:bold; border-radius:4px; border:none; color:black;"><button onclick="updateStock('${p.id}')" style="background:#4ade80; color:#000; border:none; padding:5px; border-radius:4px; font-size:10px; font-weight:bold; cursor:pointer;">UPDATE</button></div><button onclick="deleteProduct('${p.id}')" style="background: transparent; color: #ef4444; border: 1px solid #ef4444; padding: 5px; border-radius: 4px; font-size: 10px; cursor: pointer; width: 100%; font-weight: bold;">🗑️ HAPUS</button></div></div>`;
+                    const popBtnColor = p.isPopular ? '#f59e0b' : '#333';
+                    const popBtnText = p.isPopular ? '⭐ HAPUS DARI POPULER' : '⭐ SET POPULER';
+                    
+                    prodHtml += `
+                    <div style="background: #1a1a1a; padding: 15px; border: 1px solid #333; margin-bottom: 10px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center;">
+                        <div style="display: flex; gap: 15px; align-items: center;">
+                            <img src="${thumbImg}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;">
+                            <div>
+                                <b style="color:#fff;">${p.name}</b> <span style="font-size:10px; color:#888;">(${p.category})</span><br>
+                                <span style="color:#4ade80; font-size:12px;">Jual: Rp ${p.price.toLocaleString('id-ID')}</span>
+                                ${p.originalPrice ? `<span style="text-decoration:line-through; color:#ef4444; font-size:10px;">Rp ${p.originalPrice.toLocaleString('id-ID')}</span>` : ''}
+                            </div>
+                        </div>
+                        <div style="text-align: right; min-width: 140px;">
+                            <button onclick="togglePopular('${p.id}', ${!p.isPopular})" style="background:${popBtnColor}; color:white; border:none; padding:5px; border-radius:4px; font-size:10px; font-weight:bold; cursor:pointer; width:100%; margin-bottom:5px;">${popBtnText}</button>
+                            <div style="display:flex; align-items:center; gap:5px; margin-bottom:5px;">
+                                <input type="number" id="edit-stock-${p.id}" value="${p.stock || 0}" style="width:60px; padding:5px; text-align:center; font-weight:bold; border-radius:4px; border:none; color:black;">
+                                <button onclick="updateStock('${p.id}')" style="background:#4ade80; color:#000; border:none; padding:5px; border-radius:4px; font-size:10px; font-weight:bold; cursor:pointer; flex:1;">STOK</button>
+                            </div>
+                            <button onclick="deleteProduct('${p.id}')" style="background: transparent; color: #ef4444; border: 1px solid #ef4444; padding: 5px; border-radius: 4px; font-size: 10px; cursor: pointer; width: 100%; font-weight: bold;">🗑️ HAPUS</button>
+                        </div>
+                    </div>`;
                 });
                 list.innerHTML = prodHtml;
             });
         }
 
+        function togglePopular(id, status) { db.ref('products/' + id).update({ isPopular: status }); }
         function updateStock(id) { const newStock = document.getElementById('edit-stock-' + id).value; db.ref('products/' + id).update({ stock: parseInt(newStock) }).then(() => alert('Stok diupdate!')); }
-        function deleteProduct(id) { if(confirm("Yakin hapus produk?")) { db.ref('products/' + id).remove(); } }
+        function deleteProduct(id) { if(confirm("Yakin hapus produk ini permanen?")) { db.ref('products/' + id).remove(); } }
 
+        // ENGINE DESAIN WEB (BARU)
+        function loadUISettings() {
+            db.ref('ui_settings').once('value').then(snap => {
+                const s = snap.val() || {};
+                document.getElementById('uiLogoText').value = s.logoText || 'GANKETI';
+                document.getElementById('uiHeroTitle').value = s.heroTitle || 'AUTHENTIC STREETWEAR';
+                document.getElementById('uiHeroSub').value = s.heroSub || 'Premium Original Collection. Est. 2026';
+                if(s.logoImg) document.getElementById('currLogo').innerHTML = `<img src="${s.logoImg}" height="30"> <span style="font-size:10px; color:#888; cursor:pointer;" onclick="clearImage('logoImg')">[Hapus]</span>`;
+                if(s.heroImg) document.getElementById('currHero').innerHTML = `<img src="${s.heroImg}" height="50"> <span style="font-size:10px; color:#888; cursor:pointer;" onclick="clearImage('heroImg')">[Hapus]</span>`;
+            });
+        }
+
+        function clearImage(field) {
+            db.ref('ui_settings/' + field).remove().then(() => loadUISettings());
+        }
+
+        function saveUISettings() {
+            const logoText = document.getElementById('uiLogoText').value;
+            const heroTitle = document.getElementById('uiHeroTitle').value;
+            const heroSub = document.getElementById('uiHeroSub').value;
+            const fileLogo = document.getElementById('uiLogoImg').files[0];
+            const fileHero = document.getElementById('uiHeroImg').files[0];
+            const msg = document.getElementById('designMessage');
+
+            msg.innerHTML = "Menyimpan pengaturan UI...";
+            let updates = { logoText, heroTitle, heroSub };
+
+            let promises = [];
+            if(fileLogo) {
+                promises.push(new Promise(resolve => { const r = new FileReader(); r.onload = e => resolve({key: 'logoImg', val: e.target.result}); r.readAsDataURL(fileLogo); }));
+            }
+            if(fileHero) {
+                promises.push(new Promise(resolve => { const r = new FileReader(); r.onload = e => resolve({key: 'heroImg', val: e.target.result}); r.readAsDataURL(fileHero); }));
+            }
+
+            Promise.all(promises).then(results => {
+                results.forEach(res => updates[res.key] = res.val);
+                db.ref('ui_settings').update(updates).then(() => {
+                    msg.innerHTML = "<span style='color:#4ade80;'>✅ Tampilan Toko Depan Berhasil Diperbarui!</span>";
+                    document.getElementById('uiLogoImg').value = ''; document.getElementById('uiHeroImg').value = '';
+                    loadUISettings();
+                    setTimeout(() => { msg.innerHTML = ""; }, 3000);
+                });
+            });
+        }
+
+        // ENGINE ORDER & FINANCE
         let allOrdersData = [];
         function loadOrders() {
             db.ref('orders').on('value', snapshot => {
