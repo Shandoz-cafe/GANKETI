@@ -29,6 +29,7 @@
         .fin-title { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; font-weight: 600;}
         .fin-val { font-size: 22px; font-weight: 800; }
         #loginWorkspace { text-align: center; max-width: 400px; margin: 100px auto; }
+        .list-item-admin { display: flex; justify-content: space-between; align-items: center; background: #1a1a1a; padding: 10px; border-radius: 6px; border: 1px solid #333; margin-bottom: 5px; }
     </style>
 </head>
 <body>
@@ -78,35 +79,23 @@
             </div>
 
             <div id="tabDesign" style="display:none;">
-                <h3 style="font-size: 14px; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 5px;">Pengaturan Logo & Header</h3>
                 
+                <h3 style="font-size: 14px; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 5px;">1. Promo Banner (Slide Otomatis)</h3>
                 <div class="form-group">
-                    <label>Teks Logo (Kiri Atas)</label>
-                    <input type="text" id="uiLogoText" placeholder="Contoh: GANKETI">
+                    <label>Upload Gambar Banner (Bisa pilih banyak sekaligus)</label>
+                    <input type="file" id="promoBanners" accept="image/*" multiple style="padding: 9px;">
+                    <button onclick="uploadBanners()" style="background:#3b82f6; color:white; border:none; padding:8px 15px; margin-top:10px; border-radius:4px; font-weight:bold; cursor:pointer;">UPLOAD BANNER</button>
                 </div>
-                <div class="form-group">
-                    <label>Atau Upload Gambar Logo PNG (Opsional, timpa teks)</label>
-                    <input type="file" id="uiLogoImg" accept="image/png, image/jpeg" style="padding: 9px;">
-                    <div id="currLogo" style="margin-top:5px;"></div>
-                </div>
+                <div id="bannerList" style="margin-bottom: 30px;"></div>
 
-                <h3 style="font-size: 14px; margin-top: 30px; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 5px;">Pengaturan Banner (Gambar Besar)</h3>
-                <div class="form-group">
-                    <label>Judul Utama Banner</label>
-                    <input type="text" id="uiHeroTitle" placeholder="AUTHENTIC STREETWEAR">
+                <h3 style="font-size: 14px; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 5px;">2. Menu Kategori (Ikon Bulat)</h3>
+                <div style="display: flex; gap: 10px;">
+                    <div class="form-group" style="flex:1;"><label>Nama Kategori</label><input type="text" id="catName" placeholder="Cth: T-Shirt"></div>
+                    <div class="form-group" style="flex:1;"><label>Upload Ikon (1:1/Kotak)</label><input type="file" id="catIcon" accept="image/*" style="padding: 9px;"></div>
                 </div>
-                <div class="form-group">
-                    <label>Sub-Judul (Teks kecil)</label>
-                    <input type="text" id="uiHeroSub" placeholder="Premium Original Collection">
-                </div>
-                <div class="form-group">
-                    <label>Upload Gambar Banner Utama (WAJIB LANDSCAPE)</label>
-                    <input type="file" id="uiHeroImg" accept="image/*" style="padding: 9px;">
-                    <div id="currHero" style="margin-top:5px;"></div>
-                </div>
+                <button onclick="uploadCategoryBubble()" style="background:#3b82f6; color:white; border:none; padding:8px 15px; margin-bottom:15px; border-radius:4px; font-weight:bold; cursor:pointer;">TAMBAH KATEGORI</button>
+                <div id="categoryBubbleList"></div>
 
-                <button class="btn-action" style="background:#4ade80;" onclick="saveUISettings()">💾 SIMPAN PERUBAHAN TAMPILAN</button>
-                <div id="designMessage" style="text-align:center; margin-top:15px; font-size:13px; font-weight: 600;"></div>
             </div>
 
             <div id="tabOrders" style="display:none;"><div id="ordersList"></div></div>
@@ -138,7 +127,7 @@
             });
             if(tabName === 'finance') loadFinanceReport(); 
             if(tabName === 'manage') loadManageProducts();
-            if(tabName === 'design') loadUISettings();
+            if(tabName === 'design') { loadBanners(); loadBubbleCategories(); }
         }
 
         auth.onAuthStateChanged(user => {
@@ -150,29 +139,21 @@
         function loginGoogle() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
         function logout() { auth.signOut(); }
 
-        // ENGINE UPLOAD (SEKARANG MENDUKUNG HARGA CORET)
+        // ENGINE UPLOAD PRODUK
         function uploadProduct() {
             const name = document.getElementById('pName').value; const category = document.getElementById('pCategory').value;
             const cost = document.getElementById('pCost').value; const price = document.getElementById('pPrice').value; 
-            const stock = document.getElementById('pStock').value; 
-            const origPrice = document.getElementById('pOriginalPrice').value; // HARGA CORET
-            const files = document.getElementById('pImages').files; 
-            const msg = document.getElementById('statusMessage');
+            const stock = document.getElementById('pStock').value; const origPrice = document.getElementById('pOriginalPrice').value;
+            const files = document.getElementById('pImages').files; const msg = document.getElementById('statusMessage');
 
             if(!name || !cost || !price || !stock || files.length === 0) return msg.innerHTML = "<span style='color:#ef4444;'>Lengkapi semua data & pilih foto!</span>";
             if(files.length > 5) return msg.innerHTML = "<span style='color:#ef4444;'>Maksimal 5 foto!</span>";
-            for(let i=0; i<files.length; i++) if(files[i].size > 1024 * 1024) return msg.innerHTML = `<span style='color:#ef4444;'>Foto ke-${i+1} kebesaran! Maks 1MB.</span>`;
-
             msg.innerHTML = "<span style='color:white;'>Mengunggah...</span>";
             const readFiles = Array.from(files).map(file => new Promise(resolve => { const reader = new FileReader(); reader.onload = e => resolve(e.target.result); reader.readAsDataURL(file); }));
 
             Promise.all(readFiles).then(base64Images => {
-                let productData = { 
-                    name: name, category: category, cost: parseInt(cost), price: parseInt(price), 
-                    stock: parseInt(stock), images: base64Images, timestamp: Date.now(), isPopular: false 
-                };
-                if(origPrice) productData.originalPrice = parseInt(origPrice); // Tambahkan jika ada
-
+                let productData = { name: name, category: category, cost: parseInt(cost), price: parseInt(price), stock: parseInt(stock), images: base64Images, timestamp: Date.now(), isPopular: false };
+                if(origPrice) productData.originalPrice = parseInt(origPrice);
                 db.ref('products').push(productData).then(() => {
                     msg.innerHTML = "<span style='color:#4ade80;'>✅ Upload Sukses!</span>";
                     document.getElementById('pName').value=''; document.getElementById('pCost').value=''; document.getElementById('pPrice').value=''; document.getElementById('pStock').value=''; document.getElementById('pOriginalPrice').value=''; document.getElementById('pImages').value='';
@@ -181,90 +162,59 @@
             });
         }
 
-        // ENGINE MANAGE (SEKARANG MENDUKUNG TOGGLE POPULER)
+        // ENGINE MANAGE PRODUK
         function loadManageProducts() {
             db.ref('products').on('value', snapshot => {
                 const data = snapshot.val(); const list = document.getElementById('manageProductsList');
                 if(!data) return list.innerHTML = '<p style="color:#aaa; text-align:center;">Belum ada produk.</p>';
                 let prodHtml = '';
                 Object.keys(data).map(key => ({ id: key, ...data[key] })).sort((a,b) => b.timestamp - a.timestamp).forEach(p => {
-                    const thumbImg = p.images ? p.images[0] : p.image;
-                    const popBtnColor = p.isPopular ? '#f59e0b' : '#333';
-                    const popBtnText = p.isPopular ? '⭐ HAPUS DARI POPULER' : '⭐ SET POPULER';
-                    
-                    prodHtml += `
-                    <div style="background: #1a1a1a; padding: 15px; border: 1px solid #333; margin-bottom: 10px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center;">
-                        <div style="display: flex; gap: 15px; align-items: center;">
-                            <img src="${thumbImg}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;">
-                            <div>
-                                <b style="color:#fff;">${p.name}</b> <span style="font-size:10px; color:#888;">(${p.category})</span><br>
-                                <span style="color:#4ade80; font-size:12px;">Jual: Rp ${p.price.toLocaleString('id-ID')}</span>
-                                ${p.originalPrice ? `<span style="text-decoration:line-through; color:#ef4444; font-size:10px;">Rp ${p.originalPrice.toLocaleString('id-ID')}</span>` : ''}
-                            </div>
-                        </div>
-                        <div style="text-align: right; min-width: 140px;">
-                            <button onclick="togglePopular('${p.id}', ${!p.isPopular})" style="background:${popBtnColor}; color:white; border:none; padding:5px; border-radius:4px; font-size:10px; font-weight:bold; cursor:pointer; width:100%; margin-bottom:5px;">${popBtnText}</button>
-                            <div style="display:flex; align-items:center; gap:5px; margin-bottom:5px;">
-                                <input type="number" id="edit-stock-${p.id}" value="${p.stock || 0}" style="width:60px; padding:5px; text-align:center; font-weight:bold; border-radius:4px; border:none; color:black;">
-                                <button onclick="updateStock('${p.id}')" style="background:#4ade80; color:#000; border:none; padding:5px; border-radius:4px; font-size:10px; font-weight:bold; cursor:pointer; flex:1;">STOK</button>
-                            </div>
-                            <button onclick="deleteProduct('${p.id}')" style="background: transparent; color: #ef4444; border: 1px solid #ef4444; padding: 5px; border-radius: 4px; font-size: 10px; cursor: pointer; width: 100%; font-weight: bold;">🗑️ HAPUS</button>
-                        </div>
-                    </div>`;
+                    const thumbImg = p.images ? p.images[0] : p.image; const popBtnColor = p.isPopular ? '#f59e0b' : '#333'; const popBtnText = p.isPopular ? '⭐ HAPUS POPULER' : '⭐ SET POPULER';
+                    prodHtml += `<div style="background: #1a1a1a; padding: 15px; border: 1px solid #333; margin-bottom: 10px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center;"><div style="display: flex; gap: 15px; align-items: center;"><img src="${thumbImg}" style="width: 50px; height: 50px; object-fit: cover; border-radius: 4px;"><div><b style="color:#fff;">${p.name}</b> <span style="font-size:10px; color:#888;">(${p.category})</span><br><span style="color:#4ade80; font-size:12px;">Jual: Rp ${p.price.toLocaleString('id-ID')}</span></div></div><div style="text-align: right; min-width: 140px;"><button onclick="togglePopular('${p.id}', ${!p.isPopular})" style="background:${popBtnColor}; color:white; border:none; padding:5px; border-radius:4px; font-size:10px; font-weight:bold; cursor:pointer; width:100%; margin-bottom:5px;">${popBtnText}</button><div style="display:flex; align-items:center; gap:5px; margin-bottom:5px;"><input type="number" id="edit-stock-${p.id}" value="${p.stock || 0}" style="width:60px; padding:5px; text-align:center; font-weight:bold; border-radius:4px; border:none; color:black;"><button onclick="updateStock('${p.id}')" style="background:#4ade80; color:#000; border:none; padding:5px; border-radius:4px; font-size:10px; font-weight:bold; cursor:pointer; flex:1;">STOK</button></div><button onclick="deleteProduct('${p.id}')" style="background: transparent; color: #ef4444; border: 1px solid #ef4444; padding: 5px; border-radius: 4px; font-size: 10px; cursor: pointer; width: 100%; font-weight: bold;">🗑️ HAPUS</button></div></div>`;
                 });
                 list.innerHTML = prodHtml;
             });
         }
-
         function togglePopular(id, status) { db.ref('products/' + id).update({ isPopular: status }); }
         function updateStock(id) { const newStock = document.getElementById('edit-stock-' + id).value; db.ref('products/' + id).update({ stock: parseInt(newStock) }).then(() => alert('Stok diupdate!')); }
         function deleteProduct(id) { if(confirm("Yakin hapus produk ini permanen?")) { db.ref('products/' + id).remove(); } }
 
-        // ENGINE DESAIN WEB (BARU)
-        function loadUISettings() {
-            db.ref('ui_settings').once('value').then(snap => {
-                const s = snap.val() || {};
-                document.getElementById('uiLogoText').value = s.logoText || 'GANKETI';
-                document.getElementById('uiHeroTitle').value = s.heroTitle || 'AUTHENTIC STREETWEAR';
-                document.getElementById('uiHeroSub').value = s.heroSub || 'Premium Original Collection. Est. 2026';
-                if(s.logoImg) document.getElementById('currLogo').innerHTML = `<img src="${s.logoImg}" height="30"> <span style="font-size:10px; color:#888; cursor:pointer;" onclick="clearImage('logoImg')">[Hapus]</span>`;
-                if(s.heroImg) document.getElementById('currHero').innerHTML = `<img src="${s.heroImg}" height="50"> <span style="font-size:10px; color:#888; cursor:pointer;" onclick="clearImage('heroImg')">[Hapus]</span>`;
+        // ENGINE DESAIN WEB (BANNERS & BUBBLES)
+        function uploadBanners() {
+            const files = document.getElementById('promoBanners').files;
+            if(files.length === 0) return alert("Pilih gambar banner dulu!");
+            const readFiles = Array.from(files).map(file => new Promise(resolve => { const reader = new FileReader(); reader.onload = e => resolve(e.target.result); reader.readAsDataURL(file); }));
+            Promise.all(readFiles).then(base64Images => {
+                base64Images.forEach(img => { db.ref('ui_banners').push({ image: img, timestamp: Date.now() }); });
+                document.getElementById('promoBanners').value = '';
+            });
+        }
+        function loadBanners() {
+            db.ref('ui_banners').on('value', snap => {
+                const data = snap.val(); const list = document.getElementById('bannerList');
+                if(!data) return list.innerHTML = '<p style="color:#888; font-size:11px;">Belum ada banner.</p>';
+                list.innerHTML = Object.keys(data).map(key => `<div class="list-item-admin"><img src="${data[key].image}" style="height:40px; border-radius:4px;"> <button onclick="deleteItem('ui_banners', '${key}')" style="background:none; border:1px solid #ef4444; color:#ef4444; cursor:pointer; padding:5px; border-radius:4px;">Hapus</button></div>`).join('');
             });
         }
 
-        function clearImage(field) {
-            db.ref('ui_settings/' + field).remove().then(() => loadUISettings());
+        function uploadCategoryBubble() {
+            const name = document.getElementById('catName').value; const file = document.getElementById('catIcon').files[0];
+            if(!name || !file) return alert("Isi nama dan pilih ikon kategori!");
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                db.ref('ui_categories').push({ name: name, icon: e.target.result, timestamp: Date.now() });
+                document.getElementById('catName').value = ''; document.getElementById('catIcon').value = '';
+            }; reader.readAsDataURL(file);
         }
-
-        function saveUISettings() {
-            const logoText = document.getElementById('uiLogoText').value;
-            const heroTitle = document.getElementById('uiHeroTitle').value;
-            const heroSub = document.getElementById('uiHeroSub').value;
-            const fileLogo = document.getElementById('uiLogoImg').files[0];
-            const fileHero = document.getElementById('uiHeroImg').files[0];
-            const msg = document.getElementById('designMessage');
-
-            msg.innerHTML = "Menyimpan pengaturan UI...";
-            let updates = { logoText, heroTitle, heroSub };
-
-            let promises = [];
-            if(fileLogo) {
-                promises.push(new Promise(resolve => { const r = new FileReader(); r.onload = e => resolve({key: 'logoImg', val: e.target.result}); r.readAsDataURL(fileLogo); }));
-            }
-            if(fileHero) {
-                promises.push(new Promise(resolve => { const r = new FileReader(); r.onload = e => resolve({key: 'heroImg', val: e.target.result}); r.readAsDataURL(fileHero); }));
-            }
-
-            Promise.all(promises).then(results => {
-                results.forEach(res => updates[res.key] = res.val);
-                db.ref('ui_settings').update(updates).then(() => {
-                    msg.innerHTML = "<span style='color:#4ade80;'>✅ Tampilan Toko Depan Berhasil Diperbarui!</span>";
-                    document.getElementById('uiLogoImg').value = ''; document.getElementById('uiHeroImg').value = '';
-                    loadUISettings();
-                    setTimeout(() => { msg.innerHTML = ""; }, 3000);
-                });
+        function loadBubbleCategories() {
+            db.ref('ui_categories').on('value', snap => {
+                const data = snap.val(); const list = document.getElementById('categoryBubbleList');
+                if(!data) return list.innerHTML = '<p style="color:#888; font-size:11px;">Belum ada kategori visual.</p>';
+                list.innerHTML = Object.keys(data).map(key => `<div class="list-item-admin"><div style="display:flex; align-items:center; gap:10px;"><img src="${data[key].icon}" style="width:30px; height:30px; border-radius:50%; object-fit:cover;"> <span>${data[key].name}</span></div> <button onclick="deleteItem('ui_categories', '${key}')" style="background:none; border:1px solid #ef4444; color:#ef4444; cursor:pointer; padding:5px; border-radius:4px;">Hapus</button></div>`).join('');
             });
         }
+
+        function deleteItem(path, key) { if(confirm("Hapus item ini?")) db.ref(path + '/' + key).remove(); }
 
         // ENGINE ORDER & FINANCE
         let allOrdersData = [];
