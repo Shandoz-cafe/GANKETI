@@ -153,25 +153,20 @@
 
                 <div class="form-group">
                     <label>Provinsi</label>
-                    <input type="text" id="cProv" list="provList" placeholder="Memuat data..." oninput="checkProv()" autocomplete="off">
-                    <datalist id="provList"></datalist>
+                    <input type="text" id="cProv" placeholder="Contoh: Jawa Barat" autocomplete="off">
                 </div>
                 <div class="form-group">
                     <label>Kota / Kabupaten</label>
-                    <input type="text" id="cCity" list="cityList" placeholder="Pilih Provinsi Dahulu" oninput="checkCity()" autocomplete="off" disabled>
-                    <datalist id="cityList"></datalist>
+                    <input type="text" id="cCity" placeholder="Contoh: Kota Bandung" autocomplete="off">
                 </div>
                 <div class="form-group">
                     <label>Kecamatan</label>
-                    <input type="text" id="cDist" list="distList" placeholder="Pilih Kota Dahulu" oninput="checkDist()" autocomplete="off" disabled>
-                    <datalist id="distList"></datalist>
+                    <input type="text" id="cDist" placeholder="Contoh: Sumur Bandung" autocomplete="off">
                 </div>
                 <div class="form-group">
                     <label>Kelurahan / Desa</label>
-                    <input type="text" id="cVill" list="villList" placeholder="Pilih Kecamatan Dahulu" oninput="checkVill()" autocomplete="off" disabled>
-                    <datalist id="villList"></datalist>
+                    <input type="text" id="cVill" placeholder="Contoh: Babakan Ciamis" autocomplete="off">
                 </div>
-                
                 <div class="form-group">
                     <label>Kode Pos</label>
                     <input type="number" id="cZip" placeholder="12345">
@@ -212,7 +207,6 @@
         let globalProducts = []; let activeCategory = 'ALL'; 
         let cart = JSON.parse(localStorage.getItem('ganketiCart') || '[]');
         let currentUser = null; 
-        let apiRegionData = { prov: [], city: [], dist: [], vill: [] }; 
         
         updateCartCount();
 
@@ -315,85 +309,6 @@
 
         function removeItem(index) { cart.splice(index, 1); localStorage.setItem('ganketiCart', JSON.stringify(cart)); updateCartCount(); openCart(); }
         
-        // ==========================================
-        // 🔥 ENGINE API SMART DATALIST (ANTI ERROR KEYBOARD HP) 🔥
-        // ==========================================
-        async function loadRegionAPI(level, parentId = null) {
-            let url = '';
-            if (level === 'prov') url = 'https://www.emsifa.com/api-wilayah-indonesia/api/provinces.json';
-            else if (level === 'city') url = `https://www.emsifa.com/api-wilayah-indonesia/api/regencies/${parentId}.json`;
-            else if (level === 'dist') url = `https://www.emsifa.com/api-wilayah-indonesia/api/districts/${parentId}.json`;
-            else if (level === 'vill') url = `https://www.emsifa.com/api-wilayah-indonesia/api/villages/${parentId}.json`;
-
-            try {
-                const res = await fetch(url); const data = await res.json();
-                apiRegionData[level] = data; 
-                
-                const datalist = document.getElementById(level + 'List');
-                datalist.innerHTML = data.map(item => `<option value="${item.name}">`).join('');
-                
-                const inputEl = document.getElementById('c' + level.charAt(0).toUpperCase() + level.slice(1));
-                inputEl.placeholder = "Ketik atau pilih dari daftar...";
-                inputEl.disabled = false;
-            } catch(e) {
-                showToast("Gagal memuat data dari server pusat.", "error");
-            }
-        }
-
-        function resetDownstream(fromLevel) {
-            if(fromLevel === 'prov') { resetField('cCity', 'Pilih Provinsi Dahulu'); resetField('cDist', 'Pilih Kota Dahulu'); resetField('cVill', 'Pilih Kecamatan Dahulu'); }
-            else if(fromLevel === 'city') { resetField('cDist', 'Pilih Kota Dahulu'); resetField('cVill', 'Pilih Kecamatan Dahulu'); }
-            else if(fromLevel === 'dist') { resetField('cVill', 'Pilih Kecamatan Dahulu'); }
-        }
-
-        function resetField(id, placeholderText) {
-            const el = document.getElementById(id);
-            el.value = ''; el.disabled = true; el.placeholder = placeholderText;
-            document.getElementById(id.replace('c', '').toLowerCase() + 'List').innerHTML = '';
-        }
-
-        function checkProv() {
-            const val = document.getElementById('cProv').value.trim().toUpperCase();
-            const match = apiRegionData.prov.find(x => x.name.toUpperCase() === val);
-            if(match) {
-                document.getElementById('cProv').value = match.name; 
-                resetDownstream('prov');
-                document.getElementById('cCity').placeholder = "Memuat data kota...";
-                loadRegionAPI('city', match.id);
-            } else { resetDownstream('prov'); }
-        }
-
-        function checkCity() {
-            const val = document.getElementById('cCity').value.trim().toUpperCase();
-            const match = apiRegionData.city.find(x => x.name.toUpperCase() === val);
-            if(match) {
-                document.getElementById('cCity').value = match.name;
-                resetDownstream('city');
-                document.getElementById('cDist').placeholder = "Memuat data kecamatan...";
-                loadRegionAPI('dist', match.id);
-            } else { resetDownstream('city'); }
-        }
-
-        function checkDist() {
-            const val = document.getElementById('cDist').value.trim().toUpperCase();
-            const match = apiRegionData.dist.find(x => x.name.toUpperCase() === val);
-            if(match) {
-                document.getElementById('cDist').value = match.name;
-                resetDownstream('dist');
-                document.getElementById('cVill').placeholder = "Memuat data kelurahan...";
-                loadRegionAPI('vill', match.id);
-            } else { resetDownstream('dist'); }
-        }
-
-        function checkVill() {
-            const val = document.getElementById('cVill').value.trim().toUpperCase();
-            const match = apiRegionData.vill.find(x => x.name.toUpperCase() === val);
-            if(match) { document.getElementById('cVill').value = match.name; }
-        }
-
-        // ==========================================
-        // PROSES PENGIRIMAN & CHECKOUT
-        // ==========================================
         function goToShipping() { 
             if(cart.length === 0) { showToast("Keranjangmu masih kosong!", 'warning'); return; }
             if(!currentUser) { closeModal(); showToast("Wajib Login pakai akun Google dulu ya Kak!", 'warning'); setTimeout(() => handleAuth(), 1500); return; }
@@ -403,10 +318,6 @@
             if(document.getElementById('cName').value === "") document.getElementById('cName').value = currentUser.displayName;
 
             document.getElementById('shippingArea').style.display = 'block'; 
-            if(apiRegionData.prov.length === 0) {
-                document.getElementById('cProv').placeholder = "Memuat data provinsi...";
-                loadRegionAPI('prov'); 
-            }
         }
 
         function buatPesananSekarang() {
@@ -418,19 +329,16 @@
             const cRW = document.getElementById('cRW').value.trim();
             const cZip = document.getElementById('cZip').value.trim();
 
-            const provName = document.getElementById('cProv').value.trim().toUpperCase();
-            const cityName = document.getElementById('cCity').value.trim().toUpperCase();
-            const distName = document.getElementById('cDist').value.trim().toUpperCase();
-            const villName = document.getElementById('cVill').value.trim().toUpperCase();
+            // Ambil data manual
+            const provName = document.getElementById('cProv').value.trim();
+            const cityName = document.getElementById('cCity').value.trim();
+            const distName = document.getElementById('cDist').value.trim();
+            const villName = document.getElementById('cVill').value.trim();
 
+            // Cukup cek apakah kosong atau tidak
             if(!cName || !cPhone || !cStreet || !cRT || !cRW || !cZip || !provName || !cityName || !distName || !villName) {
                 showToast("Harap isi seluruh detail alamat pengiriman dengan lengkap!", 'error'); return;
             }
-
-            if(!apiRegionData.prov.find(x => x.name.toUpperCase() === provName)) { showToast("Nama Provinsi tidak terdaftar!", 'error'); return; }
-            if(!apiRegionData.city.find(x => x.name.toUpperCase() === cityName)) { showToast("Nama Kota/Kab tidak terdaftar!", 'error'); return; }
-            if(!apiRegionData.dist.find(x => x.name.toUpperCase() === distName)) { showToast("Nama Kecamatan tidak terdaftar!", 'error'); return; }
-            if(!apiRegionData.vill.find(x => x.name.toUpperCase() === villName)) { showToast("Nama Kelurahan tidak terdaftar!", 'error'); return; }
 
             const cAddress = `${cStreet}, RT ${cRT}/RW ${cRW}, Kel. ${villName}, Kec. ${distName}, ${cityName}, Prov. ${provName} - ${cZip}`;
             const invoiceNumber = "INV-GKT-" + Date.now();
