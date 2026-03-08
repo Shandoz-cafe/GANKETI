@@ -10,10 +10,12 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
         body { background: var(--bg); color: var(--text); -webkit-font-smoothing: antialiased; overflow-x: hidden;}
 
-        /* HEADER & SEARCH BAR (NEW) */
+        /* HEADER & SEARCH BAR */
         header { background: rgba(5,5,5,0.95); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--border); }
         .head-top { display: flex; justify-content: space-between; align-items: center; padding: 15px 20px; }
-        .logo { font-family: 'Oswald', sans-serif; font-size: 24px; font-weight: 700; letter-spacing: 2px; color: var(--primary); cursor: pointer; text-transform: uppercase; user-select: none;}
+        .logo { font-family: 'Oswald', sans-serif; font-size: 24px; font-weight: 700; letter-spacing: 2px; color: var(--primary); cursor: pointer; text-transform: uppercase; user-select: none; touch-action: manipulation; -webkit-tap-highlight-color: transparent; display: flex; align-items: center;}
+        .logo img { max-height: 35px; object-fit: contain; }
+        
         .nav-icons { display: flex; gap: 15px; align-items: center; }
         .icon-btn { background: none; border: none; color: var(--text); font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px; }
         .cart-badge { background: var(--primary); color: var(--bg); font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 20px; }
@@ -22,7 +24,7 @@
         .search-box { width: 100%; padding: 10px 15px; background: #1a1a1a; border: 1px solid #333; border-radius: 8px; color: white; outline: none; font-family: 'Inter'; font-size: 13px; }
         .search-box:focus { border-color: var(--primary); }
 
-        /* BUBBLE CATEGORY UI (NEW) */
+        /* BUBBLE CATEGORY UI */
         .icon-nav-container { display: flex; gap: 15px; padding: 15px 20px; overflow-x: auto; scrollbar-width: none; background: var(--bg); border-bottom: 1px solid var(--border); }
         .icon-nav-container::-webkit-scrollbar { display: none; }
         .icon-item { display: flex; flex-direction: column; align-items: center; gap: 8px; min-width: 60px; cursor: pointer; }
@@ -33,7 +35,7 @@
         .icon-item.active .icon-circle { border-color: var(--primary); }
         .icon-item.active .icon-text { color: var(--primary); }
 
-        /* AUTO-SLIDE BANNER UI (NEW) */
+        /* AUTO-SLIDE BANNER UI */
         .promo-carousel { position: relative; width: 100%; height: 30vh; overflow: hidden; background: #111; }
         .carousel-track { display: flex; height: 100%; transition: transform 0.5s ease-in-out; }
         .carousel-slide { min-width: 100%; height: 100%; position: relative; }
@@ -45,7 +47,7 @@
 
         /* PRODUCT GRID */
         .container { padding: 30px 20px; max-width: 1200px; margin: 0 auto; min-height: 50vh; }
-        .section-title { font-family: 'Oswald', sans-serif; font-size: 20px; letter-spacing: 1px; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+        .section-title { font-family: 'Oswald', sans-serif; font-size: 20px; letter-spacing: 1px; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px; display:flex; justify-content: space-between; align-items:center;}
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px; }
         .card { background: var(--surface); border-radius: 8px; overflow: hidden; border: 1px solid var(--border); cursor: pointer; transition: 0.3s; display: flex; flex-direction: column; }
         .card:hover { border-color: #555; transform: translateY(-3px); }
@@ -59,7 +61,7 @@
         .price { font-family: 'Oswald', sans-serif; font-weight: 500; font-size: 16px; margin-top: auto; color: var(--primary); display: flex; flex-direction: column; }
         .price-strike { font-family: 'Inter', sans-serif; font-size: 11px; text-decoration: line-through; color: #ef4444; font-weight: 400; margin-bottom: 2px;}
 
-        /* MODALS & FORMS (TETAP SAMA DARI SEBELUMNYA) */
+        /* MODALS & FORMS */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: flex-end; backdrop-filter: blur(5px); }
         @media (min-width: 768px) { .modal { align-items: center; } }
         .modal-box { background: var(--surface); width: 100%; max-width: 500px; border-radius: 20px 20px 0 0; border: 1px solid var(--border); border-bottom: none; padding: 25px; max-height: 90vh; overflow-y: auto; display: flex; flex-direction: column; animation: slideUp 0.3s ease-out; }
@@ -74,21 +76,33 @@
         .preview-slider::-webkit-scrollbar { display: none; }
         .preview-slider img { width: 100%; height: 100%; object-fit: cover; flex-shrink: 0; scroll-snap-align: start; }
         .stock-warn { font-size: 12px; font-weight: 600; padding: 8px; background: rgba(245, 158, 11, 0.1); color: #f59e0b; border-radius: 6px; margin-bottom: 15px; border: 1px solid rgba(245, 158, 11, 0.2);}
+        
+        /* FORM SHIPPING (SMART DATALIST NATIVE) */
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; font-size: 12px; color: var(--text-dim); margin-bottom: 5px; font-weight: 500;}
         .form-group input, .form-group select { width: 100%; padding: 12px; background: #0a0a0a; border: 1px solid var(--border); color: white; font-family: 'Inter', sans-serif; font-size: 14px; border-radius: 8px; box-sizing: border-box; outline: none;}
         .form-group input:focus, .form-group select:focus { border-color: var(--primary); }
-        .form-group input:read-only { background: #1a1a1a; color: #555; cursor: not-allowed; border-color: #222; }
+        .form-group input:disabled, .form-group input:read-only { background: #1a1a1a; color: #555; cursor: not-allowed; border-color: #222; }
         .btn-main { background: var(--primary); color: var(--bg); width: 100%; padding: 15px; border: none; font-weight: 700; font-family: 'Inter', sans-serif; font-size: 14px; border-radius: 8px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px;}
         .btn-main:disabled { background: #333; color: #666; cursor: not-allowed; }
+        
         .list-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px dashed var(--border); }
         .list-item:last-child { border-bottom: none; }
+        
+        /* KARTU INVOICE HISTORY */
         .invoice-card { background: #1a1a1a; border: 1px solid var(--border); padding: 15px; border-radius: 8px; margin-bottom: 15px; }
         .status-badge { display: inline-block; padding: 4px 10px; border-radius: 4px; font-size: 10px; font-weight: 700; letter-spacing: 1px; }
         .status-UNPAID { background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid #ef4444; }
         .status-PAID { background: rgba(245, 158, 11, 0.2); color: #f59e0b; border: 1px solid #f59e0b; }
         .status-SHIPPED { background: rgba(74, 222, 128, 0.2); color: #4ade80; border: 1px solid #4ade80; }
+        
+        /* CSS BARU UNTUK FOTO PRODUK DI HISTORY */
+        .item-row { display: flex; gap: 12px; align-items: center; padding: 10px 0; border-bottom: 1px solid #222; }
+        .item-row:last-child { border-bottom: none; }
+        .item-img { width: 45px; height: 45px; object-fit: cover; border-radius: 6px; border: 1px solid #333; }
+
         .receipt { background: #fff; color: #000; padding: 20px; font-family: monospace; font-size: 13px; border-radius: 8px; margin-top: 15px; border-top: 5px solid #000; box-shadow: 0 4px 6px rgba(0,0,0,0.3);}
+        
         .toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 99999; display: flex; flex-direction: column; gap: 10px; pointer-events: none; width: 90%; max-width: 400px; }
         .modern-toast { background: var(--surface); border: 1px solid var(--border); color: white; padding: 16px 20px; border-radius: 12px; font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.8); animation: toastSlideDown 0.4s forwards; }
         .modern-toast.success { border-left: 4px solid #4ade80; } .modern-toast.error { border-left: 4px solid #ef4444; } .modern-toast.warning { border-left: 4px solid #f59e0b; }
@@ -102,7 +116,7 @@
 
     <header>
         <div class="head-top">
-            <div class="logo" onclick="secretAdminLogin()">GANKETI</div>
+            <div class="logo" id="mainLogo" onclick="secretAdminLogin()">GANKETI</div>
             <div class="nav-icons">
                 <button class="icon-btn" id="loginBtn" onclick="handleAuth()">👤 LOGIN</button>
                 <button class="icon-btn" onclick="openMyOrders()">📝 PESANAN</button>
@@ -115,10 +129,7 @@
     </header>
 
     <div class="icon-nav-container" id="categoryIconNav">
-        <div class="icon-item active" onclick="filterCategory('ALL')">
-            <div class="icon-circle" style="background:#fff; color:black; font-weight:bold;">ALL</div>
-            <div class="icon-text">Semua</div>
-        </div>
+        <div class="icon-item active" onclick="filterCategory('ALL')"><div class="icon-circle" style="background:#fff; color:black; font-weight:bold;">ALL</div><div class="icon-text">Semua</div></div>
     </div>
 
     <div class="promo-carousel" id="promoSliderSec" style="display:none;">
@@ -150,19 +161,19 @@
 
             <div id="shippingArea" style="display:none;">
                 <p style="font-size: 12px; color: #4ade80; margin-bottom: 15px;">✅ Akun tertaut. Mohon lengkapi alamat di bawah ini.</p>
-                <div class="form-group"><label>Email</label><input type="email" id="cEmail" readonly></div>
+                <div class="form-group"><label>Email Akun</label><input type="email" id="cEmail" readonly></div>
                 <div class="form-group"><label>Nama Penerima</label><input type="text" id="cName" placeholder="Nama Lengkap"></div>
-                <div class="form-group"><label>No. WhatsApp</label><input type="number" id="cPhone" placeholder="08..."></div>
+                <div class="form-group"><label>No. WhatsApp Aktif</label><input type="number" id="cPhone" placeholder="08..."></div>
                 <div style="border-top: 1px solid var(--border); margin: 20px 0; padding-top: 15px;"></div>
                 <h3 style="font-size: 14px; margin-bottom: 15px; color: var(--primary);">Detail Alamat</h3>
-                <div class="form-group"><label>Jalan & Nomor</label><input type="text" id="cStreet" placeholder="Jl. Sudirman No. 10"></div>
+                <div class="form-group"><label>Jalan, Gedung, Nomor Rumah</label><input type="text" id="cStreet" placeholder="Contoh: Jl. Sudirman No. 10, Gedung A"></div>
                 <div style="display: flex; gap: 10px;"><div class="form-group" style="flex:1;"><label>RT</label><input type="number" id="cRT" placeholder="001"></div><div class="form-group" style="flex:1;"><label>RW</label><input type="number" id="cRW" placeholder="002"></div></div>
-                <div class="form-group"><label>Provinsi</label><input type="text" id="cProv" placeholder="Contoh: Jawa Barat"></div>
-                <div class="form-group"><label>Kota / Kabupaten</label><input type="text" id="cCity" placeholder="Contoh: Kota Bandung"></div>
-                <div class="form-group"><label>Kecamatan</label><input type="text" id="cDist" placeholder="Contoh: Sumur Bandung"></div>
-                <div class="form-group"><label>Kelurahan</label><input type="text" id="cVill" placeholder="Contoh: Babakan Ciamis"></div>
+                <div class="form-group"><label>Provinsi</label><input type="text" id="cProv" list="provList" placeholder="Memuat data..." oninput="checkProv()" autocomplete="off"><datalist id="provList"></datalist></div>
+                <div class="form-group"><label>Kota / Kabupaten</label><input type="text" id="cCity" list="cityList" placeholder="Pilih Provinsi Dahulu" oninput="checkCity()" autocomplete="off" disabled><datalist id="cityList"></datalist></div>
+                <div class="form-group"><label>Kecamatan</label><input type="text" id="cDist" list="distList" placeholder="Pilih Kota Dahulu" oninput="checkDist()" autocomplete="off" disabled><datalist id="distList"></datalist></div>
+                <div class="form-group"><label>Kelurahan / Desa</label><input type="text" id="cVill" list="villList" placeholder="Pilih Kecamatan Dahulu" oninput="checkVill()" autocomplete="off" disabled><datalist id="villList"></datalist></div>
                 <div class="form-group"><label>Kode Pos</label><input type="number" id="cZip" placeholder="12345"></div>
-                <button class="btn-main" onclick="buatPesananSekarang()">PLACE SECURE ORDER 🔒</button>
+                <button class="btn-main" onclick="buatPesananSekarang()" style="margin-top: 10px;">PLACE SECURE ORDER 🔒</button>
             </div>
 
             <div id="invoiceArea" style="display:none;">
@@ -171,6 +182,7 @@
                 <div class="receipt" id="invoicePaper"></div>
                 <button class="btn-main" style="margin-top: 15px; background: #25D366; color: white;" onclick="closeModal()">SELESAI</button>
             </div>
+            
             <div id="historyArea" style="display:none;"><div id="historyList"></div></div>
             <div id="logoutConfirmArea" style="display:none; text-align:center;"><h3 style="font-size: 16px; margin-bottom: 10px;">Keluar dari Akun?</h3><div style="display:flex; gap:10px;"><button class="btn-main" style="background:#333; color:white;" onclick="closeModal()">BATAL</button><button class="btn-main" style="background:#ef4444;" onclick="executeLogout()">YA, KELUAR</button></div></div>
         </div>
@@ -187,6 +199,7 @@
         let globalProducts = []; let activeCategory = 'ALL'; 
         let cart = JSON.parse(localStorage.getItem('ganketiCart') || '[]');
         let currentUser = null; let currentSlide = 0; let slideInterval;
+        let apiRegionData = { prov: [], city: [], dist: [], vill: [] }; 
         updateCartCount();
 
         function showToast(message, type = 'info') {
@@ -213,41 +226,37 @@
             if (clickCount >= 5) { showToast("Sistem rahasia terbuka... 🚀", 'success'); setTimeout(() => { window.location.assign('https://shandoz-cafe.github.io/GANKETI/admin.html?v=' + Date.now()); }, 800); }
         }
 
-        // ENGINE BANNER CAROUSEL DARI FIREBASE
         db.ref('ui_banners').on('value', snap => {
             const data = snap.val(); const sec = document.getElementById('promoSliderSec'); const track = document.getElementById('carouselTrack'); const dots = document.getElementById('carouselDots');
             if(!data) { sec.style.display = 'none'; clearInterval(slideInterval); return; }
-            
-            sec.style.display = 'block';
-            let banners = Object.keys(data).map(k => data[k]).sort((a,b) => a.timestamp - b.timestamp);
-            
+            sec.style.display = 'block'; let banners = Object.keys(data).map(k => data[k]).sort((a,b) => a.timestamp - b.timestamp);
             track.innerHTML = banners.map(b => `<div class="carousel-slide"><img src="${b.image}"></div>`).join('');
             dots.innerHTML = banners.map((b, i) => `<div class="dot ${i===0?'active':''}"></div>`).join('');
-            
             clearInterval(slideInterval);
-            if(banners.length > 1) {
-                slideInterval = setInterval(() => {
-                    currentSlide = (currentSlide + 1) % banners.length;
-                    track.style.transform = `translateX(-${currentSlide * 100}%)`;
-                    Array.from(dots.children).forEach((d, i) => d.className = i === currentSlide ? 'dot active' : 'dot');
-                }, 4000); // 4 DETIK AUTO SLIDE
-            }
+            if(banners.length > 1) { slideInterval = setInterval(() => { currentSlide = (currentSlide + 1) % banners.length; track.style.transform = `translateX(-${currentSlide * 100}%)`; Array.from(dots.children).forEach((d, i) => d.className = i === currentSlide ? 'dot active' : 'dot'); }, 4000); }
         });
 
-        // ENGINE KATEGORI VISUAL (BUBBLE) DARI FIREBASE
         db.ref('ui_categories').on('value', snap => {
             const data = snap.val(); const nav = document.getElementById('categoryIconNav');
             let baseHtml = `<div class="icon-item ${activeCategory === 'ALL' ? 'active' : ''}" onclick="filterCategory('ALL')"><div class="icon-circle" style="background:#fff; color:black; font-weight:bold; font-size:12px;">ALL</div><div class="icon-text">Semua</div></div>`;
             if(data) {
                 let cats = Object.keys(data).map(k => data[k]).sort((a,b) => a.timestamp - b.timestamp);
-                cats.forEach(c => {
-                    baseHtml += `<div class="icon-item ${activeCategory === c.name ? 'active' : ''}" onclick="filterCategory('${c.name}')"><div class="icon-circle"><img src="${c.icon}"></div><div class="icon-text">${c.name.substring(0,8)}</div></div>`;
-                });
+                cats.forEach(c => { baseHtml += `<div class="icon-item ${activeCategory === c.name ? 'active' : ''}" onclick="filterCategory('${c.name}')"><div class="icon-circle"><img src="${c.icon}"></div><div class="icon-text">${c.name.substring(0,8)}</div></div>`; });
             }
             nav.innerHTML = baseHtml;
         });
 
-        // LOAD PRODUCTS
+        db.ref('ui_settings').on('value', snap => {
+            const s = snap.val();
+            if(s) {
+                const logoEl = document.getElementById('mainLogo');
+                if(s.logoImg) { logoEl.innerHTML = `<img src="${s.logoImg}">`; } else { logoEl.innerText = s.logoText || 'GANKETI'; }
+                if(s.heroImg) document.getElementById('heroSec').style.backgroundImage = `url('${s.heroImg}')`;
+                if(s.heroTitle) document.getElementById('heroTitle').innerText = s.heroTitle;
+                if(s.heroSub) document.getElementById('heroSub').innerText = s.heroSub;
+            }
+        });
+
         db.ref('products').on('value', (snapshot) => {
             const data = snapshot.val(); const grid = document.getElementById('productGrid');
             if(!data) { grid.innerHTML = '<p style="text-align:center; width:100%; color:var(--text-dim);">Belum ada koleksi yang dirilis.</p>'; return; }
@@ -256,31 +265,16 @@
         });
 
         function filterCategory(cat) { 
-            activeCategory = cat; document.getElementById('secTitle').innerText = cat === 'ALL' ? 'LATEST DROP' : cat; 
-            document.getElementById('searchInput').value = ''; // Reset search
-            
-            // Re-render UI bubble biar keliatan mana yg aktif
-            document.querySelectorAll('.icon-item').forEach(el => {
-                el.classList.remove('active');
-                if(el.innerText.trim().toUpperCase() === cat.toUpperCase() || (cat === 'ALL' && el.innerText.trim().toUpperCase() === 'SEMUA')) {
-                    el.classList.add('active');
-                }
-            });
+            activeCategory = cat; document.getElementById('secTitle').innerText = cat === 'ALL' ? 'LATEST DROP' : cat; document.getElementById('searchInput').value = ''; 
+            document.querySelectorAll('.icon-item').forEach(el => { el.classList.remove('active'); if(el.innerText.trim().toUpperCase() === cat.toUpperCase() || (cat === 'ALL' && el.innerText.trim().toUpperCase() === 'SEMUA')) { el.classList.add('active'); } });
             renderProducts(); 
         }
 
-        // ENGINE SEARCH (PENCARIAN PRODUK)
         function searchProducts() {
-            const keyword = document.getElementById('searchInput').value.toLowerCase();
-            activeCategory = 'ALL'; // Kalo nyari, otomatis pindah ke semua kategori
-            document.querySelectorAll('.icon-item').forEach(el => el.classList.remove('active'));
-            document.querySelector('.icon-item').classList.add('active'); // Aktifin ALL
-
+            const keyword = document.getElementById('searchInput').value.toLowerCase(); activeCategory = 'ALL'; 
+            document.querySelectorAll('.icon-item').forEach(el => el.classList.remove('active')); document.querySelector('.icon-item').classList.add('active'); 
             let filtered = globalProducts.filter(p => p.name.toLowerCase().includes(keyword));
-            
-            document.getElementById('popularContainer').style.display = 'none'; // Sembunyiin populer pas lg nyari
-            document.getElementById('secTitle').innerText = keyword ? `HASIL: ${keyword.toUpperCase()}` : 'LATEST DROP';
-            
+            document.getElementById('popularContainer').style.display = 'none'; document.getElementById('secTitle').innerText = keyword ? `HASIL: ${keyword.toUpperCase()}` : 'LATEST DROP';
             const grid = document.getElementById('productGrid');
             if(filtered.length === 0) grid.innerHTML = '<p style="text-align:center; width:100%; color:var(--text-dim);">Produk tidak ditemukan.</p>';
             else grid.innerHTML = filtered.map(p => createProductCard(p)).join('');
@@ -293,17 +287,10 @@
         }
 
         function renderProducts() {
-            const keyword = document.getElementById('searchInput').value;
-            if(keyword) return searchProducts(); // Kalo lagi ngetik, stop ngerender default
-
-            const popProds = globalProducts.filter(p => p.isPopular);
-            const popContainer = document.getElementById('popularContainer');
-            if(popProds.length > 0 && activeCategory === 'ALL') {
-                popContainer.style.display = 'block'; document.getElementById('popularGrid').innerHTML = popProds.map(p => createProductCard(p)).join('');
-            } else { popContainer.style.display = 'none'; }
-
-            const grid = document.getElementById('productGrid');
-            let filteredProducts = activeCategory === 'ALL' ? globalProducts : globalProducts.filter(p => p.category === activeCategory);
+            const keyword = document.getElementById('searchInput').value; if(keyword) return searchProducts(); 
+            const popProds = globalProducts.filter(p => p.isPopular); const popContainer = document.getElementById('popularContainer');
+            if(popProds.length > 0 && activeCategory === 'ALL') { popContainer.style.display = 'block'; document.getElementById('popularGrid').innerHTML = popProds.map(p => createProductCard(p)).join(''); } else { popContainer.style.display = 'none'; }
+            const grid = document.getElementById('productGrid'); let filteredProducts = activeCategory === 'ALL' ? globalProducts : globalProducts.filter(p => p.category === activeCategory);
             if(filteredProducts.length === 0) return grid.innerHTML = '<p style="text-align:center; width:100%; color:var(--text-dim);">Kategori kosong.</p>';
             grid.innerHTML = filteredProducts.map(p => createProductCard(p)).join('');
         }
@@ -337,7 +324,8 @@
         function updateCartCount() { document.getElementById('cartCount').innerText = cart.reduce((sum, item) => sum + item.qty, 0); }
 
         function openCart() {
-            hideAllAreas(); document.getElementById('modalTitle').innerText = "YOUR CART"; document.getElementById('cartArea').style.display = 'block'; document.getElementById('mainModal').style.display = 'flex';
+            hideAllAreas(); document.getElementById('modalTitle').innerText = "YOUR CART";
+            document.getElementById('cartArea').style.display = 'block'; document.getElementById('mainModal').style.display = 'flex';
             const list = document.getElementById('cartItemsList'); let total = 0;
             if (cart.length === 0) { list.innerHTML = '<p style="color:var(--text-dim); text-align:center; padding: 20px 0;">Keranjang kosong.</p>'; } 
             else {
@@ -348,42 +336,147 @@
             }
             document.getElementById('cartTotalDisplay').innerText = `Rp ${total.toLocaleString('id-ID')}`;
         }
-
         function removeItem(index) { cart.splice(index, 1); localStorage.setItem('ganketiCart', JSON.stringify(cart)); updateCartCount(); openCart(); }
+
+        async function loadRegionAPI(level, parentId = null) {
+            let url = '';
+            if (level === 'prov') url = 'https://www.emsifa.com/api-wilayah-indonesia/api/provinces.json';
+            else if (level === 'city') url = `https://www.emsifa.com/api-wilayah-indonesia/api/regencies/${parentId}.json`;
+            else if (level === 'dist') url = `https://www.emsifa.com/api-wilayah-indonesia/api/districts/${parentId}.json`;
+            else if (level === 'vill') url = `https://www.emsifa.com/api-wilayah-indonesia/api/villages/${parentId}.json`;
+
+            try {
+                const res = await fetch(url); const data = await res.json();
+                apiRegionData[level] = data; 
+                const datalist = document.getElementById(level + 'List');
+                datalist.innerHTML = data.map(item => `<option value="${item.name}">`).join('');
+                const inputEl = document.getElementById('c' + level.charAt(0).toUpperCase() + level.slice(1));
+                inputEl.placeholder = "Ketik atau pilih dari daftar...";
+                inputEl.disabled = false;
+            } catch(e) { showToast("Gagal memuat data dari server pusat.", "error"); }
+        }
+
+        function resetDownstream(fromLevel) {
+            if(fromLevel === 'prov') { resetField('cCity', 'Pilih Provinsi Dahulu'); resetField('cDist', 'Pilih Kota Dahulu'); resetField('cVill', 'Pilih Kecamatan Dahulu'); }
+            else if(fromLevel === 'city') { resetField('cDist', 'Pilih Kota Dahulu'); resetField('cVill', 'Pilih Kecamatan Dahulu'); }
+            else if(fromLevel === 'dist') { resetField('cVill', 'Pilih Kecamatan Dahulu'); }
+        }
+
+        function resetField(id, placeholderText) {
+            const el = document.getElementById(id); el.value = ''; el.disabled = true; el.placeholder = placeholderText; document.getElementById(id.replace('c', '').toLowerCase() + 'List').innerHTML = '';
+        }
+
+        function checkProv() { const val = document.getElementById('cProv').value.trim().toUpperCase(); const match = apiRegionData.prov.find(x => x.name.toUpperCase() === val); if(match) { document.getElementById('cProv').value = match.name; resetDownstream('prov'); document.getElementById('cCity').placeholder = "Memuat data kota..."; loadRegionAPI('city', match.id); } else { resetDownstream('prov'); } }
+        function checkCity() { const val = document.getElementById('cCity').value.trim().toUpperCase(); const match = apiRegionData.city.find(x => x.name.toUpperCase() === val); if(match) { document.getElementById('cCity').value = match.name; resetDownstream('city'); document.getElementById('cDist').placeholder = "Memuat data kecamatan..."; loadRegionAPI('dist', match.id); } else { resetDownstream('city'); } }
+        function checkDist() { const val = document.getElementById('cDist').value.trim().toUpperCase(); const match = apiRegionData.dist.find(x => x.name.toUpperCase() === val); if(match) { document.getElementById('cDist').value = match.name; resetDownstream('dist'); document.getElementById('cVill').placeholder = "Memuat data kelurahan..."; loadRegionAPI('vill', match.id); } else { resetDownstream('dist'); } }
+        function checkVill() { const val = document.getElementById('cVill').value.trim().toUpperCase(); const match = apiRegionData.vill.find(x => x.name.toUpperCase() === val); if(match) { document.getElementById('cVill').value = match.name; } }
+
         function goToShipping() { 
-            if(cart.length === 0) { showToast("Keranjang kosong!", 'warning'); return; }
-            if(!currentUser) { closeModal(); showToast("Wajib Login akun Google dulu ya Kak!", 'warning'); setTimeout(() => handleAuth(), 1500); return; }
+            if(cart.length === 0) { showToast("Keranjangmu masih kosong!", 'warning'); return; }
+            if(!currentUser) { closeModal(); showToast("Wajib Login pakai akun Google dulu ya Kak!", 'warning'); setTimeout(() => handleAuth(), 1500); return; }
             hideAllAreas(); document.getElementById('modalTitle').innerText = "SHIPPING INFO"; 
             document.getElementById('cEmail').value = currentUser.email;
             if(document.getElementById('cName').value === "") document.getElementById('cName').value = currentUser.displayName;
             document.getElementById('shippingArea').style.display = 'block'; 
+            if(apiRegionData.prov.length === 0) { document.getElementById('cProv').placeholder = "Memuat data provinsi..."; loadRegionAPI('prov'); }
         }
 
         function buatPesananSekarang() {
             const cEmail = document.getElementById('cEmail').value; const cName = document.getElementById('cName').value.trim(); const cPhone = document.getElementById('cPhone').value.trim(); 
             const cStreet = document.getElementById('cStreet').value.trim(); const cRT = document.getElementById('cRT').value.trim(); const cRW = document.getElementById('cRW').value.trim();
-            const cProv = document.getElementById('cProv').value.trim(); const cCity = document.getElementById('cCity').value.trim(); const cDist = document.getElementById('cDist').value.trim(); const cVill = document.getElementById('cVill').value.trim(); const cZip = document.getElementById('cZip').value.trim();
-            
-            if(!cName || !cPhone || !cStreet || !cRT || !cRW || !cProv || !cCity || !cDist || !cVill || !cZip) { showToast("Isi seluruh detail alamat pengiriman!", 'error'); return; }
-            const cAddress = `${cStreet}, RT ${cRT}/RW ${cRW}, Kel. ${cVill}, Kec. ${cDist}, ${cCity}, Prov. ${cProv} - ${cZip}`;
+            const cZip = document.getElementById('cZip').value.trim();
+            const provName = document.getElementById('cProv').value.trim().toUpperCase(); const cityName = document.getElementById('cCity').value.trim().toUpperCase(); const distName = document.getElementById('cDist').value.trim().toUpperCase(); const villName = document.getElementById('cVill').value.trim().toUpperCase();
+
+            if(!cName || !cPhone || !cStreet || !cRT || !cRW || !cZip || !provName || !cityName || !distName || !villName) { showToast("Harap isi seluruh detail alamat!", 'error'); return; }
+            if(!apiRegionData.prov.find(x => x.name.toUpperCase() === provName)) { showToast("Nama Provinsi tidak valid!", 'error'); return; }
+            if(!apiRegionData.city.find(x => x.name.toUpperCase() === cityName)) { showToast("Nama Kota/Kab tidak valid!", 'error'); return; }
+            if(!apiRegionData.dist.find(x => x.name.toUpperCase() === distName)) { showToast("Nama Kecamatan tidak valid!", 'error'); return; }
+            if(!apiRegionData.vill.find(x => x.name.toUpperCase() === villName)) { showToast("Nama Kelurahan tidak valid!", 'error'); return; }
+
+            const cAddress = `${cStreet}, RT ${cRT}/RW ${cRW}, Kel. ${villName}, Kec. ${distName}, ${cityName}, Prov. ${provName} - ${cZip}`;
             const invoiceNumber = "INV-GKT-" + Date.now(); const orderDate = new Date().toLocaleString('id-ID');
             let grandTotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
 
             db.ref('orders').push({ invoice_no: invoiceNumber, date: orderDate, customer: { email: cEmail, name: cName, phone: cPhone, address: cAddress }, items: cart, total: grandTotal, status: "UNPAID", timestamp: Date.now() }); 
             cart.forEach(item => { const prodRef = db.ref('products/' + item.id); prodRef.once('value').then(snap => { const currentData = snap.val(); if(currentData) { prodRef.update({ stock: Math.max(0, (currentData.stock || 0) - item.qty) }); }});});
             let itemsHtml = cart.map(i => `${i.qty}x ${i.name.substring(0,20)} <span style="float:right;">${(i.price * i.qty).toLocaleString('id-ID')}</span>`).join('<br>');
-            document.getElementById('invoicePaper').innerHTML = `<div style="text-align:center; font-weight:bold; font-size:16px; margin-bottom:10px; border-bottom:2px dashed #000; padding-bottom:10px;">GANKETI OFFICIAL</div>INV NO : <b style="color:blue;">${invoiceNumber}</b><br>DATE   : ${orderDate}<br>NAME   : ${cName}<br><hr style="border-top:1px dashed #000; margin:10px 0;">${itemsHtml}<hr style="border-top:1px dashed #000; margin:10px 0;"><b style="font-size: 14px;">GRAND TOTAL : <span style="float:right;">Rp ${grandTotal.toLocaleString('id-ID')}</span></b><div style="margin-top:20px; text-align:center; font-size:10px; color:#666;">Selesaikan pembayaran sesuai instruksi admin.</div>`;
+            document.getElementById('invoicePaper').innerHTML = `<div style="text-align:center; font-weight:bold; font-size:16px; margin-bottom:10px; border-bottom:2px dashed #000; padding-bottom:10px;">GANKETI OFFICIAL</div>INV NO : <b style="color:blue;">${invoiceNumber}</b><br>DATE   : ${orderDate}<br>NAME   : ${cName}<br><hr style="border-top:1px dashed #000; margin:10px 0;">${itemsHtml}<hr style="border-top:1px dashed #000; margin:10px 0;"><b style="font-size: 14px;">GRAND TOTAL : <span style="float:right;">Rp ${grandTotal.toLocaleString('id-ID')}</span></b><div style="margin-top:20px; text-align:center; font-size:10px; color:#666;">Silakan selesaikan pembayaran sesuai instruksi admin.</div>`;
             cart = []; localStorage.setItem('ganketiCart', JSON.stringify(cart)); updateCartCount(); hideAllAreas(); document.getElementById('modalTitle').innerText = "ORDER PLACED"; document.getElementById('invoiceArea').style.display = 'block'; showToast("Pesanan sukses dibuat! 🎉", "success");
         }
 
+        // =========================================================
+        // 🔥 ENGINE RIWAYAT PESANAN (PREVIEW PRODUK PELANGGAN) 🔥
+        // =========================================================
         function openMyOrders() {
-            if(!currentUser) { showToast("Login dulu untuk melihat pesanan!", 'warning'); setTimeout(() => handleAuth(), 1500); return; }
+            if(!currentUser) { showToast("Silakan Login dulu untuk melihat pesanan!", 'warning'); setTimeout(() => handleAuth(), 1500); return; }
             hideAllAreas(); document.getElementById('modalTitle').innerText = "PESANAN SAYA";
-            const list = document.getElementById('historyList'); list.innerHTML = `<p style="text-align:center; color:var(--text-dim); padding:20px;">Memuat data...</p>`; document.getElementById('historyArea').style.display = 'block'; document.getElementById('mainModal').style.display = 'flex';
+            const list = document.getElementById('historyList'); list.innerHTML = `<p style="text-align:center; color:var(--text-dim); padding:20px;">Memuat data...</p>`;
+            document.getElementById('historyArea').style.display = 'block'; document.getElementById('mainModal').style.display = 'flex';
+            
             db.ref('orders').orderByChild('customer/email').equalTo(currentUser.email).once('value').then(snapshot => {
-                const data = snapshot.val(); if(!data) { list.innerHTML = `<p style="text-align:center; color:var(--text-dim); padding:20px;">Belum ada pesanan untuk akun ini.</p>`; return; }
+                const data = snapshot.val();
+                if(!data) { list.innerHTML = `<p style="text-align:center; color:var(--text-dim); padding:20px;">Belum ada pesanan untuk akun ini.</p>`; return; }
+                
                 let historyHtml = ''; const orders = Object.keys(data).map(k => data[k]).sort((a,b) => b.timestamp - a.timestamp);
-                orders.forEach(order => { historyHtml += `<div class="invoice-card"><div style="display:flex; justify-content:space-between; margin-bottom:10px; border-bottom:1px dashed var(--border); padding-bottom:5px;"><b style="color:white; font-size:12px;">${order.invoice_no}</b><span class="status-badge status-${order.status}">${order.status}</span></div><div style="font-size:12px; color:var(--text-dim); line-height:1.5;">Tgl: ${order.date}<br>Dikirim ke: ${order.customer.name}<br>Total Tagihan: <b style="color:var(--primary);">Rp ${order.total.toLocaleString('id-ID')}</b></div></div>`; });
+                
+                orders.forEach(order => { 
+                    // Bikin Rincian Barang yang Dibeli Pelanggan (Pakai Gambar)
+                    let itemsHtml = order.items.map(i => {
+                        let imgUrl = i.images ? i.images[0] : (i.image ? i.image : 'https://via.placeholder.com/50');
+                        return `
+                        <div class="item-row">
+                            <img src="${imgUrl}" class="item-img">
+                            <div style="flex:1;">
+                                <div style="font-size:12px; font-weight:bold; color:#fff;">${i.name}</div>
+                                <div style="font-size:10px; color:#888;">${i.qty}x @ Rp ${i.price.toLocaleString('id-ID')}</div>
+                            </div>
+                            <div style="font-size:12px; font-weight:bold; color:var(--primary);">
+                                Rp ${(i.price * i.qty).toLocaleString('id-ID')}
+                            </div>
+                        </div>`;
+                    }).join('');
+
+                    let resiHtml = '';
+                    if (order.status === 'SHIPPED' && order.resi) {
+                        resiHtml = `
+                        <div style="margin-top:12px; padding:10px; background:#111; border-radius:6px; border:1px solid #333;">
+                            <span style="font-size:10px; color:#888;">Nomor Resi Pengiriman:</span><br>
+                            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:5px;">
+                                <b style="color:#4ade80; font-size:14px; letter-spacing:1px;">${order.resi}</b>
+                                <div style="display:flex; gap:5px;">
+                                    <button onclick="navigator.clipboard.writeText('${order.resi}'); showToast('Resi disalin!', 'success');" style="background:#3b82f6; color:white; border:none; padding:6px 10px; border-radius:4px; font-size:10px; font-weight:bold; cursor:pointer;">COPY</button>
+                                    <a href="https://cekresi.com/?noresi=${order.resi}" target="_blank" style="background:#f59e0b; color:black; border:none; padding:6px 10px; border-radius:4px; font-size:10px; text-decoration:none; font-weight:bold; text-align:center;">LACAK</a>
+                                </div>
+                            </div>
+                        </div>`;
+                    }
+
+                    historyHtml += `
+                    <div class="invoice-card">
+                        <div style="display:flex; justify-content:space-between; margin-bottom:10px; border-bottom:1px dashed var(--border); padding-bottom:10px;">
+                            <div>
+                                <b style="color:#3b82f6; font-size:13px;">${order.invoice_no}</b><br>
+                                <span style="font-size:10px; color:#888;">📅 ${order.date}</span>
+                            </div>
+                            <div><span class="status-badge status-${order.status}">${order.status}</span></div>
+                        </div>
+                        
+                        <div style="background:#0a0a0a; padding:10px; border-radius:8px; border:1px solid #222; margin-bottom:10px;">
+                            ${itemsHtml}
+                        </div>
+
+                        <div style="display:flex; justify-content:space-between; align-items:center; font-size:12px; color:var(--text-dim); line-height:1.5;">
+                            <div>
+                                Dikirim ke: <b style="color:#ccc;">${order.customer.name}</b>
+                            </div>
+                            <div style="text-align:right;">
+                                Total Belanja:<br>
+                                <b style="color:#4ade80; font-size:15px;">Rp ${order.total.toLocaleString('id-ID')}</b>
+                            </div>
+                        </div>
+                        ${resiHtml}
+                    </div>`; 
+                });
                 list.innerHTML = historyHtml;
             });
         }
