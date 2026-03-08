@@ -91,7 +91,7 @@
             <div style="display: flex; gap: 10px;"><div class="form-group" style="flex:1;"><label>Modal Supplier</label><input type="number" id="eCost"></div><div class="form-group" style="flex:1;"><label>Harga Jual</label><input type="number" id="ePrice"></div></div>
             <div style="display: flex; gap: 10px;"><div class="form-group" style="flex:1;"><label>Jumlah Stok</label><input type="number" id="eStock"></div><div class="form-group" style="flex:1;"><label>Harga Coret</label><input type="number" id="eOriginalPrice"></div></div>
             
-            <div class="form-group"><label>Link URL Supplier (Rahasia Admin)</label><input type="url" id="eLink" placeholder="https://shopee.co.id/..."></div>
+            <div class="form-group"><label>Link URL Supplier (Dropship)</label><input type="url" id="eLink" placeholder="https://shopee.co.id/..."></div>
 
             <div class="form-group"><label>Ganti Foto</label><input type="file" id="eImages" accept="image/*" multiple style="padding: 9px;"><p style="font-size: 10px; color: #888;">*Akan menimpa foto lama.</p></div>
             <button class="btn-action" style="background:#3b82f6; color:white;" onclick="saveEditedProduct()">💾 SIMPAN PERUBAHAN</button>
@@ -382,7 +382,7 @@
             const name = document.getElementById('pName').value; 
             const cost = document.getElementById('pCost').value; const price = document.getElementById('pPrice').value; const stock = document.getElementById('pStock').value; const orig = document.getElementById('pOriginalPrice').value; const files = document.getElementById('pImages').files;
             
-            const link = document.getElementById('pLink').value.trim(); // 🔥 BACA LINK SUPPLIER
+            const link = document.getElementById('pLink').value.trim(); // BACA LINK SUPPLIER
             
             const checkedCats = Array.from(document.querySelectorAll('.pCatCb:checked')).map(cb => cb.value);
             if(checkedCats.length === 0) return alert("Pilih minimal 1 kategori!");
@@ -395,7 +395,7 @@
             Promise.all(readFiles).then(imgs => {
                 let data = { name, category: categoryString, cost: parseInt(cost), price: parseInt(price), stock: parseInt(stock), images: imgs, timestamp: Date.now(), isPopular: false };
                 if(orig) data.originalPrice = parseInt(orig);
-                if(link) data.link = link; // 🔥 SIMPAN LINK KE DATABASE
+                if(link) data.link = link; // SIMPAN LINK KE DATABASE
                 
                 db.ref('products').push(data).then(() => { 
                     document.getElementById('statusMessage').innerHTML = "<span style='color:#4ade80;'>✅ Upload sukses!</span>"; 
@@ -406,19 +406,42 @@
             });
         }
 
+        // 🔥 TAMBAH TOMBOL LINK SUPPLIER DI TAB KELOLA 🔥
         function loadManageProducts() {
             db.ref('products').on('value', snap => {
                 const data = snap.val(); adminProductsData = data || {}; const list = document.getElementById('manageProductsList');
                 if(!data) return list.innerHTML = '<p style="color:#aaa; text-align:center;">Belum ada produk.</p>';
                 list.innerHTML = Object.keys(data).sort((a,b)=>data[b].timestamp - data[a].timestamp).map(k => {
-                    let p = data[k]; return `<div style="background:#1a1a1a; padding:15px; border:1px solid #333; margin-bottom:10px; border-radius:6px; display:flex; justify-content:space-between;"><div style="display:flex; gap:15px;"><img src="${p.images?p.images[0]:p.image}" style="width:50px; height:50px; object-fit:cover; border-radius:4px;"><div><b>${p.name}</b><br><span style="color:#888; font-size:10px;">[${p.category}]</span><br><span style="color:#4ade80; font-size:12px;">Rp ${p.price.toLocaleString('id-ID')}</span></div></div><div><button onclick="db.ref('products/${k}').update({isPopular: ${!p.isPopular}})" style="background:${p.isPopular?'#f59e0b':'#333'}; color:white; border:none; padding:5px; border-radius:4px; font-size:10px; width:100%; margin-bottom:5px;">${p.isPopular?'⭐ HAPUS POPULER':'⭐ SET POPULER'}</button><div style="display:flex; gap:5px;"><button onclick="openEditModal('${k}')" style="background:#3b82f6; color:white; border:none; padding:5px; border-radius:4px; font-size:10px; flex:1;">✏️ EDIT</button><button onclick="if(confirm('Hapus?')) db.ref('products/${k}').remove()" style="background:transparent; color:#ef4444; border:1px solid #ef4444; padding:5px; border-radius:4px; font-size:10px; flex:1;">🗑️</button></div></div></div>`;
+                    let p = data[k]; 
+                    
+                    // Tombol Link Supplier Khusus Admin di Tab Kelola
+                    let linkSupplierHtml = p.link ? `<a href="${p.link}" target="_blank" style="display:inline-block; margin-top:5px; font-size:10px; background:#4285F4; color:white; padding:3px 8px; border-radius:4px; text-decoration:none;">🔗 Cek Supplier</a>` : '';
+
+                    return `<div style="background:#1a1a1a; padding:15px; border:1px solid #333; margin-bottom:10px; border-radius:6px; display:flex; justify-content:space-between;">
+                        <div style="display:flex; gap:15px;">
+                            <img src="${p.images?p.images[0]:p.image}" style="width:50px; height:50px; object-fit:cover; border-radius:4px;">
+                            <div>
+                                <b>${p.name}</b><br>
+                                <span style="color:#888; font-size:10px;">[${p.category}]</span><br>
+                                <span style="color:#4ade80; font-size:12px; font-weight:bold;">Rp ${p.price.toLocaleString('id-ID')}</span><br>
+                                ${linkSupplierHtml}
+                            </div>
+                        </div>
+                        <div>
+                            <button onclick="db.ref('products/${k}').update({isPopular: ${!p.isPopular}})" style="background:${p.isPopular?'#f59e0b':'#333'}; color:white; border:none; padding:5px; border-radius:4px; font-size:10px; width:100%; margin-bottom:5px;">${p.isPopular?'⭐ HAPUS POPULER':'⭐ SET POPULER'}</button>
+                            <div style="display:flex; gap:5px;">
+                                <button onclick="openEditModal('${k}')" style="background:#3b82f6; color:white; border:none; padding:5px; border-radius:4px; font-size:10px; flex:1;">✏️ EDIT</button>
+                                <button onclick="if(confirm('Hapus?')) db.ref('products/${k}').remove()" style="background:transparent; color:#ef4444; border:1px solid #ef4444; padding:5px; border-radius:4px; font-size:10px; flex:1;">🗑️</button>
+                            </div>
+                        </div>
+                    </div>`;
                 }).join('');
             });
         }
 
         function openEditModal(id) { 
             currentEditId = id; let p = adminProductsData[id]; 
-            ['eName','eCost','ePrice','eStock','eOriginalPrice', 'eLink'].forEach(k=>document.getElementById(k).value=p[k.replace('e','').toLowerCase()]||''); // 🔥 BACA LINK KE FORM EDIT
+            ['eName','eCost','ePrice','eStock','eOriginalPrice', 'eLink'].forEach(k=>document.getElementById(k).value=p[k.replace('e','').toLowerCase()]||''); // BACA LINK KE FORM EDIT
             
             document.querySelectorAll('.eCatCb').forEach(cb => {
                 cb.checked = p.category ? p.category.includes(cb.value) : false;
@@ -436,7 +459,7 @@
 
             let u = { name: document.getElementById('eName').value, category: categoryString, cost: parseInt(document.getElementById('eCost').value), price: parseInt(document.getElementById('ePrice').value), stock: parseInt(document.getElementById('eStock').value) };
             let o = document.getElementById('eOriginalPrice').value; if(o) u.originalPrice = parseInt(o); else u.originalPrice = null;
-            let l = document.getElementById('eLink').value.trim(); if(l) u.link = l; else u.link = null; // 🔥 UPDATE LINK KE DATABASE
+            let l = document.getElementById('eLink').value.trim(); if(l) u.link = l; else u.link = null; // UPDATE LINK KE DATABASE
             let files = document.getElementById('eImages').files;
             
             if(files.length>0) { Promise.all(Array.from(files).map(file => new Promise(resolve => { const reader = new FileReader(); reader.onload = e => resolve(e.target.result); reader.readAsDataURL(file); }))).then(imgs => { u.images = imgs; db.ref('products/'+currentEditId).update(u).then(()=>{closeEditModal(); alert('Tersimpan!');}); }); } 
@@ -484,8 +507,8 @@
                 let itemsHtml = o.items.map(i => {
                     let imgUrl = i.images ? i.images[0] : (i.image ? i.image : 'https://via.placeholder.com/45');
                     
-                    // 🔥 LOGIC TOMBOL LINK SUPPLIER: HANYA MUNCUL DI ADMIN JIKA ADA LINK 🔥
-                    let supplierLinkHtml = i.link ? `<a href="${i.link}" target="_blank" style="display:inline-block; margin-top:3px; font-size:9px; background:#3b82f6; color:white; padding:3px 6px; border-radius:4px; text-decoration:none;">🔗 Beli di Supplier</a>` : '';
+                    // LOGIC TOMBOL LINK SUPPLIER: HANYA MUNCUL DI ADMIN JIKA ADA LINK
+                    let supplierLinkHtml = i.link ? `<a href="${i.link}" target="_blank" style="display:inline-block; margin-top:3px; font-size:9px; background:#4ade80; color:black; padding:3px 6px; border-radius:4px; text-decoration:none; font-weight:bold;">🛒 Checkout di Supplier</a>` : '';
 
                     return `
                     <div class="item-row">
