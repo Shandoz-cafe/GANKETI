@@ -9,31 +9,20 @@
         :root { --bg: #0a0a0a; --text: #ffffff; --card: #141414; }
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body { background: var(--bg); color: var(--text); font-family: 'Poppins', sans-serif; }
-
-        /* HEADER PREMIUM */
         header { padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; background: #0a0a0a; position: sticky; top: 0; z-index: 100; border-bottom: 1px solid #222;}
-        /* Logo dengan kursor pointer karena sekarang jadi tombol rahasia */
         .logo { font-family: 'Montserrat', sans-serif; font-size: 24px; font-weight: 900; letter-spacing: 2px; cursor: pointer; user-select: none; }
         .nav-actions { display: flex; gap: 10px; }
         .action-btn { background: transparent; color: white; border: 1px solid #444; padding: 8px 15px; border-radius: 30px; font-weight: 600; cursor: pointer; transition: 0.3s; font-size: 12px; }
         .action-btn.primary { background: #fff; color: #000; border-color: #fff; }
-        .action-btn:hover { background: #ccc; color: #000; }
-        
-        /* CATEGORY NAVBAR (Bisa di-scroll nyamping di HP) */
         .category-nav { display: flex; gap: 10px; padding: 12px 20px; overflow-x: auto; white-space: nowrap; background: rgba(10,10,10,0.95); position: sticky; top: 62px; z-index: 99; border-bottom: 1px solid #222; backdrop-filter: blur(10px); scrollbar-width: none; }
         .category-nav::-webkit-scrollbar { display: none; }
-        .cat-chip { background: #1a1a1a; color: #888; border: 1px solid #333; padding: 8px 20px; border-radius: 30px; font-size: 11px; font-weight: 600; cursor: pointer; transition: 0.3s; text-transform: uppercase; letter-spacing: 1px; }
+        .cat-chip { background: #1a1a1a; color: #888; border: 1px solid #333; padding: 8px 20px; border-radius: 30px; font-size: 11px; font-weight: 600; cursor: pointer; transition: 0.3s; text-transform: uppercase; }
         .cat-chip.active { background: #fff; color: #000; border-color: #fff; }
-
-        /* HERO & BANNER */
         .hero { text-align: center; padding: 50px 20px; background: linear-gradient(rgba(0,0,0,0.7), rgba(0,0,0,0.8)), url('https://images.unsplash.com/photo-1556821840-3a63f95609a7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1000&q=80') center/cover; }
         .hero h1 { font-family: 'Montserrat', sans-serif; font-size: 32px; font-weight: 900; letter-spacing: 1px; text-transform: uppercase; margin-bottom: 10px;}
-
-        /* PRODUCT GRID */
         .container { padding: 30px 20px; max-width: 1200px; margin: 0 auto; min-height: 50vh;}
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 15px; }
         .card { background: var(--card); border: 1px solid #222; transition: 0.3s; }
-        .card:hover { transform: translateY(-5px); border-color: #555; }
         .img-box { width: 100%; height: 200px; background: #222; position: relative; }
         .img-box img { width: 100%; height: 100%; object-fit: cover; }
         .badge { position: absolute; top: 10px; left: 10px; background: white; color: black; font-size: 10px; font-weight: 800; padding: 3px 8px; text-transform: uppercase; }
@@ -43,23 +32,16 @@
         .price { font-family: 'Montserrat', sans-serif; font-weight: 800; font-size: 15px; margin-bottom: 15px; }
         .btn-add { background: transparent; color: white; border: 1px solid white; width: 100%; padding: 10px; font-weight: 600; cursor: pointer; text-transform: uppercase; font-size: 11px; transition: 0.2s;}
         .btn-add:hover { background: white; color: black; }
-
-        /* MODAL SYSTEM (CART, SHIPPING, INVOICE, TRACK) */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(5px); }
         .modal-box { background: #141414; width: 90%; max-width: 450px; border-radius: 12px; border: 1px solid #333; padding: 25px; max-height: 90vh; overflow-y: auto; }
         .modal-header { display: flex; justify-content: space-between; font-weight: 800; font-size: 18px; border-bottom: 1px solid #333; padding-bottom: 15px; margin-bottom: 15px; font-family: 'Montserrat', sans-serif; }
         .close-btn { color: #ef4444; cursor: pointer; font-size: 14px; }
-        
         .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; font-size: 11px; color: #aaa; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px;}
+        .form-group label { display: block; font-size: 11px; color: #aaa; margin-bottom: 5px; text-transform: uppercase;}
         .form-group input, .form-group textarea { width: 100%; padding: 12px; background: #222; border: 1px solid #444; color: white; font-family: 'Poppins', sans-serif; border-radius: 6px; box-sizing: border-box;}
-        
-        .btn-checkout { background: #fff; color: #000; width: 100%; padding: 15px; border: none; font-weight: 800; font-family: 'Montserrat', sans-serif; margin-top: 10px; cursor: pointer; text-transform: uppercase; transition: 0.3s;}
-        .btn-checkout:hover { background: #ccc; }
-        
+        .btn-checkout { background: #fff; color: #000; width: 100%; padding: 15px; border: none; font-weight: 800; font-family: 'Montserrat', sans-serif; margin-top: 10px; cursor: pointer; text-transform: uppercase;}
         .cart-item { display: flex; justify-content: space-between; font-size: 13px; margin-bottom: 15px; border-bottom: 1px dashed #333; padding-bottom: 10px; }
         .invoice-box { background: #fff; color: #000; padding: 20px; font-family: monospace; font-size: 12px; border-radius: 8px; margin-top: 15px;}
-        
         .track-result { background: #222; padding: 15px; border-radius: 8px; margin-top: 15px; border: 1px solid #444; display: none; }
         .status-badge { display: inline-block; padding: 5px 15px; border-radius: 30px; font-size: 12px; font-weight: bold; margin-bottom: 10px;}
         .status-UNPAID { background: #ef4444; color: white; }
@@ -77,33 +59,17 @@
         </div>
     </header>
 
-    <div class="category-nav" id="categoryNav">
-        <div class="cat-chip active" onclick="filterCategory('ALL')">ALL COLLECTION</div>
-        </div>
-
-    <div class="hero">
-        <h1>Authentic Streetwear</h1>
-        <p style="font-size: 13px; color: #ccc;">Premium Original Collection.</p>
-    </div>
-
-    <div class="container">
-        <div class="grid" id="productGrid">
-            <p style="text-align: center; width: 100%; color: #888;">Memuat koleksi...</p>
-        </div>
-    </div>
+    <div class="category-nav" id="categoryNav"><div class="cat-chip active" onclick="filterCategory('ALL')">ALL COLLECTION</div></div>
+    <div class="hero"><h1>Authentic Streetwear</h1><p style="font-size: 13px; color: #ccc;">Premium Original Collection.</p></div>
+    <div class="container"><div class="grid" id="productGrid"><p style="text-align: center; width: 100%; color: #888;">Memuat koleksi...</p></div></div>
 
     <div class="modal" id="mainModal">
         <div class="modal-box">
-            <div class="modal-header">
-                <span id="modalTitle">MODAL TITLE</span>
-                <span class="close-btn" onclick="closeModal()">✕ CLOSE</span>
-            </div>
+            <div class="modal-header"><span id="modalTitle">MODAL TITLE</span><span class="close-btn" onclick="closeModal()">✕ CLOSE</span></div>
             
             <div id="cartArea" style="display:none;">
                 <div id="cartItemsList"></div>
-                <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 16px; margin-top: 20px;">
-                    <span>SUBTOTAL:</span><span id="cartTotalDisplay">Rp 0</span>
-                </div>
+                <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 16px; margin-top: 20px;"><span>SUBTOTAL:</span><span id="cartTotalDisplay">Rp 0</span></div>
                 <button class="btn-checkout" onclick="goToShipping()">PROCEED TO CHECKOUT ➔</button>
             </div>
 
@@ -116,168 +82,123 @@
 
             <div id="invoiceArea" style="display:none;">
                 <p style="text-align:center; color:#4ade80; font-weight:bold;">✅ ORDER CREATED!</p>
-                <p style="text-align:center; font-size:12px; color:#aaa;">Simpan Nomor Invoice ini untuk melacak pesanan Anda.</p>
+                <p style="text-align:center; font-size:12px; color:#aaa;">Simpan Nomor Invoice ini untuk melacak pesanan.</p>
                 <div class="invoice-box" id="invoicePaper"></div>
             </div>
 
             <div id="trackArea" style="display:none;">
-                <div class="form-group"><label>Masukkan Nomor Invoice</label><input type="text" id="trackInv" placeholder="INV-GKT-..."></div>
+                <div class="form-group"><label>Nomor Invoice</label><input type="text" id="trackInv" placeholder="INV-GKT-..."></div>
                 <button class="btn-checkout" onclick="lacakPesanan()">TRACK NOW 🔍</button>
-                <div class="track-result" id="trackResult">
-                    <div id="trackStatus" class="status-badge status-UNPAID">UNPAID</div>
-                    <div style="font-size:12px; color:#aaa; line-height:1.6;" id="trackDetails"></div>
-                </div>
+                <div class="track-result" id="trackResult"><div id="trackStatus" class="status-badge status-UNPAID">UNPAID</div><div style="font-size:12px; color:#aaa; line-height:1.6;" id="trackDetails"></div></div>
             </div>
         </div>
     </div>
 
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
-
     <script>
-        const firebaseConfig = {
-            apiKey: "AIzaSyDoh1VBH6YEicKHPyViPi0NUsnILaTin8g",
-            authDomain: "ganketi.firebaseapp.com",
-            databaseURL: "https://ganketi-default-rtdb.firebaseio.com",
-            projectId: "ganketi",
-            storageBucket: "ganketi.firebasestorage.app",
-            messagingSenderId: "61078873925",
-            appId: "1:61078873925:web:c5bf3bdf7cc18f11d6002c"
-        };
+        const firebaseConfig = { apiKey: "AIzaSyDoh1VBH6YEicKHPyViPi0NUsnILaTin8g", authDomain: "ganketi.firebaseapp.com", databaseURL: "https://ganketi-default-rtdb.firebaseio.com", projectId: "ganketi", storageBucket: "ganketi.firebasestorage.app", messagingSenderId: "61078873925", appId: "1:61078873925:web:c5bf3bdf7cc18f11d6002c" };
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
 
-        let globalProducts = [];
-        let activeCategory = 'ALL';
-        let cart = JSON.parse(localStorage.getItem('ganketiCart') || '[]');
+        let globalProducts = []; let activeCategory = 'ALL'; let cart = JSON.parse(localStorage.getItem('ganketiCart') || '[]');
         updateCartCount();
 
-        // ==========================================
-        // 1. FITUR PINTU RAHASIA ADMIN (KLIK LOGO 5X)
-        // ==========================================
-        let clickCount = 0;
-        let lastClickTime = 0;
-        
+        let clickCount = 0; let lastClickTime = 0;
         function secretAdminLogin() {
-            const now = Date.now();
-            // Jika jeda klik lebih dari 2 detik, reset hitungan
-            if (now - lastClickTime > 2000) { clickCount = 0; }
-            
-            lastClickTime = now;
-            clickCount++;
-            
-            if (clickCount >= 5) {
-                // Efek keren sebelum pindah
-                document.body.style.opacity = '0';
-                document.body.style.transition = '0.5s';
-                setTimeout(() => {
-                    window.location.href = 'admin.html';
-                }, 500);
-            }
+            const now = Date.now(); if (now - lastClickTime > 2000) clickCount = 0;
+            lastClickTime = now; clickCount++;
+            if (clickCount >= 5) { document.body.style.opacity = '0'; document.body.style.transition = '0.5s'; setTimeout(() => { window.location.href = 'admin.html'; }, 500); }
         }
 
-        // ==========================================
-        // 2. SEDOT DATA & BIKIN NAVBAR KATEGORI
-        // ==========================================
         db.ref('products').on('value', (snapshot) => {
-            const data = snapshot.val();
-            const grid = document.getElementById('productGrid');
-            if(!data) return grid.innerHTML = '<p style="text-align:center; width:100%; color:#888;">Belum ada koleksi yang dirilis.</p>';
-
+            const data = snapshot.val(); const grid = document.getElementById('productGrid');
+            if(!data) return grid.innerHTML = '<p style="text-align:center; width:100%; color:#888;">Belum ada koleksi.</p>';
             globalProducts = Object.keys(data).map(key => ({ id: key, ...data[key] })).sort((a, b) => b.timestamp - a.timestamp);
-            
-            // Generate Kategori Dinamis Unik (menghindari duplikat)
             let uniqueCategories = [...new Set(globalProducts.map(p => p.category))];
-            renderCategoryNav(uniqueCategories);
-            
-            // Tampilkan Produk
-            renderProducts();
+            renderCategoryNav(uniqueCategories); renderProducts();
         });
 
         function renderCategoryNav(categories) {
-            const nav = document.getElementById('categoryNav');
             let navHtml = `<div class="cat-chip ${activeCategory === 'ALL' ? 'active' : ''}" onclick="filterCategory('ALL')">ALL COLLECTION</div>`;
-            
-            categories.forEach(cat => {
-                navHtml += `<div class="cat-chip ${activeCategory === cat ? 'active' : ''}" onclick="filterCategory('${cat}')">${cat}</div>`;
-            });
-            nav.innerHTML = navHtml;
+            categories.forEach(cat => { navHtml += `<div class="cat-chip ${activeCategory === cat ? 'active' : ''}" onclick="filterCategory('${cat}')">${cat}</div>`; });
+            document.getElementById('categoryNav').innerHTML = navHtml;
         }
 
-        function filterCategory(cat) {
-            activeCategory = cat;
-            // Re-render nav buat ubah warna tombol yang aktif
-            let uniqueCategories = [...new Set(globalProducts.map(p => p.category))];
-            renderCategoryNav(uniqueCategories);
-            renderProducts();
-        }
+        function filterCategory(cat) { activeCategory = cat; renderCategoryNav([...new Set(globalProducts.map(p => p.category))]); renderProducts(); }
 
         function renderProducts() {
             const grid = document.getElementById('productGrid');
-            
-            // Saring produk berdasarkan kategori yang di-klik
-            let filteredProducts = activeCategory === 'ALL' 
-                ? globalProducts 
-                : globalProducts.filter(p => p.category === activeCategory);
+            let filteredProducts = activeCategory === 'ALL' ? globalProducts : globalProducts.filter(p => p.category === activeCategory);
+            if(filteredProducts.length === 0) return grid.innerHTML = '<p style="text-align:center; width:100%; color:#888;">Kategori kosong.</p>';
 
-            if(filteredProducts.length === 0) {
-                grid.innerHTML = '<p style="text-align:center; width:100%; color:#888;">Koleksi kategori ini sedang kosong.</p>';
-                return;
-            }
+            grid.innerHTML = filteredProducts.map(p => {
+                let sizeHtml = p.category !== 'Accessories' 
+                    ? `<select id="size-${p.id}" style="width:100%; padding:8px; margin-bottom:10px; background:#222; color:white; border:1px solid #444; border-radius:4px; font-size:11px;"><option value="S">Size: S</option><option value="M" selected>Size: M</option><option value="L">Size: L</option><option value="XL">Size: XL</option><option value="XXL">Size: XXL</option></select>`
+                    : `<input type="hidden" id="size-${p.id}" value="All Size"><div style="font-size:11px; color:#888; margin-bottom:10px; padding:8px 0;">All Size</div>`;
+                
+                // TAMPILAN SISA STOK
+                let stockDisplay = (p.stock && p.stock > 0) 
+                    ? `<div style="font-size:11px; color:#f59e0b; margin-bottom:10px; font-weight:bold;">🔥 Sisa Stok: ${p.stock} pcs</div>` 
+                    : `<div style="font-size:11px; color:#ef4444; margin-bottom:10px; font-weight:bold;">Stok Habis!</div>`;
 
-            grid.innerHTML = filteredProducts.map(p => `
+                let buttonHtml = (!p.stock || p.stock <= 0) 
+                    ? `<button class="btn-add" style="background: #333; color: #888; border-color: #333; cursor: not-allowed;" disabled>SOLD OUT</button>`
+                    : `<button class="btn-add" onclick="addToCart('${p.id}')">+ ADD TO CART</button>`;
+
+                return `
                 <div class="card">
-                    <div class="img-box"><div class="badge">Original</div><img src="${p.image}"></div>
+                    <div class="img-box"><div class="badge">${(!p.stock || p.stock <= 0) ? 'HABIS' : 'Original'}</div><img src="${p.image}" style="${(!p.stock || p.stock <= 0) ? 'filter: grayscale(100%); opacity: 0.5;' : ''}"></div>
                     <div class="info">
                         <div class="cat">${p.category}</div><div class="name">${p.name}</div>
                         <div class="price">Rp ${p.price.toLocaleString('id-ID')}</div>
-                        <button class="btn-add" onclick="addToCart('${p.id}')">+ ADD TO CART</button>
+                        ${stockDisplay}
+                        ${sizeHtml}
+                        ${buttonHtml}
                     </div>
-                </div>
-            `).join('');
+                </div>`;
+            }).join('');
         }
 
-        // ==========================================
-        // 3. FUNGSI KERANJANG & CHECKOUT (TETAP SAMA)
-        // ==========================================
         function closeModal() { document.getElementById('mainModal').style.display = 'none'; }
         function hideAllAreas() { ['cartArea', 'shippingArea', 'invoiceArea', 'trackArea'].forEach(id => document.getElementById(id).style.display = 'none'); }
 
         function addToCart(id) {
             const product = globalProducts.find(p => p.id === id);
-            const existing = cart.find(c => c.id === id);
-            if(existing) existing.qty += 1; else cart.push({ ...product, qty: 1 });
+            const sizeElement = document.getElementById('size-' + id);
+            const selectedSize = sizeElement ? sizeElement.value : 'All Size';
+            const cartItemId = id + '-' + selectedSize;
+            
+            // CEK APAKAH MELEBIHI SISA STOK?
+            const totalQtyInCart = cart.filter(c => c.id === id).reduce((sum, item) => sum + item.qty, 0);
+            if (totalQtyInCart + 1 > product.stock) return alert(`Maaf Bos! Sisa stok ${product.name} cuma tinggal ${product.stock} pcs.`);
+
+            const existing = cart.find(c => c.cartItemId === cartItemId);
+            if(existing) { existing.qty += 1; } else { cart.push({ ...product, cartItemId: cartItemId, name: `${product.name} (Size: ${selectedSize})`, qty: 1 }); }
+            
             localStorage.setItem('ganketiCart', JSON.stringify(cart)); updateCartCount(); openCart();
         }
 
         function updateCartCount() { document.getElementById('cartCount').innerText = cart.reduce((sum, item) => sum + item.qty, 0); }
 
         function openCart() {
-            hideAllAreas();
-            document.getElementById('modalTitle').innerText = "YOUR CART";
-            document.getElementById('cartArea').style.display = 'block';
-            document.getElementById('mainModal').style.display = 'flex';
-            const list = document.getElementById('cartItemsList');
-            let total = 0;
+            hideAllAreas(); document.getElementById('modalTitle').innerText = "YOUR CART";
+            document.getElementById('cartArea').style.display = 'block'; document.getElementById('mainModal').style.display = 'flex';
+            const list = document.getElementById('cartItemsList'); let total = 0;
             if (cart.length === 0) { list.innerHTML = '<p style="color:#666; text-align:center;">Cart is empty.</p>'; } 
             else {
                 list.innerHTML = cart.map((item, index) => {
                     total += (item.price * item.qty);
-                    return `<div class="cart-item">
-                        <div style="width:70%;"><b>${item.name}</b><br><span style="color:#888;">${item.qty} x Rp ${item.price.toLocaleString('id-ID')}</span></div>
-                        <div style="text-align:right; font-weight:bold;">Rp ${(item.price * item.qty).toLocaleString('id-ID')}<br><span style="color:#ef4444; cursor:pointer;" onclick="removeItem(${index})">Remove</span></div>
-                    </div>`;
+                    return `<div class="cart-item"><div style="width:70%;"><b>${item.name}</b><br><span style="color:#888;">${item.qty} x Rp ${item.price.toLocaleString('id-ID')}</span></div><div style="text-align:right; font-weight:bold;">Rp ${(item.price * item.qty).toLocaleString('id-ID')}<br><span style="color:#ef4444; cursor:pointer;" onclick="removeItem(${index})">Remove</span></div></div>`;
                 }).join('');
             }
             document.getElementById('cartTotalDisplay').innerText = `Rp ${total.toLocaleString('id-ID')}`;
         }
 
         function removeItem(index) { cart.splice(index, 1); localStorage.setItem('ganketiCart', JSON.stringify(cart)); updateCartCount(); openCart(); }
-        function goToShipping() {
-            if(cart.length === 0) return alert("Cart is empty!");
-            hideAllAreas(); document.getElementById('modalTitle').innerText = "SHIPPING DETAILS"; document.getElementById('shippingArea').style.display = 'block';
-        }
+        function goToShipping() { if(cart.length === 0) return alert("Cart is empty!"); hideAllAreas(); document.getElementById('modalTitle').innerText = "SHIPPING DETAILS"; document.getElementById('shippingArea').style.display = 'block'; }
 
+        // CHECKOUT & PEMOTONGAN STOK OTOMATIS
         function buatPesananSekarang() {
             const cName = document.getElementById('cName').value; const cPhone = document.getElementById('cPhone').value; const cAddress = document.getElementById('cAddress').value;
             if(!cName || !cPhone || !cAddress) return alert("Mohon lengkapi data pengiriman!");
@@ -286,48 +207,38 @@
             const orderDate = new Date().toLocaleString('id-ID');
             let grandTotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
 
-            db.ref('orders').push({
-                invoice_no: invoiceNumber, date: orderDate, customer: { name: cName, phone: cPhone, address: cAddress },
-                items: cart, total: grandTotal, status: "UNPAID", timestamp: Date.now()
-            }); 
+            db.ref('orders').push({ invoice_no: invoiceNumber, date: orderDate, customer: { name: cName, phone: cPhone, address: cAddress }, items: cart, total: grandTotal, status: "UNPAID", timestamp: Date.now() }); 
 
-            let itemsHtml = cart.map(i => `${i.qty}x ${i.name.substring(0,15)}... <span style="float:right;">${(i.price * i.qty).toLocaleString('id-ID')}</span>`).join('<br>');
-            document.getElementById('invoicePaper').innerHTML = `
-                <div style="text-align:center; font-weight:bold; font-size:16px; margin-bottom:10px; border-bottom:2px dashed #000; padding-bottom:10px;">GANKETI OFFICIAL</div>
-                INV NO : <b style="color:blue;">${invoiceNumber}</b><br>DATE   : ${orderDate}<br>NAME   : ${cName}<br>
-                <hr style="border-top:1px dashed #000; margin:10px 0;">${itemsHtml}<hr style="border-top:1px dashed #000; margin:10px 0;">
-                <b>GRAND TOTAL : <span style="float:right; font-size:14px;">Rp ${grandTotal.toLocaleString('id-ID')}</span></b>
-            `;
+            // ENGINE PEMOTONG STOK
+            cart.forEach(item => {
+                const prodRef = db.ref('products/' + item.id);
+                prodRef.once('value').then(snap => {
+                    const currentData = snap.val();
+                    if(currentData) {
+                        let newStock = (currentData.stock || 0) - item.qty;
+                        if(newStock < 0) newStock = 0;
+                        prodRef.update({ stock: newStock });
+                    }
+                });
+            });
+
+            let itemsHtml = cart.map(i => `${i.qty}x ${i.name.substring(0,25)}... <span style="float:right;">${(i.price * i.qty).toLocaleString('id-ID')}</span>`).join('<br>');
+            document.getElementById('invoicePaper').innerHTML = `<div style="text-align:center; font-weight:bold; font-size:16px; margin-bottom:10px; border-bottom:2px dashed #000; padding-bottom:10px;">GANKETI OFFICIAL</div>INV NO : <b style="color:blue;">${invoiceNumber}</b><br>DATE   : ${orderDate}<br>NAME   : ${cName}<br><hr style="border-top:1px dashed #000; margin:10px 0;">${itemsHtml}<hr style="border-top:1px dashed #000; margin:10px 0;"><b>GRAND TOTAL : <span style="float:right; font-size:14px;">Rp ${grandTotal.toLocaleString('id-ID')}</span></b>`;
 
             cart = []; localStorage.setItem('ganketiCart', JSON.stringify(cart)); updateCartCount();
             hideAllAreas(); document.getElementById('modalTitle').innerText = "ORDER SUMMARY"; document.getElementById('invoiceArea').style.display = 'block';
         }
 
-        // ==========================================
-        // 4. FUNGSI TRACKING
-        // ==========================================
-        function openTrackModal() {
-            hideAllAreas(); document.getElementById('modalTitle').innerText = "TRACK YOUR ORDER";
-            document.getElementById('trackResult').style.display = 'none'; document.getElementById('trackInv').value = '';
-            document.getElementById('trackArea').style.display = 'block'; document.getElementById('mainModal').style.display = 'flex';
-        }
-
+        // TRACKING
+        function openTrackModal() { hideAllAreas(); document.getElementById('modalTitle').innerText = "TRACK YOUR ORDER"; document.getElementById('trackResult').style.display = 'none'; document.getElementById('trackInv').value = ''; document.getElementById('trackArea').style.display = 'block'; document.getElementById('mainModal').style.display = 'flex'; }
         function lacakPesanan() {
-            const invQuery = document.getElementById('trackInv').value.trim();
-            if(!invQuery) return alert("Masukkan Nomor Invoice!");
-
+            const invQuery = document.getElementById('trackInv').value.trim(); if(!invQuery) return alert("Masukkan Nomor Invoice!");
             const resultBox = document.getElementById('trackResult'); const statusBadge = document.getElementById('trackStatus'); const detailsText = document.getElementById('trackDetails');
             detailsText.innerHTML = "Mencari data..."; resultBox.style.display = 'block';
-
             db.ref('orders').orderByChild('invoice_no').equalTo(invQuery).once('value', snapshot => {
                 const data = snapshot.val();
-                if(!data) {
-                    statusBadge.className = "status-badge status-UNPAID"; statusBadge.innerText = "NOT FOUND";
-                    detailsText.innerHTML = "Pesanan tidak ditemukan."; return;
-                }
-                const orderData = data[Object.keys(data)[0]];
-                statusBadge.className = `status-badge status-${orderData.status}`; statusBadge.innerText = orderData.status;
-
+                if(!data) { statusBadge.className = "status-badge status-UNPAID"; statusBadge.innerText = "NOT FOUND"; detailsText.innerHTML = "Pesanan tidak ditemukan."; return; }
+                const orderData = data[Object.keys(data)[0]]; statusBadge.className = `status-badge status-${orderData.status}`; statusBadge.innerText = orderData.status;
                 let message = orderData.status === "UNPAID" ? "Menunggu konfirmasi pembayaran." : orderData.status === "PAID" ? "Pembayaran diterima. Sedang dikemas." : "Pesanan sedang dalam pengiriman.";
                 detailsText.innerHTML = `<b>Penerima:</b> ${orderData.customer.name}<br><b>Tanggal:</b> ${orderData.date}<br><b>Total:</b> Rp ${orderData.total.toLocaleString('id-ID')}<br><br><span style="color:white;">${message}</span>`;
             });
