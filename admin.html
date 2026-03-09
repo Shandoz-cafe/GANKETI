@@ -26,6 +26,11 @@
         .cat-label { display: inline-block; background: #222; color: #888; padding: 8px 15px; border-radius: 20px; font-size: 11px; cursor: pointer; border: 1px solid #444; margin: 0 5px 8px 0; transition: 0.3s; font-weight: bold;}
         .cat-checkbox:checked + .cat-label { background: #3b82f6; color: white; border-color: #3b82f6; }
 
+        /* 🔥 CSS AUTOCOMPLETE BITESHIP 🔥 */
+        .autocomplete-box { position: absolute; width: 100%; max-height: 150px; overflow-y: auto; z-index: 100; border: 1px solid #444; border-radius: 4px; box-shadow: 0 4px 6px rgba(0,0,0,0.5); display: none; background: #1a1a1a; margin-top: 2px; }
+        .biteship-item { padding: 12px 10px; border-bottom: 1px solid #333; font-size: 11px; cursor: pointer; color: #ccc;}
+        .biteship-item:hover { background: #3b82f6; color: white; font-weight: bold; }
+
         .order-card { background: #1a1a1a; border: 1px solid #333; border-radius: 10px; padding: 20px; margin-bottom: 20px; font-size: 13px; box-shadow: 0 4px 6px rgba(0,0,0,0.3);}
         .order-header { display: flex; justify-content: space-between; border-bottom: 1px dashed #444; padding-bottom: 12px; margin-bottom: 15px; align-items: flex-start;}
         .badge-status { padding: 6px 12px; border-radius: 6px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;}
@@ -93,7 +98,13 @@
             <div style="display: flex; gap: 10px;"><div class="form-group" style="flex:1;"><label>Modal Supplier</label><input type="number" id="eCost"></div><div class="form-group" style="flex:1;"><label>Harga Jual</label><input type="number" id="ePrice"></div></div>
             <div style="display: flex; gap: 10px;"><div class="form-group" style="flex:1;"><label>Jumlah Stok</label><input type="number" id="eStock"></div><div class="form-group" style="flex:1;"><label>Harga Coret</label><input type="number" id="eOriginalPrice"></div></div>
             
-            <div class="form-group"><label>Dikirim Dari (Kota Asal Dropshipper)</label><input type="text" id="eOrigin" placeholder="Cth: KOTA BATAM"></div>
+            <div class="form-group" style="position:relative;">
+                <label>Dikirim Dari Kecamatan/Kota Asal Dropshipper (Sistem Biteship)</label>
+                <input type="text" id="eOrigin" placeholder="Ketik min 3 huruf (Cth: Sumedang)..." oninput="searchBiteshipOrigin(this.value, 'e')" autocomplete="off">
+                <input type="hidden" id="eOriginId">
+                <div id="eOriginResults" class="autocomplete-box"></div>
+            </div>
+
             <div class="form-group">
                 <label>Kurir Pengiriman (Bisa Pilih > 1)</label>
                 <div style="display:flex; gap:5px; flex-wrap:wrap;">
@@ -155,7 +166,13 @@
                 <div style="display: flex; gap: 10px;"><div class="form-group" style="flex:1;"><label>Modal Supplier</label><input type="number" id="pCost"></div><div class="form-group" style="flex:1;"><label>Harga Jual</label><input type="number" id="pPrice"></div></div>
                 <div style="display: flex; gap: 10px;"><div class="form-group" style="flex:1;"><label>Jumlah Stok</label><input type="number" id="pStock" placeholder="50"></div><div class="form-group" style="flex:1;"><label>Harga Coret</label><input type="number" id="pOriginalPrice" placeholder="Opsional"></div></div>
                 
-                <div class="form-group"><label>Dikirim Dari (Kota Asal Dropshipper)</label><input type="text" id="pOrigin" placeholder="Cth: KOTA BATAM"></div>
+                <div class="form-group" style="position:relative;">
+                    <label>Dikirim Dari Kecamatan/Kota Asal Dropshipper (Sistem Biteship)</label>
+                    <input type="text" id="pOrigin" placeholder="Ketik min 3 huruf (Cth: Sumedang)..." oninput="searchBiteshipOrigin(this.value, 'p')" autocomplete="off">
+                    <input type="hidden" id="pOriginId">
+                    <div id="pOriginResults" class="autocomplete-box"></div>
+                </div>
+
                 <div class="form-group">
                     <label>Kurir Pengiriman (Bisa Pilih > 1)</label>
                     <div style="display:flex; gap:5px; flex-wrap:wrap;">
@@ -331,7 +348,46 @@
         function logout() { auth.signOut(); }
 
         // =========================================================
-        // 🔥 ENGINE KATEGORI (EDIT, SORT, DAN RENDER MULTI-SELECT) 🔥
+        // 🔥 ENGINE API PENCARIAN AREA BITESHIP 🔥
+        // =========================================================
+        const BITESHIP_KEY = 'Biteship_live.eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiR2Fua2V0aSIsInVzZXJJZCI6IjY5YWVlODYzM2NjODBhMWUzMjE3ZGJkYyIsImlhdCI6MTc3MzA3OTg3MX0.ot-KA-1HmE0xMsc7OhHeQBaDGo7KrDKU1tuS4bk5fCo';
+        let searchTimeout;
+
+        function searchBiteshipOrigin(query, type) {
+            const resultBox = document.getElementById(type + 'OriginResults');
+            if(query.length < 3) { resultBox.style.display = 'none'; return; }
+            
+            clearTimeout(searchTimeout);
+            searchTimeout = setTimeout(async () => {
+                resultBox.innerHTML = '<div style="padding:10px; font-size:11px; color:#aaa;">Mencari di Biteship...</div>';
+                resultBox.style.display = 'block';
+                try {
+                    const res = await fetch(`https://api.biteship.com/v1/maps/areas?countries=ID&input=${encodeURIComponent(query)}&type=single`, {
+                        headers: { 'Authorization': `Bearer ${BITESHIP_KEY}` }
+                    });
+                    const data = await res.json();
+                    if(data.success && data.areas.length > 0) {
+                        resultBox.innerHTML = data.areas.map(a => {
+                            let text = `${a.name}, ${a.administrative_division_level_2_name}, ${a.administrative_division_level_1_name}`;
+                            return `<div class="biteship-item" onclick="selectBiteshipOrigin('${a.id}', '${text.replace(/'/g, "\\'")}', '${type}')">${text}</div>`;
+                        }).join('');
+                    } else {
+                        resultBox.innerHTML = '<div style="padding:10px; font-size:11px; color:#ef4444;">Kecamatan/Kota tidak ditemukan.</div>';
+                    }
+                } catch(e) {
+                    resultBox.innerHTML = '<div style="padding:10px; font-size:11px; color:#ef4444;">Gagal menghubungi server Biteship.</div>';
+                }
+            }, 600);
+        }
+
+        function selectBiteshipOrigin(id, text, type) {
+            document.getElementById(type + 'Origin').value = text;
+            document.getElementById(type + 'OriginId').value = id;
+            document.getElementById(type + 'OriginResults').style.display = 'none';
+        }
+
+        // =========================================================
+        // ENGINE KATEGORI 
         // =========================================================
         db.ref('ui_categories').on('value', snap => {
             const data = snap.val(); 
@@ -415,7 +471,7 @@
         }
 
         // =========================================================
-        // 🔥 ENGINE KOTAK UNGGULAN (FEATURED CARDS) 🔥
+        // ENGINE KOTAK UNGGULAN
         // =========================================================
         function uploadFeaturedCat() {
             const title = document.getElementById('fcTitle').value.trim();
@@ -452,7 +508,7 @@
         });
 
         // =========================================================
-        // 🔥 MESIN UPLOAD & MANAGE PRODUK DENGAN LOKASI & KURIR 🔥
+        // 🔥 MESIN UPLOAD & MANAGE PRODUK (TERMASUK ID AREA BITESHIP) 🔥
         // =========================================================
         function uploadProduct() { 
             const name = document.getElementById('pName').value; 
@@ -460,8 +516,10 @@
             const cost = document.getElementById('pCost').value; const price = document.getElementById('pPrice').value; const stock = document.getElementById('pStock').value; const orig = document.getElementById('pOriginalPrice').value; const files = document.getElementById('pImages').files;
             const link = document.getElementById('pLink').value.trim(); 
             
-            // 🔥 BACA KOTA ASAL & KURIR 🔥
+            // Baca Kota Asal & ID-nya
             const origin = document.getElementById('pOrigin').value.trim();
+            const originId = document.getElementById('pOriginId').value.trim();
+            
             const checkedCouriers = Array.from(document.querySelectorAll('.pCourierCb:checked')).map(cb => cb.value);
             const courierString = checkedCouriers.join(', ');
 
@@ -469,20 +527,18 @@
             if(checkedCats.length === 0) return alert("Pilih minimal 1 kategori!");
             const categoryString = checkedCats.join(', ');
 
-            // Validasi bertambah
-            if(!name || !cost || !price || !stock || !origin || checkedCouriers.length === 0 || files.length===0) return alert("Lengkapi data, kurir, kota asal, dan pilih foto!");
+            if(!name || !cost || !price || !stock || !origin || !originId || checkedCouriers.length === 0 || files.length===0) return alert("Lengkapi data, kurir, dan pastikan KLIK KOTA ASAL DARI HASIL PENCARIAN!");
             
             document.getElementById('statusMessage').innerHTML = "<span style='color:white;'>Mengunggah...</span>";
             const readFiles = Array.from(files).map(file => new Promise(resolve => { const reader = new FileReader(); reader.onload = e => resolve(e.target.result); reader.readAsDataURL(file); }));
             Promise.all(readFiles).then(imgs => {
-                // Simpan Origin & Couriers ke Database
-                let data = { name, desc: desc, origin: origin, couriers: courierString, category: categoryString, cost: parseInt(cost), price: parseInt(price), stock: parseInt(stock), images: imgs, timestamp: Date.now(), isPopular: false };
+                let data = { name, desc: desc, origin: origin, originId: originId, couriers: courierString, category: categoryString, cost: parseInt(cost), price: parseInt(price), stock: parseInt(stock), images: imgs, timestamp: Date.now(), isPopular: false };
                 if(orig) data.originalPrice = parseInt(orig);
                 if(link) data.link = link; 
                 
                 db.ref('products').push(data).then(() => { 
                     document.getElementById('statusMessage').innerHTML = "<span style='color:#4ade80;'>✅ Upload sukses!</span>"; 
-                    ['pName','pDesc','pOrigin','pCost','pPrice','pStock','pOriginalPrice','pLink','pImages'].forEach(id=>document.getElementById(id).value=''); 
+                    ['pName','pDesc','pOrigin','pOriginId','pCost','pPrice','pStock','pOriginalPrice','pLink','pImages'].forEach(id=>document.getElementById(id).value=''); 
                     document.querySelectorAll('.pCatCb').forEach(cb => cb.checked = false); 
                     document.querySelectorAll('.pCourierCb').forEach(cb => cb.checked = false); 
                     setTimeout(() => { document.getElementById('statusMessage').innerHTML = ""; }, 3000);
@@ -497,8 +553,6 @@
                 list.innerHTML = Object.keys(data).sort((a,b)=>data[b].timestamp - data[a].timestamp).map(k => {
                     let p = data[k]; 
                     let linkSupplierHtml = p.link ? `<a href="${p.link}" target="_blank" style="display:inline-block; margin-top:5px; font-size:10px; background:#4285F4; color:white; padding:3px 8px; border-radius:4px; text-decoration:none;">🔗 Cek Supplier</a>` : '';
-                    
-                    // Tampilkan Kota Asal & Kurir di Daftar Kelola Admin
                     let originHtml = p.origin ? `<span style="font-size:9px; color:#f59e0b;">📍 ${p.origin} | 🚚 ${p.couriers || '-'}</span><br>` : '';
 
                     return `<div style="background:#1a1a1a; padding:15px; border:1px solid #333; margin-bottom:10px; border-radius:6px; display:flex; justify-content:space-between;">
@@ -527,8 +581,7 @@
         function openEditModal(id) { 
             currentEditId = id; let p = adminProductsData[id]; 
             
-            // Baca data ke form edit, termasuk Origin
-            ['eName','eDesc','eOrigin','eCost','ePrice','eStock','eOriginalPrice', 'eLink'].forEach(k=>{
+            ['eName','eDesc','eOrigin','eOriginId','eCost','ePrice','eStock','eOriginalPrice', 'eLink'].forEach(k=>{
                 let val = p[k.replace('e','').toLowerCase()] || '';
                 if(k==='eDesc' && p.desc) val = p.desc;
                 if(document.getElementById(k)) document.getElementById(k).value = val;
@@ -550,8 +603,12 @@
             
             const categoryString = checkedCats.join(', ');
             const courierString = checkedCouriers.join(', ');
+            
+            const originStr = document.getElementById('eOrigin').value.trim();
+            const originIdStr = document.getElementById('eOriginId').value.trim();
+            if(!originStr || !originIdStr) return alert("Pastikan Anda memilih Kota Asal dari dropdown pencarian Biteship!");
 
-            let u = { name: document.getElementById('eName').value, desc: document.getElementById('eDesc').value.trim(), origin: document.getElementById('eOrigin').value.trim(), couriers: courierString, category: categoryString, cost: parseInt(document.getElementById('eCost').value), price: parseInt(document.getElementById('ePrice').value), stock: parseInt(document.getElementById('eStock').value) };
+            let u = { name: document.getElementById('eName').value, desc: document.getElementById('eDesc').value.trim(), origin: originStr, originId: originIdStr, couriers: courierString, category: categoryString, cost: parseInt(document.getElementById('eCost').value), price: parseInt(document.getElementById('ePrice').value), stock: parseInt(document.getElementById('eStock').value) };
             let o = document.getElementById('eOriginalPrice').value; if(o) u.originalPrice = parseInt(o); else u.originalPrice = null;
             let l = document.getElementById('eLink').value.trim(); if(l) u.link = l; else u.link = null; 
             let files = document.getElementById('eImages').files;
@@ -561,7 +618,7 @@
         }
 
         // =========================================================
-        // 🔥 MESIN BANNER 🔥
+        // ENGINE BANNER
         // =========================================================
         function uploadBanners() { 
             const files = document.getElementById('promoBanners').files;
@@ -580,7 +637,7 @@
         });
 
         // =========================================================
-        // 🔥 ENGINE RENDER PESANAN (MUNCULKAN ONGKIR & KURIR) 🔥
+        // ENGINE PESANAN
         // =========================================================
         function fetchDataSuper() {
             db.ref('orders').on('value', snap => {
@@ -601,8 +658,6 @@
                 let itemsHtml = o.items.map(i => {
                     let imgUrl = i.images ? i.images[0] : (i.image ? i.image : 'https://via.placeholder.com/45');
                     let supplierLinkHtml = i.link ? `<a href="${i.link}" target="_blank" style="display:inline-block; margin-top:3px; font-size:9px; background:#4ade80; color:black; padding:3px 6px; border-radius:4px; text-decoration:none; font-weight:bold;">🛒 Checkout di Supplier</a>` : '';
-                    
-                    // Tampilkan Kota Asal Barang di Rincian Pesanan
                     let kurirInfo = i.origin ? `<br><span style="color:#f59e0b; font-size:10px;">(Asal: ${i.origin})</span>` : '';
 
                     return `
@@ -618,7 +673,6 @@
                     </div>`;
                 }).join('');
 
-                // 🔥 TAMPILKAN ONGKOS KIRIM DI INVOICE ADMIN JIKA ADA 🔥
                 let ongkirHtml = o.shippingCost ? `<div style="display:flex; justify-content:space-between; padding:8px 12px; background:#111; border-top:1px dashed #333; align-items:center;"><span style="font-size:11px; color:#888;">Ongkos Kirim (${o.courier || '-'})</span><b style="color:#fff; font-size:13px;">Rp ${o.shippingCost.toLocaleString('id-ID')}</b></div>` : '';
 
                 return `
@@ -670,7 +724,7 @@
         }
 
         // =========================================================
-        // ENGINE FINANCE ANALYTICS
+        // ENGINE FINANCE
         // =========================================================
         function setFinanceFilter(type) {
             currentFinFilter = type;
