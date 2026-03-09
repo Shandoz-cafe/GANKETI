@@ -27,8 +27,8 @@
         .cat-checkbox:checked + .cat-label { background: #3b82f6; color: white; border-color: #3b82f6; }
 
         /* 🔥 CSS AUTOCOMPLETE BITESHIP 🔥 */
-        .autocomplete-box { position: absolute; width: 100%; max-height: 150px; overflow-y: auto; z-index: 100; border: 1px solid #444; border-radius: 4px; box-shadow: 0 4px 6px rgba(0,0,0,0.5); display: none; background: #1a1a1a; margin-top: 2px; }
-        .biteship-item { padding: 12px 10px; border-bottom: 1px solid #333; font-size: 11px; cursor: pointer; color: #ccc;}
+        .autocomplete-box { position: absolute; width: 100%; max-height: 180px; overflow-y: auto; z-index: 1000; border: 1px solid #444; border-radius: 4px; box-shadow: 0 4px 10px rgba(0,0,0,0.8); display: none; background: #1a1a1a; margin-top: 2px; }
+        .biteship-item { padding: 12px 10px; border-bottom: 1px solid #333; font-size: 12px; cursor: pointer; color: #ccc; line-height: 1.4; }
         .biteship-item:hover { background: #3b82f6; color: white; font-weight: bold; }
 
         .order-card { background: #1a1a1a; border: 1px solid #333; border-radius: 10px; padding: 20px; margin-bottom: 20px; font-size: 13px; box-shadow: 0 4px 6px rgba(0,0,0,0.3);}
@@ -99,7 +99,7 @@
             <div style="display: flex; gap: 10px;"><div class="form-group" style="flex:1;"><label>Jumlah Stok</label><input type="number" id="eStock"></div><div class="form-group" style="flex:1;"><label>Harga Coret</label><input type="number" id="eOriginalPrice"></div></div>
             
             <div class="form-group" style="position:relative;">
-                <label>Dikirim Dari Kecamatan/Kota Asal Dropshipper (Sistem Biteship)</label>
+                <label>Dikirim Dari Kecamatan/Kota Asal (Wajib Pilih dari Dropdown!)</label>
                 <input type="text" id="eOrigin" placeholder="Ketik min 3 huruf (Cth: Sumedang)..." oninput="searchBiteshipOrigin(this.value, 'e')" autocomplete="off">
                 <input type="hidden" id="eOriginId">
                 <div id="eOriginResults" class="autocomplete-box"></div>
@@ -167,7 +167,7 @@
                 <div style="display: flex; gap: 10px;"><div class="form-group" style="flex:1;"><label>Jumlah Stok</label><input type="number" id="pStock" placeholder="50"></div><div class="form-group" style="flex:1;"><label>Harga Coret</label><input type="number" id="pOriginalPrice" placeholder="Opsional"></div></div>
                 
                 <div class="form-group" style="position:relative;">
-                    <label>Dikirim Dari Kecamatan/Kota Asal Dropshipper (Sistem Biteship)</label>
+                    <label>Dikirim Dari Kecamatan/Kota Asal (Wajib Pilih dari Dropdown!)</label>
                     <input type="text" id="pOrigin" placeholder="Ketik min 3 huruf (Cth: Sumedang)..." oninput="searchBiteshipOrigin(this.value, 'p')" autocomplete="off">
                     <input type="hidden" id="pOriginId">
                     <div id="pOriginResults" class="autocomplete-box"></div>
@@ -363,10 +363,10 @@
                 resultBox.style.display = 'block';
                 try {
                     const res = await fetch(`https://api.biteship.com/v1/maps/areas?countries=ID&input=${encodeURIComponent(query)}&type=single`, {
-                        headers: { 'Authorization': `Bearer ${BITESHIP_KEY}` }
+                        headers: { 'Authorization': BITESHIP_KEY }
                     });
                     const data = await res.json();
-                    if(data.success && data.areas.length > 0) {
+                    if(data.success && data.areas && data.areas.length > 0) {
                         resultBox.innerHTML = data.areas.map(a => {
                             let text = `${a.name}, ${a.administrative_division_level_2_name}, ${a.administrative_division_level_1_name}`;
                             return `<div class="biteship-item" onclick="selectBiteshipOrigin('${a.id}', '${text.replace(/'/g, "\\'")}', '${type}')">${text}</div>`;
@@ -527,7 +527,7 @@
             if(checkedCats.length === 0) return alert("Pilih minimal 1 kategori!");
             const categoryString = checkedCats.join(', ');
 
-            if(!name || !cost || !price || !stock || !origin || !originId || checkedCouriers.length === 0 || files.length===0) return alert("Lengkapi data, kurir, dan pastikan KLIK KOTA ASAL DARI HASIL PENCARIAN!");
+            if(!name || !cost || !price || !stock || !origin || !originId || checkedCouriers.length === 0 || files.length===0) return alert("Lengkapi data, kurir, dan pastikan KLIK KOTA ASAL DARI HASIL PENCARIAN DROPDOWN!");
             
             document.getElementById('statusMessage').innerHTML = "<span style='color:white;'>Mengunggah...</span>";
             const readFiles = Array.from(files).map(file => new Promise(resolve => { const reader = new FileReader(); reader.onload = e => resolve(e.target.result); reader.readAsDataURL(file); }));
