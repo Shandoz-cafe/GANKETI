@@ -124,6 +124,11 @@
         .preview-slider { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 15px; aspect-ratio: 1/1;}
         .preview-slider::-webkit-scrollbar { display: none; }
         .preview-slider img { width: 100%; height: 100%; object-fit: cover; flex-shrink: 0; scroll-snap-align: start; }
+        
+        /* 🔥 CSS UNTUK DESKRIPSI PRODUK (DETAIL BAHAN DLL) 🔥 */
+        .product-desc-box { background: #0a0a0a; border: 1px solid #222; border-radius: 8px; padding: 15px; margin-bottom: 15px; font-size: 12px; color: #ccc; line-height: 1.6;}
+        .product-desc-title { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; font-weight: bold; border-bottom: 1px dashed #333; padding-bottom: 5px;}
+
         .stock-warn { font-size: 12px; font-weight: 600; padding: 8px; background: rgba(245, 158, 11, 0.1); color: #f59e0b; border-radius: 6px; margin-bottom: 15px; border: 1px solid rgba(245, 158, 11, 0.2);}
         
         .form-group { margin-bottom: 15px; }
@@ -142,9 +147,11 @@
         .status-UNPAID { background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid #ef4444; }
         .status-PAID { background: rgba(245, 158, 11, 0.2); color: #f59e0b; border: 1px solid #f59e0b; }
         .status-SHIPPED { background: rgba(74, 222, 128, 0.2); color: #4ade80; border: 1px solid #4ade80; }
+        
         .item-row { display: flex; gap: 12px; align-items: center; padding: 10px 0; border-bottom: 1px solid #222; }
         .item-row:last-child { border-bottom: none; }
         .item-img { width: 45px; height: 45px; object-fit: cover; border-radius: 6px; border: 1px solid #333; }
+
         .receipt { background: #fff; color: #000; padding: 20px; font-family: monospace; font-size: 13px; border-radius: 8px; margin-top: 15px; border-top: 5px solid #000; box-shadow: 0 4px 6px rgba(0,0,0,0.3);}
         
         .toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 99999; display: flex; flex-direction: column; gap: 10px; pointer-events: none; width: 90%; max-width: 400px; }
@@ -153,14 +160,12 @@
         @keyframes toastSlideDown { from { transform: translateY(-50px) scale(0.9); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
         @keyframes toastFadeOut { from { transform: translateY(0) scale(1); opacity: 1; } to { transform: translateY(-20px) scale(0.9); opacity: 0; } }
 
-        /* 🔥 FOOTER INFO MODAL (TEXT PANJANG) 🔥 */
         .info-content { font-size: 13px; line-height: 1.6; color: #ddd; }
         .info-content h4 { color: #fff; font-family: 'Oswald'; font-size: 16px; margin: 15px 0 5px 0; letter-spacing: 1px;}
         .info-content p { margin-bottom: 10px; }
         .info-content ul { padding-left: 20px; margin-bottom: 10px; }
         .info-content li { margin-bottom: 5px; }
         
-        /* FOOTER SEDERHANA */
         footer { border-top: 1px solid var(--border); padding: 30px 20px; text-align: center; margin-top: 30px;}
         .newsletter input { width: 100%; max-width: 300px; padding: 12px; background: #111; border: 1px solid #333; color: white; border-radius: 4px; margin-bottom: 10px; outline: none;}
         .newsletter button { background: var(--primary); color: var(--bg); padding: 12px 20px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;}
@@ -452,6 +457,17 @@
             nav.innerHTML = bubbleHtml; sideNav.innerHTML = sidebarHtml;
         });
 
+        db.ref('ui_settings').on('value', snap => {
+            const s = snap.val();
+            if(s) {
+                const logoEl = document.getElementById('mainLogo');
+                if(s.logoImg) { logoEl.innerHTML = `<img src="${s.logoImg}" alt="GANKETI">`; } 
+                else { logoEl.innerHTML = `<img src="ganketilogo.png" alt="GANKETI">`; }
+                if(s.heroTitle) document.getElementById('heroTitle').innerText = s.heroTitle;
+                if(s.heroSub) document.getElementById('heroSub').innerText = s.heroSub;
+            }
+        });
+
         db.ref('products').on('value', (snapshot) => {
             const data = snapshot.val(); const grid = document.getElementById('productGrid');
             if(!data) { grid.innerHTML = '<p style="text-align:center; width:100%; color:var(--text-dim);">Catalogue is empty.</p>'; document.getElementById('productCountUi').innerText = '0'; return; }
@@ -462,7 +478,10 @@
         // 🔥 LOGIC FILTER & SORTING 🔥
         function filterCategory(cat) { 
             activeCategory = cat; 
+            let titleText = cat === 'ALL' ? 'LATEST DROP' : cat;
+            document.getElementById('secTitle').innerText = titleText; 
             document.getElementById('searchInput').value = ''; 
+            
             document.querySelectorAll('.icon-item').forEach(el => { 
                 el.classList.remove('active'); 
                 if(el.innerText.trim().toUpperCase() === cat.toUpperCase() || (cat === 'ALL' && el.innerText.trim().toUpperCase() === 'SEMUA')) { 
@@ -523,7 +542,6 @@
         function closeModal() { document.getElementById('mainModal').style.display = 'none'; }
         function hideAllAreas() { ['previewArea', 'cartArea', 'shippingArea', 'invoiceArea', 'historyArea', 'logoutConfirmArea', 'textInfoArea'].forEach(id => document.getElementById(id).style.display = 'none'); }
 
-        // 🔥 HALAMAN INFO TEKS KHUSUS (ABOUT, PRIVACY, FAQ) 🔥
         function openInfoModal(type) {
             hideAllAreas();
             const infoBox = document.getElementById('textInfoArea');
@@ -531,69 +549,25 @@
 
             if(type === 'about') {
                 title = "ABOUT GANKETI";
-                content = `<h4>About GANKETI Official</h4>
-                <p>GANKETI is an exclusive streetwear and lifestyle brand built for the modern urban youth. Established with a passion for authentic fashion, we provide premium quality apparel designed to elevate your everyday style.</p>
-                <p>We believe that clothing is more than just fabric; it's a statement. Therefore, every piece in our collection is crafted with attention to detail and high-grade materials.</p>
-                <h4>Our Mission</h4>
-                <p>To empower individuals to express their true selves through high-quality, comfortable, and trend-setting streetwear.</p>`;
-            } 
-            else if(type === 'privacy') {
+                content = `<h4>About GANKETI Official</h4><p>GANKETI is an exclusive streetwear and lifestyle brand built for the modern urban youth. Established with a passion for authentic fashion, we provide premium quality apparel designed to elevate your everyday style.</p><p>We believe that clothing is more than just fabric; it's a statement. Therefore, every piece in our collection is crafted with attention to detail and high-grade materials.</p><h4>Our Mission</h4><p>To empower individuals to express their true selves through high-quality, comfortable, and trend-setting streetwear.</p>`;
+            } else if(type === 'privacy') {
                 title = "PRIVACY POLICY";
-                content = `<h4>Privacy Policy</h4>
-                <p>Effective as of March 2026.</p>
-                <p>This Privacy Policy governs how GANKETI handles information and personal data from users of our site and webstore. We respect your concerns about privacy and commit to protect the security of your personal data.</p>
-                <h4>Information We Collect</h4>
-                <ul>
-                    <li>Contact information (e.g., name, address, phone number).</li>
-                    <li>Order details and secure payment records.</li>
-                    <li>Geographic location for shipping purposes.</li>
-                </ul>
-                <p>We do not sell or otherwise disclose personal information about you to unauthorized third parties.</p>`;
-            }
-            else if(type === 'terms') {
+                content = `<h4>Privacy Policy</h4><p>Effective as of March 2026.</p><p>This Privacy Policy governs how GANKETI handles information and personal data from users of our site and webstore. We respect your concerns about privacy and commit to protect the security of your personal data.</p><h4>Information We Collect</h4><ul><li>Contact information (e.g., name, address, phone number).</li><li>Order details and secure payment records.</li><li>Geographic location for shipping purposes.</li></ul><p>We do not sell or otherwise disclose personal information about you to unauthorized third parties.</p>`;
+            } else if(type === 'terms') {
                 title = "TERMS & CONDITIONS";
-                content = `<h4>Terms and Conditions</h4>
-                <p>By accessing and using the GANKETI website, you agree to comply with our terms of service.</p>
-                <ul>
-                    <li>All products are subject to availability.</li>
-                    <li>Prices are subject to change without prior notice.</li>
-                    <li>We reserve the right to refuse or cancel orders if fraud is suspected.</li>
-                </ul>`;
-            }
-            else if(type === 'faq') {
+                content = `<h4>Terms and Conditions</h4><p>By accessing and using the GANKETI website, you agree to comply with our terms of service.</p><ul><li>All products are subject to availability.</li><li>Prices are subject to change without prior notice.</li><li>We reserve the right to refuse or cancel orders if fraud is suspected.</li></ul>`;
+            } else if(type === 'faq') {
                 title = "FAQ";
-                content = `<h4>Frequently Asked Questions</h4>
-                <p><b>Q: Do you ship internationally?</b><br>A: Currently, we only ship within Indonesia.</p>
-                <p><b>Q: How long does delivery take?</b><br>A: Standard delivery takes 2-5 business days depending on your location.</p>
-                <p><b>Q: Are the products original?</b><br>A: 100% Original and Authentic.</p>`;
-            }
-            else if(type === 'return') {
+                content = `<h4>Frequently Asked Questions</h4><p><b>Q: Do you ship internationally?</b><br>A: Currently, we only ship within Indonesia.</p><p><b>Q: How long does delivery take?</b><br>A: Standard delivery takes 2-5 business days depending on your location.</p><p><b>Q: Are the products original?</b><br>A: 100% Original and Authentic.</p>`;
+            } else if(type === 'return') {
                 title = "RETURN POLICY";
-                content = `<h4>Return & Exchange Policy</h4>
-                <p>We accept returns within 3 days of receiving your order, provided that the item is unwashed, unworn, and has all original tags attached.</p>
-                <p>Please note that shipping costs for returns are the responsibility of the customer unless the return is due to a defect on our part.</p>
-                <p>Contact our customer care to initiate a return process.</p>`;
-            }
-            else if(type === 'contact') {
+                content = `<h4>Return & Exchange Policy</h4><p>We accept returns within 3 days of receiving your order, provided that the item is unwashed, unworn, and has all original tags attached.</p><p>Please note that shipping costs for returns are the responsibility of the customer unless the return is due to a defect on our part.</p><p>Contact our customer care to initiate a return process.</p>`;
+            } else if(type === 'contact') {
                 title = "CONTACT US";
-                content = `<h4>Get in Touch</h4>
-                <p>If you have any query about your order or our products, please reach out to us:</p>
-                <p><b>WhatsApp:</b> +62 812 3456 7890<br>
-                <b>Email:</b> support@ganketi.store<br>
-                <b>Operating Hours:</b> Monday - Sunday, 09:00 AM - 09:00 PM WIB</p>`;
-            }
-            else if(type === 'size') {
+                content = `<h4>Get in Touch</h4><p>If you have any query about your order or our products, please reach out to us:</p><p><b>WhatsApp:</b> +62 812 3456 7890<br><b>Email:</b> support@ganketi.store<br><b>Operating Hours:</b> Monday - Sunday, 09:00 AM - 09:00 PM WIB</p>`;
+            } else if(type === 'size') {
                 title = "SIZE GUIDE";
-                content = `<h4>General Size Guide</h4>
-                <p>Measurements are in Centimeters (cm):</p>
-                <ul>
-                    <li><b>S:</b> Chest 48 - Length 68</li>
-                    <li><b>M:</b> Chest 50 - Length 70</li>
-                    <li><b>L:</b> Chest 52 - Length 72</li>
-                    <li><b>XL:</b> Chest 54 - Length 74</li>
-                    <li><b>XXL:</b> Chest 56 - Length 76</li>
-                </ul>
-                <p><i>*Please allow 1-2 cm margin of error due to manual measurement.</i></p>`;
+                content = `<h4>General Size Guide</h4><p>Measurements are in Centimeters (cm):</p><ul><li><b>S:</b> Chest 48 - Length 68</li><li><b>M:</b> Chest 50 - Length 70</li><li><b>L:</b> Chest 52 - Length 72</li><li><b>XL:</b> Chest 54 - Length 74</li><li><b>XXL:</b> Chest 56 - Length 76</li></ul><p><i>*Please allow 1-2 cm margin of error due to manual measurement.</i></p>`;
             }
 
             document.getElementById('modalTitle').innerText = title;
@@ -602,21 +576,31 @@
             document.getElementById('mainModal').style.display = 'flex';
         }
 
+        // 🔥 LOGIC PREVIEW MENAMPILKAN DESKRIPSI PRODUK 🔥
         function openPreview(id) {
             hideAllAreas(); const p = globalProducts.find(x => x.id === id); if(!p) return;
             document.getElementById('modalTitle').innerText = 'PRODUCT DETAIL'; 
             const previewBox = document.getElementById('previewArea');
             let imgArray = p.images ? p.images : [p.image]; let isHabis = (!p.stock || p.stock <= 0);
+            
             let sliderHtml = `<div class="preview-slider">`; imgArray.forEach(img => { sliderHtml += `<img src="${img}" style="${isHabis ? 'filter: grayscale(100%); opacity: 0.5;' : ''}">`; }); sliderHtml += `</div>`;
             if(imgArray.length > 1) sliderHtml += `<div style="text-align:center; font-size:10px; color:var(--text-dim); margin-top:-10px; margin-bottom:15px;">⟵ Swipe Image ⟶</div>`;
             
             let isClothing = p.category ? (p.category.toLowerCase().includes('accessories') === false && p.category.toLowerCase().includes('topi') === false) : true;
             let sizeHtml = isClothing ? `<div class="form-group"><label>Select Size</label><select id="previewSize"><option value="S">Size: S</option><option value="M" selected>Size: M</option><option value="L">Size: L</option><option value="XL">Size: XL</option><option value="XXL">Size: XXL</option></select></div>` : `<input type="hidden" id="previewSize" value="All Size"><div style="font-size:12px; color:var(--text-dim); margin-bottom:15px;">Size: All Size</div>`;
             
+            // 🔥 TAMPILKAN DESKRIPSI (ENTER DARI ADMIN DIUBAH JADI BARIS BARU) 🔥
+            let descHtml = '';
+            if(p.desc && p.desc.trim() !== '') {
+                let formattedDesc = p.desc.replace(/\n/g, '<br>');
+                descHtml = `<div class="product-desc-box"><div class="product-desc-title">Description Details</div>${formattedDesc}</div>`;
+            }
+
             let stockHtml = isHabis ? `<div class="stock-warn" style="color:#ef4444; border-color:rgba(239,68,68,0.2); background:rgba(239,68,68,0.1);">Out of Stock!</div>` : `<div class="stock-warn">🔥 Only ${p.stock} items left in stock.</div>`;
-            let btnHtml = isHabis ? `<button class="btn-main" disabled>SOLD OUT</button>` : `<button class="btn-main" onclick="addToCart('${p.id}')">ADD TO CART - Rp ${p.price.toLocaleString('id-ID')}</button>`;
+            let btnHtml = isHabis ? `<button class="btn-main" disabled>SOLD OUT</button>` : `<button class="btn-main" style="background:#f59e0b; color:#000;" onclick="addToCart('${p.id}')">ADD TO CART - Rp ${p.price.toLocaleString('id-ID')}</button>`;
             let priceHtml = p.originalPrice ? `<span style="font-size:12px; text-decoration:line-through; color:#ef4444; margin-right:8px; font-family:'Inter';">Rp ${p.originalPrice.toLocaleString('id-ID')}</span>Rp ${p.price.toLocaleString('id-ID')}` : `Rp ${p.price.toLocaleString('id-ID')}`;
-            previewBox.innerHTML = `${sliderHtml}<h3 style="font-size: 18px; color: white; margin-bottom: 5px; line-height: 1.3;">${p.name}</h3><p style="font-size: 16px; font-weight: bold; color: var(--primary); margin-bottom: 15px; font-family: 'Oswald';">${priceHtml}</p>${stockHtml}${sizeHtml}${btnHtml}`;
+            
+            previewBox.innerHTML = `${sliderHtml}<h3 style="font-size: 18px; color: white; margin-bottom: 5px; line-height: 1.3;">${p.name}</h3><p style="font-size: 16px; font-weight: bold; color: var(--primary); margin-bottom: 15px; font-family: 'Oswald';">${priceHtml}</p>${descHtml}${stockHtml}${sizeHtml}${btnHtml}`;
             previewBox.style.display = 'block'; document.getElementById('mainModal').style.display = 'flex';
         }
 
