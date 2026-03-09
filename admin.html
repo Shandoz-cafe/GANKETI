@@ -160,7 +160,14 @@
                     <div class="form-group" style="flex:1;"><input type="file" id="catIcon" accept="image/*" style="padding: 9px;"></div>
                 </div>
                 <button onclick="uploadCategoryBubble()" class="btn-action" style="padding:10px; font-size:11px; background:#4ade80;">Tambah Kategori</button>
-                <div id="categoryBubbleList" style="margin-top: 15px;"></div>
+                <div id="categoryBubbleList" style="margin-top: 15px; margin-bottom: 30px;"></div>
+
+                <h3 style="font-size: 14px; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 5px;">3. Koleksi Unggulan (Kotak Ala Sports Station)</h3>
+                <div class="form-group"><label>Teks / Judul Kotak (Cth: LIFESTYLE)</label><input type="text" id="fcTitle"></div>
+                <div class="form-group"><label>Target Kategori (Tulis Nama Kategori yg Mau Dibuka)</label><input type="text" id="fcTarget" placeholder="Cth: Celana"></div>
+                <div class="form-group"><label>Gambar Background</label><input type="file" id="fcImage" accept="image/*" style="padding: 9px;"></div>
+                <button onclick="uploadFeaturedCat()" class="btn-action" style="padding:10px; font-size:11px; background:#f59e0b; color:black;">Tambah Kotak Unggulan</button>
+                <div id="featuredCatList" style="margin-top: 15px;"></div>
             </div>
 
             <div id="tabOrders" style="display:none;"><div id="ordersList"></div></div>
@@ -304,7 +311,7 @@
             
             if(!data) {
                 currentCategoriesData = [];
-                if(bList) bList.innerHTML = '<p style="color:#888; font-size:11px;">Belum ada kategori. Silakan tambah di atas.</p>';
+                if(bList) bList.innerHTML = '<p style="color:#888; font-size:11px;">Belum ada kategori.</p>';
                 if(pCat) pCat.innerHTML = '<span style="color:#ef4444;">Bikin Kategori di tab TAMPILAN dulu!</span>';
                 if(eCat) eCat.innerHTML = '<span style="color:#ef4444;">Bikin Kategori di tab TAMPILAN dulu!</span>';
                 return;
@@ -374,6 +381,40 @@
                 reader.readAsDataURL(file);
             } else { db.ref('ui_categories').push(baseData); document.getElementById('catName').value = ''; document.getElementById('catIcon').value = ''; }
         }
+
+        // =========================================================
+        // 🔥 ENGINE KOTAK UNGGULAN (FEATURED CARDS) 🔥
+        // =========================================================
+        function uploadFeaturedCat() {
+            const title = document.getElementById('fcTitle').value.trim();
+            const target = document.getElementById('fcTarget').value.trim();
+            const file = document.getElementById('fcImage').files[0];
+            
+            if(!title || !target || !file) return alert("Isi Judul, Target Kategori, dan pilih Gambar!");
+            
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                db.ref('ui_featured_cats').push({ title: title, target: target, image: e.target.result, timestamp: Date.now() });
+                document.getElementById('fcTitle').value = ''; document.getElementById('fcTarget').value = ''; document.getElementById('fcImage').value = '';
+                alert("Kotak Unggulan Berhasil Ditambahkan!");
+            };
+            reader.readAsDataURL(file);
+        }
+
+        db.ref('ui_featured_cats').on('value', snap => {
+            const data = snap.val(); const list = document.getElementById('featuredCatList');
+            if(!data) return list.innerHTML = '<p style="color:#888; font-size:11px;">Belum ada Kotak Unggulan.</p>';
+            list.innerHTML = Object.keys(data).map(key => {
+                let fc = data[key];
+                return `<div class="list-item-admin">
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <img src="${fc.image}" style="width:60px; height:40px; border-radius:4px; object-fit:cover;">
+                        <div><b style="font-size:12px;">${fc.title}</b><br><span style="font-size:9px; color:#888;">Target: ${fc.target}</span></div>
+                    </div>
+                    <button onclick="if(confirm('Hapus kotak unggulan ini?')) db.ref('ui_featured_cats/${key}').remove()" style="background:none; border:1px solid #ef4444; color:#ef4444; cursor:pointer; padding:5px; border-radius:4px;">Hapus</button>
+                </div>`;
+            }).join('');
+        });
 
         // =========================================================
         // 🔥 MESIN UPLOAD & MANAGE PRODUK DENGAN MULTI-KATEGORI 🔥
