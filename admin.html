@@ -164,7 +164,10 @@
 
                 <h3 style="font-size: 14px; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 5px;">3. Koleksi Unggulan (Kotak Ala Sports Station)</h3>
                 <div class="form-group"><label>Teks / Judul Kotak (Cth: LIFESTYLE)</label><input type="text" id="fcTitle"></div>
-                <div class="form-group"><label>Target Kategori (Tulis Nama Kategori yg Mau Dibuka)</label><input type="text" id="fcTarget" placeholder="Cth: Celana"></div>
+                <div class="form-group">
+                    <label>Target Kategori (Bisa pilih beberapa sekaligus!)</label>
+                    <div id="fcCategoryContainer"><span style="color:#ef4444; font-size:11px;">Memuat data...</span></div>
+                </div>
                 <div class="form-group"><label>Gambar Background</label><input type="file" id="fcImage" accept="image/*" style="padding: 9px;"></div>
                 <button onclick="uploadFeaturedCat()" class="btn-action" style="padding:10px; font-size:11px; background:#f59e0b; color:black;">Tambah Kotak Unggulan</button>
                 <div id="featuredCatList" style="margin-top: 15px;"></div>
@@ -308,12 +311,13 @@
             const pCat = document.getElementById('pCategoryContainer'); 
             const eCat = document.getElementById('eCategoryContainer'); 
             const bList = document.getElementById('categoryBubbleList');
+            const fcCat = document.getElementById('fcCategoryContainer'); // Container untuk Featured Target
             
             if(!data) {
                 currentCategoriesData = [];
                 if(bList) bList.innerHTML = '<p style="color:#888; font-size:11px;">Belum ada kategori.</p>';
-                if(pCat) pCat.innerHTML = '<span style="color:#ef4444;">Bikin Kategori di tab TAMPILAN dulu!</span>';
-                if(eCat) eCat.innerHTML = '<span style="color:#ef4444;">Bikin Kategori di tab TAMPILAN dulu!</span>';
+                let emptyMsg = '<span style="color:#ef4444;">Bikin Kategori di tab TAMPILAN dulu!</span>';
+                if(pCat) pCat.innerHTML = emptyMsg; if(eCat) eCat.innerHTML = emptyMsg; if(fcCat) fcCat.innerHTML = emptyMsg;
                 return;
             }
 
@@ -336,12 +340,14 @@
                 </div>`).join('');
             }
             
-            // Build Checkboxes untuk Multi-Select Category
+            // Build Checkboxes untuk Multi-Select Category (Upload, Edit, & Featured Target)
             let cbHtmlUpload = currentCategoriesData.map(c => `<label><input type="checkbox" class="cat-checkbox pCatCb" value="${c.name}"><span class="cat-label">${c.name}</span></label>`).join('');
             let cbHtmlEdit = currentCategoriesData.map(c => `<label><input type="checkbox" class="cat-checkbox eCatCb" value="${c.name}"><span class="cat-label">${c.name}</span></label>`).join('');
+            let cbHtmlFc = currentCategoriesData.map(c => `<label><input type="checkbox" class="cat-checkbox fcCatCb" value="${c.name}"><span class="cat-label">${c.name}</span></label>`).join('');
             
             if(pCat) pCat.innerHTML = cbHtmlUpload; 
             if(eCat) eCat.innerHTML = cbHtmlEdit;
+            if(fcCat) fcCat.innerHTML = cbHtmlFc;
         });
 
         function moveCategory(index, direction) {
@@ -383,19 +389,22 @@
         }
 
         // =========================================================
-        // 🔥 ENGINE KOTAK UNGGULAN (FEATURED CARDS) 🔥
+        // 🔥 ENGINE KOTAK UNGGULAN (DENGAN MULTI-TARGET CHIPS) 🔥
         // =========================================================
         function uploadFeaturedCat() {
             const title = document.getElementById('fcTitle').value.trim();
-            const target = document.getElementById('fcTarget').value.trim();
+            const checkedTargets = Array.from(document.querySelectorAll('.fcCatCb:checked')).map(cb => cb.value);
             const file = document.getElementById('fcImage').files[0];
             
-            if(!title || !target || !file) return alert("Isi Judul, Target Kategori, dan pilih Gambar!");
+            if(!title || checkedTargets.length === 0 || !file) return alert("Isi Judul, Pilih Minimal 1 Target Kategori, dan Pilih Gambar!");
+            
+            const targetStr = checkedTargets.join(', ');
             
             const reader = new FileReader();
             reader.onload = function(e) {
-                db.ref('ui_featured_cats').push({ title: title, target: target, image: e.target.result, timestamp: Date.now() });
-                document.getElementById('fcTitle').value = ''; document.getElementById('fcTarget').value = ''; document.getElementById('fcImage').value = '';
+                db.ref('ui_featured_cats').push({ title: title, target: targetStr, image: e.target.result, timestamp: Date.now() });
+                document.getElementById('fcTitle').value = ''; document.getElementById('fcImage').value = '';
+                document.querySelectorAll('.fcCatCb').forEach(cb => cb.checked = false);
                 alert("Kotak Unggulan Berhasil Ditambahkan!");
             };
             reader.readAsDataURL(file);
@@ -409,7 +418,7 @@
                 return `<div class="list-item-admin">
                     <div style="display:flex; align-items:center; gap:10px;">
                         <img src="${fc.image}" style="width:60px; height:40px; border-radius:4px; object-fit:cover;">
-                        <div><b style="font-size:12px;">${fc.title}</b><br><span style="font-size:9px; color:#888;">Target: ${fc.target}</span></div>
+                        <div><b style="font-size:12px;">${fc.title}</b><br><span style="font-size:9px; color:#888;">Target: [${fc.target}]</span></div>
                     </div>
                     <button onclick="if(confirm('Hapus kotak unggulan ini?')) db.ref('ui_featured_cats/${key}').remove()" style="background:none; border:1px solid #ef4444; color:#ef4444; cursor:pointer; padding:5px; border-radius:4px;">Hapus</button>
                 </div>`;
@@ -423,7 +432,7 @@
             const name = document.getElementById('pName').value; 
             const cost = document.getElementById('pCost').value; const price = document.getElementById('pPrice').value; const stock = document.getElementById('pStock').value; const orig = document.getElementById('pOriginalPrice').value; const files = document.getElementById('pImages').files;
             
-            const link = document.getElementById('pLink').value.trim(); // BACA LINK SUPPLIER
+            const link = document.getElementById('pLink').value.trim(); 
             
             const checkedCats = Array.from(document.querySelectorAll('.pCatCb:checked')).map(cb => cb.value);
             if(checkedCats.length === 0) return alert("Pilih minimal 1 kategori!");
@@ -436,12 +445,12 @@
             Promise.all(readFiles).then(imgs => {
                 let data = { name, category: categoryString, cost: parseInt(cost), price: parseInt(price), stock: parseInt(stock), images: imgs, timestamp: Date.now(), isPopular: false };
                 if(orig) data.originalPrice = parseInt(orig);
-                if(link) data.link = link; // SIMPAN LINK KE DATABASE
+                if(link) data.link = link; 
                 
                 db.ref('products').push(data).then(() => { 
                     document.getElementById('statusMessage').innerHTML = "<span style='color:#4ade80;'>✅ Upload sukses!</span>"; 
                     ['pName','pCost','pPrice','pStock','pOriginalPrice','pLink','pImages'].forEach(id=>document.getElementById(id).value=''); 
-                    document.querySelectorAll('.pCatCb').forEach(cb => cb.checked = false); // Reset checkbox
+                    document.querySelectorAll('.pCatCb').forEach(cb => cb.checked = false); 
                     setTimeout(() => { document.getElementById('statusMessage').innerHTML = ""; }, 3000);
                 });
             });
@@ -455,7 +464,6 @@
                 list.innerHTML = Object.keys(data).sort((a,b)=>data[b].timestamp - data[a].timestamp).map(k => {
                     let p = data[k]; 
                     
-                    // Tombol Link Supplier Khusus Admin di Tab Kelola
                     let linkSupplierHtml = p.link ? `<a href="${p.link}" target="_blank" style="display:inline-block; margin-top:5px; font-size:10px; background:#4285F4; color:white; padding:3px 8px; border-radius:4px; text-decoration:none;">🔗 Cek Supplier</a>` : '';
 
                     return `<div style="background:#1a1a1a; padding:15px; border:1px solid #333; margin-bottom:10px; border-radius:6px; display:flex; justify-content:space-between;">
@@ -482,7 +490,7 @@
 
         function openEditModal(id) { 
             currentEditId = id; let p = adminProductsData[id]; 
-            ['eName','eCost','ePrice','eStock','eOriginalPrice', 'eLink'].forEach(k=>document.getElementById(k).value=p[k.replace('e','').toLowerCase()]||''); // BACA LINK KE FORM EDIT
+            ['eName','eCost','ePrice','eStock','eOriginalPrice', 'eLink'].forEach(k=>document.getElementById(k).value=p[k.replace('e','').toLowerCase()]||''); 
             
             document.querySelectorAll('.eCatCb').forEach(cb => {
                 cb.checked = p.category ? p.category.includes(cb.value) : false;
@@ -500,7 +508,7 @@
 
             let u = { name: document.getElementById('eName').value, category: categoryString, cost: parseInt(document.getElementById('eCost').value), price: parseInt(document.getElementById('ePrice').value), stock: parseInt(document.getElementById('eStock').value) };
             let o = document.getElementById('eOriginalPrice').value; if(o) u.originalPrice = parseInt(o); else u.originalPrice = null;
-            let l = document.getElementById('eLink').value.trim(); if(l) u.link = l; else u.link = null; // UPDATE LINK KE DATABASE
+            let l = document.getElementById('eLink').value.trim(); if(l) u.link = l; else u.link = null; 
             let files = document.getElementById('eImages').files;
             
             if(files.length>0) { Promise.all(Array.from(files).map(file => new Promise(resolve => { const reader = new FileReader(); reader.onload = e => resolve(e.target.result); reader.readAsDataURL(file); }))).then(imgs => { u.images = imgs; db.ref('products/'+currentEditId).update(u).then(()=>{closeEditModal(); alert('Tersimpan!');}); }); } 
@@ -548,7 +556,6 @@
                 let itemsHtml = o.items.map(i => {
                     let imgUrl = i.images ? i.images[0] : (i.image ? i.image : 'https://via.placeholder.com/45');
                     
-                    // LOGIC TOMBOL LINK SUPPLIER: HANYA MUNCUL DI ADMIN JIKA ADA LINK
                     let supplierLinkHtml = i.link ? `<a href="${i.link}" target="_blank" style="display:inline-block; margin-top:3px; font-size:9px; background:#4ade80; color:black; padding:3px 6px; border-radius:4px; text-decoration:none; font-weight:bold;">🛒 Checkout di Supplier</a>` : '';
 
                     return `
