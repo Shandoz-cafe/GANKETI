@@ -30,7 +30,7 @@
         .head-top { display: grid; grid-template-columns: auto 1fr auto; align-items: center; padding: 12px 20px; gap: 15px;} 
         .hamburger-btn { background: none; border: none; color: var(--primary); font-size: 24px; cursor: pointer; display: flex; align-items: center; padding: 0; margin: 0;}
         .logo { cursor: pointer; user-select: none; touch-action: manipulation; -webkit-tap-highlight-color: transparent; display: flex; justify-content: center; align-items: center;}
-        .logo img { max-height: 35px; width: auto; object-fit: contain; } 
+        .logo img { max-height: 45px; width: auto; object-fit: contain; } 
         .nav-icons { display: flex; gap: 15px; align-items: center; justify-content: flex-end;}
         .icon-btn { background: none; border: none; color: var(--text); font-size: 18px; font-weight: 600; cursor: pointer; display: flex; align-items: center; position: relative;}
         .cart-badge { position: absolute; top: -5px; right: -10px; background: #ef4444; color: white; font-size: 9px; font-weight: 800; padding: 2px 6px; border-radius: 20px; }
@@ -136,12 +136,14 @@
         .form-group input:focus, .form-group select:focus { border-color: var(--primary); }
         .form-group input:disabled, .form-group input:read-only { background: #1a1a1a; color: #555; cursor: not-allowed; border-color: #222; }
         
-        /* 🔥 CSS UNTUK BUKU ALAMAT / PAYMENT 🔥 */
+        /* CSS BUKU ALAMAT / PAYMENT / SHIPPING */
         .saved-address-card { background: #1a1a1a; border: 1px solid #333; padding: 15px; border-radius: 8px; margin-bottom: 10px; cursor: pointer; transition: 0.2s; font-size: 12px; color: #ccc;}
         .saved-address-card:hover { border-color: #3b82f6; }
         .saved-address-card.active { border-color: #4ade80; background: rgba(74, 222, 128, 0.05); }
         .payment-method-card { display: flex; align-items: center; justify-content: space-between; background: #1a1a1a; border: 1px solid #333; padding: 15px; border-radius: 8px; margin-bottom: 10px; cursor: pointer; transition: 0.2s;}
         .payment-method-card:hover { border-color: var(--primary); }
+        .courier-card { display: flex; justify-content: space-between; align-items: center; background: #111; border: 1px solid #333; padding: 12px; border-radius: 6px; margin-bottom: 8px; cursor: pointer;}
+        .courier-card:hover { border-color: #f59e0b; }
 
         .btn-main { background: var(--primary); color: var(--bg); width: 100%; padding: 15px; border: none; font-weight: 700; font-family: 'Inter', sans-serif; font-size: 14px; border-radius: 8px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px;}
         .btn-main:disabled { background: #333; color: #666; cursor: not-allowed; }
@@ -336,7 +338,29 @@
                     </label>
                 </div>
 
-                <button class="btn-main" onclick="goToPayment()" style="margin-top: 10px; background:#f59e0b; color:#000;">PROCEED TO PAYMENT ➔</button>
+                <button class="btn-main" onclick="calculateShipping()" style="margin-top: 10px; background:#f59e0b; color:#000;">PILIH PENGIRIMAN ➔</button>
+            </div>
+
+            <div id="shippingOptionsArea" style="display:none;">
+                <p style="font-size: 12px; color: #aaa; margin-bottom: 15px; text-align:center;">Pilih Jasa Pengiriman</p>
+                <div id="courierListContainer"></div>
+                
+                <div style="margin-top:20px; padding-top:15px; border-top:1px solid #333;">
+                    <div style="display: flex; justify-content: space-between; font-size: 14px; margin-bottom:10px;">
+                        <span style="color:#aaa;">Subtotal Produk:</span>
+                        <b style="color:#fff;" id="sumSubtotal">Rp 0</b>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-size: 14px; margin-bottom:15px;">
+                        <span style="color:#aaa;">Ongkos Kirim:</span>
+                        <b style="color:#ef4444;" id="sumShipping">Rp 0</b>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-size: 18px; font-weight:bold;">
+                        <span style="color:#fff;">Grand Total:</span>
+                        <b style="color:var(--primary);" id="sumGrandTotal">Rp 0</b>
+                    </div>
+                </div>
+
+                <button class="btn-main" onclick="goToPayment()" style="margin-top: 20px; background:#f59e0b; color:#000;">LANJUT PEMBAYARAN ➔</button>
             </div>
 
             <div id="paymentArea" style="display:none;">
@@ -393,9 +417,12 @@
         let currentUser = null; 
         let apiRegionData = { prov: [], city: [], dist: [], vill: [] }; 
         
-        // Data alamat tersimpan di perangkat pelanggan
         let savedAddresses = JSON.parse(localStorage.getItem('ganketiAddresses') || '[]');
-        let pendingOrderData = null; // Menyimpan data order sementara sebelum dibayar
+        
+        // Data Pembayaran & Ongkir Sementara
+        let pendingOrderData = null; 
+        let selectedShippingCost = 0;
+        let selectedCourierName = "";
 
         updateCartCount();
 
@@ -582,7 +609,7 @@
         }
 
         function closeModal() { document.getElementById('mainModal').style.display = 'none'; }
-        function hideAllAreas() { ['previewArea', 'cartArea', 'shippingArea', 'paymentArea', 'invoiceArea', 'historyArea', 'logoutConfirmArea', 'textInfoArea'].forEach(id => document.getElementById(id).style.display = 'none'); }
+        function hideAllAreas() { ['previewArea', 'cartArea', 'shippingArea', 'shippingOptionsArea', 'paymentArea', 'invoiceArea', 'historyArea', 'logoutConfirmArea', 'textInfoArea'].forEach(id => document.getElementById(id).style.display = 'none'); }
 
         function openInfoModal(type) {
             hideAllAreas();
@@ -650,6 +677,12 @@
             if (totalQtyInCart + 1 > product.stock) { showToast(`Stock limit reached.`, 'warning'); return; }
             const existing = cart.find(c => c.cartItemId === cartItemId);
             if(existing) { existing.qty += 1; } else { cart.push({ ...product, cartItemId: cartItemId, name: `${product.name} (${selectedSize})`, qty: 1 }); }
+            
+            // Simpan info ongkir origin juga (jika ada) ke cart
+            let cartItemIndex = cart.findIndex(c => c.cartItemId === cartItemId);
+            cart[cartItemIndex].origin = product.origin || 'KOTA JAKARTA'; // Default Jakarta
+            cart[cartItemIndex].couriers = product.couriers || 'JNE,J&T';
+
             localStorage.setItem('ganketiCart', JSON.stringify(cart)); updateCartCount(); closeModal(); showToast('Added to Cart! 🛒', 'success');
         }
 
@@ -704,7 +737,6 @@
         function checkDist() { const val = document.getElementById('cDist').value.trim().toUpperCase(); const match = apiRegionData.dist.find(x => x.name.toUpperCase() === val); if(match) { document.getElementById('cDist').value = match.name; resetDownstream('dist'); document.getElementById('cVill').placeholder = "Loading villages..."; loadRegionAPI('vill', match.id); } else { resetDownstream('dist'); } }
         function checkVill() { const val = document.getElementById('cVill').value.trim().toUpperCase(); const match = apiRegionData.vill.find(x => x.name.toUpperCase() === val); if(match) { document.getElementById('cVill').value = match.name; } }
 
-        // 🔥 LOGIC MENAMPILKAN BUKU ALAMAT 🔥
         function renderSavedAddresses() {
             const container = document.getElementById('savedAddressesContainer');
             const list = document.getElementById('savedAddressesList');
@@ -752,7 +784,6 @@
             hideAllAreas(); document.getElementById('modalTitle').innerText = "SHIPPING INFO"; 
             document.getElementById('cEmail').value = currentUser.email;
             
-            // Tampilkan alamat yang tersimpan
             renderSavedAddresses();
             
             if(document.getElementById('cName').value === "") document.getElementById('cName').value = currentUser.displayName;
@@ -760,8 +791,8 @@
             if(apiRegionData.prov.length === 0) { document.getElementById('cProv').placeholder = "Loading provinces..."; loadRegionAPI('prov'); }
         }
 
-        // 🔥 LOGIC TRANSISI KE PAYMENT GATEWAY (SIMULASI XENDIT) 🔥
-        function goToPayment() {
+        // 🔥 LOGIC KALKULASI ONGKOS KIRIM OTOMATIS 🔥
+        function calculateShipping() {
             const cEmail = document.getElementById('cEmail').value; const cName = document.getElementById('cName').value.trim(); const cPhone = document.getElementById('cPhone').value.trim(); 
             const cStreet = document.getElementById('cStreet').value.trim(); const cRT = document.getElementById('cRT').value.trim(); const cRW = document.getElementById('cRW').value.trim();
             const cZip = document.getElementById('cZip').value.trim();
@@ -769,29 +800,92 @@
 
             if(!cName || !cPhone || !cStreet || !cRT || !cRW || !cZip || !provName || !cityName || !distName || !villName) { showToast("Please fill all shipping details!", 'error'); return; }
             
-            // Simpan alamat baru ke LocalStorage jika checkbox dicentang
             if(document.getElementById('saveAddressCheck').checked) {
                 let newAdr = { name: cName, phone: cPhone, street: cStreet, rt: cRT, rw: cRW, prov: provName, city: cityName, dist: distName, vill: villName, zip: cZip };
                 let isDuplicate = savedAddresses.some(a => a.street === newAdr.street && a.name === newAdr.name);
-                if(!isDuplicate) {
-                    savedAddresses.push(newAdr);
-                    localStorage.setItem('ganketiAddresses', JSON.stringify(savedAddresses));
-                }
+                if(!isDuplicate) { savedAddresses.push(newAdr); localStorage.setItem('ganketiAddresses', JSON.stringify(savedAddresses)); }
             }
 
             const cAddress = `${cStreet}, RT ${cRT}/RW ${cRW}, Kel. ${villName}, Kec. ${distName}, ${cityName}, Prov. ${provName} - ${cZip}`;
-            let grandTotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+            let subTotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
 
-            // Simpan data order sementara
+            // SIMULASI ALGORITMA ONGKIR
+            // Kita ambil data Origin & Kurir dari item pertama di keranjang sbg dasar
+            let baseOrigin = cart[0].origin || 'KOTA JAKARTA';
+            let availableCouriers = (cart[0].couriers || 'JNE,J&T').split(',').map(s => s.trim());
+            
+            // Logika Jarak (Semakin beda pulau, ongkir naik)
+            let baseCost = 10000;
+            if(provName.includes("JAWA")) baseCost = 15000;
+            if(provName.includes("SUMATERA")) baseCost = 25000;
+            if(provName.includes("KALIMANTAN")) baseCost = 35000;
+            if(provName.includes("SULAWESI") || provName.includes("BALI")) baseCost = 45000;
+            if(provName.includes("PAPUA") || provName.includes("MALUKU")) baseCost = 60000;
+            if(provName.includes("NTT") || provName.includes("PAPUA")) baseCost = 80000;
+            
+            // Render Kurir ke UI
+            let courierHtml = availableCouriers.map((c, idx) => {
+                let fee = baseCost;
+                if(c === 'JNE') fee += 2000;
+                if(c === 'Sicepat') fee -= 1000;
+                if(c === 'AnterAja') fee += 500;
+                // Default ke J&T tanpa tambahan
+                
+                let isChecked = idx === 0 ? 'checked' : ''; // Default pilih yang pertama
+                
+                return `
+                <label class="courier-card" onclick="updateShippingTotal(${fee}, '${c}')">
+                    <div style="display:flex; align-items:center; gap:10px;">
+                        <input type="radio" name="courierOption" value="${c}" ${isChecked} style="width:16px; height:16px; accent-color:#f59e0b;">
+                        <div>
+                            <b style="color:white; font-size:13px;">${c} Reguler</b><br>
+                            <span style="font-size:10px; color:#888;">Estimasi tiba 2-4 hari</span>
+                        </div>
+                    </div>
+                    <b style="color:var(--primary); font-size:13px;">Rp ${fee.toLocaleString('id-ID')}</b>
+                </label>`;
+            }).join('');
+
+            document.getElementById('courierListContainer').innerHTML = courierHtml;
+
+            // Set data pesanan sementara
             pendingOrderData = {
                 customer: { email: cEmail, name: cName, phone: cPhone, address: cAddress },
                 items: cart,
-                total: grandTotal
+                subTotal: subTotal
             };
 
+            // Tampilkan Modal
+            hideAllAreas();
+            document.getElementById('modalTitle').innerText = "OPSI PENGIRIMAN";
+            document.getElementById('shippingOptionsArea').style.display = 'block';
+            
+            // Trigger seleksi ongkir pertama kali
+            document.querySelector('input[name="courierOption"]:checked').parentElement.parentElement.click();
+        }
+
+        // 🔥 FUNGSI UPDATE TOTAL BELANJA REALTIME 🔥
+        function updateShippingTotal(fee, courierName) {
+            selectedShippingCost = fee;
+            selectedCourierName = courierName;
+            
+            let grandTotal = pendingOrderData.subTotal + fee;
+            
+            document.getElementById('sumSubtotal').innerText = `Rp ${pendingOrderData.subTotal.toLocaleString('id-ID')}`;
+            document.getElementById('sumShipping').innerText = `Rp ${fee.toLocaleString('id-ID')}`;
+            document.getElementById('sumGrandTotal').innerText = `Rp ${grandTotal.toLocaleString('id-ID')}`;
+            
+            // Update object pending
+            pendingOrderData.shippingCost = fee;
+            pendingOrderData.courier = courierName;
+            pendingOrderData.total = grandTotal;
+        }
+
+        function goToPayment() {
+            if(!pendingOrderData.shippingCost) return alert("Pilih jasa pengiriman dulu!");
             hideAllAreas();
             document.getElementById('modalTitle').innerText = "PAYMENT";
-            document.getElementById('payTotalDisplay').innerText = `Rp ${grandTotal.toLocaleString('id-ID')}`;
+            document.getElementById('payTotalDisplay').innerText = `Rp ${pendingOrderData.total.toLocaleString('id-ID')}`;
             document.getElementById('paymentArea').style.display = 'block';
         }
 
@@ -800,36 +894,34 @@
             el.style.borderColor = '#4ade80';
         }
 
-        // 🔥 LOGIC SIMULASI PEMBAYARAN BERHASIL (NANTI DIGANTI API XENDIT) 🔥
         function simulateXenditSuccess() {
             if(!pendingOrderData) return;
             
             const invoiceNumber = "INV-GKT-" + Date.now(); 
             const orderDate = new Date().toLocaleString('id-ID');
 
-            // Simpan ke Database
             db.ref('orders').push({ 
                 invoice_no: invoiceNumber, 
                 date: orderDate, 
                 customer: pendingOrderData.customer, 
                 items: pendingOrderData.items, 
+                shippingCost: pendingOrderData.shippingCost, // Simpan ongkir
+                courier: pendingOrderData.courier,           // Simpan nama kurir
                 total: pendingOrderData.total, 
-                status: "PAID", // Otomatis Lunas
+                status: "PAID", 
                 timestamp: Date.now() 
             }); 
             
-            // Kurangi Stok
             pendingOrderData.items.forEach(item => { const prodRef = db.ref('products/' + item.id); prodRef.once('value').then(snap => { const currentData = snap.val(); if(currentData) { prodRef.update({ stock: Math.max(0, (currentData.stock || 0) - item.qty) }); }});});
             
-            // Buat Kertas Invoice
             let itemsHtml = pendingOrderData.items.map(i => `${i.qty}x ${i.name.substring(0,20)} <span style="float:right;">${(i.price * i.qty).toLocaleString('id-ID')}</span>`).join('<br>');
-            document.getElementById('invoicePaper').innerHTML = `<div style="text-align:center; font-weight:bold; font-size:16px; margin-bottom:10px; border-bottom:2px dashed #000; padding-bottom:10px;">GANKETI OFFICIAL</div>INV NO : <b style="color:blue;">${invoiceNumber}</b><br>DATE   : ${orderDate}<br>NAME   : ${pendingOrderData.customer.name}<br>STATUS : <b style="color:#4ade80;">PAID</b><hr style="border-top:1px dashed #000; margin:10px 0;">${itemsHtml}<hr style="border-top:1px dashed #000; margin:10px 0;"><b style="font-size: 14px;">GRAND TOTAL : <span style="float:right;">Rp ${pendingOrderData.total.toLocaleString('id-ID')}</span></b><div style="margin-top:20px; text-align:center; font-size:10px; color:#666;">Payment Verified by System.</div>`;
+            let ongkirHtml = `<div style="font-size:12px; margin-top:5px; color:#555;">Ongkos Kirim (${pendingOrderData.courier}) <span style="float:right;">Rp ${pendingOrderData.shippingCost.toLocaleString('id-ID')}</span></div>`;
+
+            document.getElementById('invoicePaper').innerHTML = `<div style="text-align:center; font-weight:bold; font-size:16px; margin-bottom:10px; border-bottom:2px dashed #000; padding-bottom:10px;">GANKETI OFFICIAL</div>INV NO : <b style="color:blue;">${invoiceNumber}</b><br>DATE   : ${orderDate}<br>NAME   : ${pendingOrderData.customer.name}<br>STATUS : <b style="color:#4ade80;">PAID</b><hr style="border-top:1px dashed #000; margin:10px 0;">${itemsHtml}${ongkirHtml}<hr style="border-top:1px dashed #000; margin:10px 0;"><b style="font-size: 14px;">GRAND TOTAL : <span style="float:right;">Rp ${pendingOrderData.total.toLocaleString('id-ID')}</span></b><div style="margin-top:20px; text-align:center; font-size:10px; color:#666;">Payment Verified by System.</div>`;
             
-            // Kosongkan Keranjang
             cart = []; localStorage.setItem('ganketiCart', JSON.stringify(cart)); updateCartCount(); 
-            pendingOrderData = null; // Reset
+            pendingOrderData = null; 
             
-            // Tampilkan Invoice
             hideAllAreas(); document.getElementById('modalTitle').innerText = "ORDER CONFIRMED"; document.getElementById('invoiceArea').style.display = 'block'; showToast("Payment Successful! 🎉", "success");
         }
 
