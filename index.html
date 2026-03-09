@@ -30,7 +30,7 @@
         .head-top { display: grid; grid-template-columns: auto 1fr auto; align-items: center; padding: 12px 20px; gap: 15px;} 
         .hamburger-btn { background: none; border: none; color: var(--primary); font-size: 24px; cursor: pointer; display: flex; align-items: center; padding: 0; margin: 0;}
         .logo { cursor: pointer; user-select: none; touch-action: manipulation; -webkit-tap-highlight-color: transparent; display: flex; justify-content: center; align-items: center;}
-        .logo img { max-height: 45px; width: auto; object-fit: contain; } 
+        .logo img { max-height: 35px; width: auto; object-fit: contain; } 
         .nav-icons { display: flex; gap: 15px; align-items: center; justify-content: flex-end;}
         .icon-btn { background: none; border: none; color: var(--text); font-size: 18px; font-weight: 600; cursor: pointer; display: flex; align-items: center; position: relative;}
         .cart-badge { position: absolute; top: -5px; right: -10px; background: #ef4444; color: white; font-size: 9px; font-weight: 800; padding: 2px 6px; border-radius: 20px; }
@@ -39,22 +39,23 @@
         .search-box { width: 100%; padding: 10px 15px; background: #1a1a1a; border: 1px solid #333; border-radius: 4px; color: white; outline: none; font-family: 'Inter'; font-size: 13px; }
         .search-box:focus { border-color: var(--primary); }
 
-        /* LACI SAMPING (SIDEBAR MENU) */
+        /* LACI SAMPING (SIDEBAR MENU) - DARK & TRANSPARENT */
         .sidebar-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 999; display: none; backdrop-filter: blur(2px); }
-        .sidebar { position: fixed; top: 0; left: -100%; width: 85%; max-width: 320px; height: 100%; background: #ffffff; z-index: 1000; transition: 0.3s ease-in-out; display: flex; flex-direction: column; overflow-y: auto;}
+        .sidebar { position: fixed; top: 0; left: -100%; width: 85%; max-width: 320px; height: 100%; background: rgba(18, 18, 18, 0.95); backdrop-filter: blur(10px); z-index: 1000; transition: 0.3s ease-in-out; display: flex; flex-direction: column; overflow-y: auto; border-right: 1px solid #333;}
         .sidebar.active { left: 0; }
-        .sidebar-header { padding: 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; position: relative; background: #fff;}
-        .sidebar-close { font-size: 26px; color: #000; cursor: pointer; line-height: 1; }
+        .sidebar-header { padding: 20px; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; position: relative; }
+        .sidebar-close { font-size: 26px; color: #fff; cursor: pointer; line-height: 1; }
         
-        .sidebar-content { flex: 1; display: flex; flex-direction: column; background: #fff; padding-bottom: 30px;}
-        .sidebar-item { padding: 18px 20px; color: #000; font-size: 13px; font-weight: 600; text-transform: uppercase; border-bottom: 1px solid #f5f5f5; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: 0.2s;}
-        .sidebar-item:hover { background: #f9f9f9; }
-        .sidebar-item-sub { padding: 18px 20px; color: #333; font-size: 13px; border-bottom: 1px solid #f5f5f5; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: 0.2s;}
+        .sidebar-content { flex: 1; display: flex; flex-direction: column; padding-bottom: 30px;}
+        .sidebar-item { padding: 18px 20px; color: #fff; font-size: 13px; font-weight: 600; text-transform: uppercase; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: 0.2s;}
+        .sidebar-item:hover { background: rgba(255,255,255,0.05); }
+        .sidebar-item-sub { padding: 18px 20px; color: #ccc; font-size: 13px; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: 0.2s;}
+        .sidebar-item-sub:hover { background: rgba(255,255,255,0.05); color: #fff;}
         
-        .sub-menu { display: none; background: #fafafa; border-bottom: 1px solid #eee; }
-        .sub-item { padding: 15px 20px 15px 40px; color: #555; font-size: 12px; cursor: pointer; transition: 0.2s;}
-        .sub-item:hover { background: #f0f0f0; color: #000; font-weight: bold;}
-        .sidebar-divider { height: 8px; background: #f0f0f0; border-top: 1px solid #e0e0e0; border-bottom: 1px solid #e0e0e0;}
+        .sub-menu { display: none; background: rgba(10, 10, 10, 0.5); border-bottom: 1px solid #333; }
+        .sub-item { padding: 15px 20px 15px 40px; color: #aaa; font-size: 12px; cursor: pointer; transition: 0.2s;}
+        .sub-item:hover { background: rgba(255,255,255,0.05); color: #fff; font-weight: bold;}
+        .sidebar-divider { height: 8px; background: #0a0a0a; border-top: 1px solid #222; border-bottom: 1px solid #222;}
 
         /* BUBBLE CATEGORY UI */
         .icon-nav-container { display: flex; gap: 15px; padding: 10px 20px 20px 20px; overflow-x: auto; scrollbar-width: none; align-items: flex-start;}
@@ -188,7 +189,7 @@
     <div class="sidebar" id="sidebarMenu">
         <div class="sidebar-header">
             <div style="width:24px;"></div>
-            <h2 style="margin:0; color:#000; font-family:'Oswald', sans-serif; font-size:22px; letter-spacing:1px;">GANKETI</h2>
+            <img src="ganketilogo.png" alt="GANKETI" style="max-height: 28px; object-fit: contain;">
             <div class="sidebar-close" onclick="toggleMenu()">×</div>
         </div>
         
@@ -197,7 +198,7 @@
                 SHOP BY CATEGORY <span id="arrow-catSubMenu" style="transition:0.3s; font-size:18px;">›</span>
             </div>
             <div class="sub-menu" id="catSubMenu">
-                <div class="sub-item" onclick="filterCategory('ALL'); toggleMenu();" style="font-weight:bold; color: #ef4444;">SEMUA KOLEKSI</div>
+                <div class="sub-item" onclick="filterCategory('ALL'); toggleMenu();" style="font-weight:bold; color: #fff;">SEMUA KOLEKSI</div>
                 <div id="sidebarCatList"></div>
             </div>
             
@@ -225,7 +226,7 @@
             <div class="sidebar-divider"></div>
 
             <div class="sidebar-item-sub" onclick="openMyOrders(); toggleMenu();" style="margin-top: 10px;">Track Order</div>
-            <div class="sidebar-item-sub" id="sideLoginBtn" onclick="handleAuth(); toggleMenu();" style="font-weight:bold; color:#000;">Sign In</div>
+            <div class="sidebar-item-sub" id="sideLoginBtn" onclick="handleAuth(); toggleMenu();" style="font-weight:bold; color:#fff;">Sign In</div>
         </div>
     </div>
 
@@ -419,7 +420,6 @@
         
         let savedAddresses = JSON.parse(localStorage.getItem('ganketiAddresses') || '[]');
         
-        // Data Pembayaran & Ongkir Sementara
         let pendingOrderData = null; 
         let selectedShippingCost = 0;
         let selectedCourierName = "";
@@ -678,10 +678,9 @@
             const existing = cart.find(c => c.cartItemId === cartItemId);
             if(existing) { existing.qty += 1; } else { cart.push({ ...product, cartItemId: cartItemId, name: `${product.name} (${selectedSize})`, qty: 1 }); }
             
-            // Simpan info ongkir origin juga (jika ada) ke cart
             let cartItemIndex = cart.findIndex(c => c.cartItemId === cartItemId);
-            cart[cartItemIndex].origin = product.origin || 'KOTA JAKARTA'; // Default Jakarta
-            cart[cartItemIndex].couriers = product.couriers || 'JNE,J&T';
+            cart[cartItemIndex].origin = product.origin || 'KOTA JAKARTA PUSAT'; 
+            cart[cartItemIndex].couriers = product.couriers || 'jne,jnt,sicepat';
 
             localStorage.setItem('ganketiCart', JSON.stringify(cart)); updateCartCount(); closeModal(); showToast('Added to Cart! 🛒', 'success');
         }
@@ -791,8 +790,8 @@
             if(apiRegionData.prov.length === 0) { document.getElementById('cProv').placeholder = "Loading provinces..."; loadRegionAPI('prov'); }
         }
 
-        // 🔥 LOGIC KALKULASI ONGKOS KIRIM OTOMATIS 🔥
-        function calculateShipping() {
+        // 🔥 MESIN HITUNG ONGKIR API BITESHIP 🔥
+        async function calculateShipping() {
             const cEmail = document.getElementById('cEmail').value; const cName = document.getElementById('cName').value.trim(); const cPhone = document.getElementById('cPhone').value.trim(); 
             const cStreet = document.getElementById('cStreet').value.trim(); const cRT = document.getElementById('cRT').value.trim(); const cRW = document.getElementById('cRW').value.trim();
             const cZip = document.getElementById('cZip').value.trim();
@@ -809,62 +808,98 @@
             const cAddress = `${cStreet}, RT ${cRT}/RW ${cRW}, Kel. ${villName}, Kec. ${distName}, ${cityName}, Prov. ${provName} - ${cZip}`;
             let subTotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
 
-            // SIMULASI ALGORITMA ONGKIR
-            // Kita ambil data Origin & Kurir dari item pertama di keranjang sbg dasar
-            let baseOrigin = cart[0].origin || 'KOTA JAKARTA';
-            let availableCouriers = (cart[0].couriers || 'JNE,J&T').split(',').map(s => s.trim());
-            
-            // Logika Jarak (Semakin beda pulau, ongkir naik)
-            let baseCost = 10000;
-            if(provName.includes("JAWA")) baseCost = 15000;
-            if(provName.includes("SUMATERA")) baseCost = 25000;
-            if(provName.includes("KALIMANTAN")) baseCost = 35000;
-            if(provName.includes("SULAWESI") || provName.includes("BALI")) baseCost = 45000;
-            if(provName.includes("PAPUA") || provName.includes("MALUKU")) baseCost = 60000;
-            if(provName.includes("NTT") || provName.includes("PAPUA")) baseCost = 80000;
-            
-            // Render Kurir ke UI
-            let courierHtml = availableCouriers.map((c, idx) => {
-                let fee = baseCost;
-                if(c === 'JNE') fee += 2000;
-                if(c === 'Sicepat') fee -= 1000;
-                if(c === 'AnterAja') fee += 500;
-                // Default ke J&T tanpa tambahan
-                
-                let isChecked = idx === 0 ? 'checked' : ''; // Default pilih yang pertama
-                
-                return `
-                <label class="courier-card" onclick="updateShippingTotal(${fee}, '${c}')">
-                    <div style="display:flex; align-items:center; gap:10px;">
-                        <input type="radio" name="courierOption" value="${c}" ${isChecked} style="width:16px; height:16px; accent-color:#f59e0b;">
-                        <div>
-                            <b style="color:white; font-size:13px;">${c} Reguler</b><br>
-                            <span style="font-size:10px; color:#888;">Estimasi tiba 2-4 hari</span>
-                        </div>
-                    </div>
-                    <b style="color:var(--primary); font-size:13px;">Rp ${fee.toLocaleString('id-ID')}</b>
-                </label>`;
-            }).join('');
-
-            document.getElementById('courierListContainer').innerHTML = courierHtml;
-
-            // Set data pesanan sementara
             pendingOrderData = {
                 customer: { email: cEmail, name: cName, phone: cPhone, address: cAddress },
                 items: cart,
                 subTotal: subTotal
             };
 
-            // Tampilkan Modal
             hideAllAreas();
             document.getElementById('modalTitle').innerText = "OPSI PENGIRIMAN";
             document.getElementById('shippingOptionsArea').style.display = 'block';
-            
-            // Trigger seleksi ongkir pertama kali
-            document.querySelector('input[name="courierOption"]:checked').parentElement.parentElement.click();
+            document.getElementById('courierListContainer').innerHTML = '<p style="color:#aaa; text-align:center; padding:20px;">Menghitung ongkos kirim resmi... ⏳</p>';
+
+            try {
+                // API Biteship yang dikirim Bos
+                const API_KEY = 'Biteship_live.eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiR2Fua2V0aSIsInVzZXJJZCI6IjY5YWVlODYzM2NjODBhMWUzMjE3ZGJkYyIsImlhdCI6MTc3MzA3MTE4Nn0.mXk-V_Qh1ilf6PQ_IYOUW4PP1KznZ9YS3qeOQ5Gni3I';
+
+                // Asal (Dari Produk) & Tujuan Pembeli
+                let baseOrigin = cart[0].origin || 'KOTA JAKARTA PUSAT';
+                let availableCouriers = cart[0].couriers || 'jne,jnt,sicepat';
+                // Format Biteship: huruf kecil, tanpa spasi, j&t jadi jnt
+                let formatCouriers = availableCouriers.toLowerCase().replace(/j\&t/g, 'jnt').replace(/ /g, '');
+                
+                let destSearch = distName + ' ' + cityName;
+
+                // Fungsi Cari ID Area Biteship
+                const getAreaId = async (inputStr) => {
+                    const res = await fetch(`https://api.biteship.com/v1/maps/areas?input=${encodeURIComponent(inputStr)}`, {
+                        headers: { 'Authorization': `Bearer ${API_KEY}` }
+                    });
+                    const data = await res.json();
+                    if(data && data.areas && data.areas.length > 0) return data.areas[0].id;
+                    return null;
+                };
+
+                let originId = await getAreaId(baseOrigin);
+                let destId = await getAreaId(destSearch);
+                if(!destId) destId = await getAreaId(cityName); // Fallback
+
+                if(!originId || !destId) {
+                    document.getElementById('courierListContainer').innerHTML = '<p style="color:#ef4444; text-align:center;">Gagal menemukan lokasi asal/tujuan di sistem Kurir. Cek kembali penulisan kota.</p>';
+                    return;
+                }
+
+                // Kalkulasi Berat Standar (1kg)
+                let totalWeight = cart.reduce((sum, item) => sum + (500 * item.qty), 0);
+                if(totalWeight < 1000) totalWeight = 1000;
+
+                // Hitung Ongkir Asli
+                const rateRes = await fetch('https://api.biteship.com/v1/rates/couriers', {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        origin_area_id: originId,
+                        destination_area_id: destId,
+                        couriers: formatCouriers,
+                        items: [{ name: "Apparel", value: subTotal, weight: totalWeight, quantity: 1 }]
+                    })
+                });
+
+                const rateData = await rateRes.json();
+
+                if(rateData.success && rateData.pricing && rateData.pricing.length > 0) {
+                    let courierHtml = rateData.pricing.map((p, idx) => {
+                        let isChecked = idx === 0 ? 'checked' : '';
+                        let duration = p.duration ? p.duration : '2-4 hari';
+                        return `
+                        <label class="courier-card" onclick="updateShippingTotal(${p.price}, '${p.courier_name.toUpperCase()} - ${p.courier_service_name}')">
+                            <div style="display:flex; align-items:center; gap:10px;">
+                                <input type="radio" name="courierOption" value="${p.courier_name}" ${isChecked} style="width:16px; height:16px; accent-color:#f59e0b;">
+                                <div>
+                                    <b style="color:white; font-size:13px; text-transform:uppercase;">${p.courier_name} ${p.courier_service_name}</b><br>
+                                    <span style="font-size:10px; color:#888;">Estimasi tiba ${duration}</span>
+                                </div>
+                            </div>
+                            <b style="color:var(--primary); font-size:13px;">Rp ${p.price.toLocaleString('id-ID')}</b>
+                        </label>`;
+                    }).join('');
+                    
+                    document.getElementById('courierListContainer').innerHTML = courierHtml;
+                    
+                    // Trigger klik pada opsi pertama agar harga langsung masuk
+                    setTimeout(() => { document.querySelector('input[name="courierOption"]:checked').parentElement.parentElement.click(); }, 100);
+                } else {
+                    document.getElementById('courierListContainer').innerHTML = '<p style="color:#ef4444; text-align:center;">Kurir tidak menjangkau rute ini.</p>';
+                }
+
+            } catch (e) {
+                console.error(e);
+                document.getElementById('courierListContainer').innerHTML = '<p style="color:#ef4444; text-align:center;">Sistem API Ongkir sedang sibuk atau diblokir. Coba refresh halaman.</p>';
+            }
         }
 
-        // 🔥 FUNGSI UPDATE TOTAL BELANJA REALTIME 🔥
+        // UPDATE TOTAL HARGA ONGKIR + PRODUK
         function updateShippingTotal(fee, courierName) {
             selectedShippingCost = fee;
             selectedCourierName = courierName;
@@ -875,7 +910,6 @@
             document.getElementById('sumShipping').innerText = `Rp ${fee.toLocaleString('id-ID')}`;
             document.getElementById('sumGrandTotal').innerText = `Rp ${grandTotal.toLocaleString('id-ID')}`;
             
-            // Update object pending
             pendingOrderData.shippingCost = fee;
             pendingOrderData.courier = courierName;
             pendingOrderData.total = grandTotal;
@@ -905,8 +939,8 @@
                 date: orderDate, 
                 customer: pendingOrderData.customer, 
                 items: pendingOrderData.items, 
-                shippingCost: pendingOrderData.shippingCost, // Simpan ongkir
-                courier: pendingOrderData.courier,           // Simpan nama kurir
+                shippingCost: pendingOrderData.shippingCost, 
+                courier: pendingOrderData.courier,           
                 total: pendingOrderData.total, 
                 status: "PAID", 
                 timestamp: Date.now() 
