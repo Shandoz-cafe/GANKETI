@@ -30,7 +30,7 @@
         .head-top { display: grid; grid-template-columns: auto 1fr auto; align-items: center; padding: 12px 20px; gap: 15px;} 
         .hamburger-btn { background: none; border: none; color: var(--primary); font-size: 24px; cursor: pointer; display: flex; align-items: center; padding: 0; margin: 0;}
         .logo { cursor: pointer; user-select: none; touch-action: manipulation; -webkit-tap-highlight-color: transparent; display: flex; justify-content: center; align-items: center;}
-        .logo img { max-height: 35px; width: auto; object-fit: contain; } 
+        .logo img { max-height: 45px; width: auto; object-fit: contain; } 
         .nav-icons { display: flex; gap: 15px; align-items: center; justify-content: flex-end;}
         .icon-btn { background: none; border: none; color: var(--text); font-size: 18px; font-weight: 600; cursor: pointer; display: flex; align-items: center; position: relative;}
         .cart-badge { position: absolute; top: -5px; right: -10px; background: #ef4444; color: white; font-size: 9px; font-weight: 800; padding: 2px 6px; border-radius: 20px; }
@@ -160,12 +160,14 @@
         @keyframes toastSlideDown { from { transform: translateY(-50px) scale(0.9); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
         @keyframes toastFadeOut { from { transform: translateY(0) scale(1); opacity: 1; } to { transform: translateY(-20px) scale(0.9); opacity: 0; } }
 
+        /* 🔥 FOOTER INFO MODAL (TEXT PANJANG) 🔥 */
         .info-content { font-size: 13px; line-height: 1.6; color: #ddd; }
-        .info-content h4 { color: #fff; font-family: 'Oswald'; font-size: 16px; margin: 15px 0 5px 0; letter-spacing: 1px;}
+        .info-content h4 { color: #fff; font-family: 'Oswald', sans-serif; font-size: 16px; margin: 15px 0 5px 0; letter-spacing: 1px;}
         .info-content p { margin-bottom: 10px; }
         .info-content ul { padding-left: 20px; margin-bottom: 10px; }
         .info-content li { margin-bottom: 5px; }
         
+        /* FOOTER SEDERHANA */
         footer { border-top: 1px solid var(--border); padding: 30px 20px; text-align: center; margin-top: 30px;}
         .newsletter input { width: 100%; max-width: 300px; padding: 12px; background: #111; border: 1px solid #333; color: white; border-radius: 4px; margin-bottom: 10px; outline: none;}
         .newsletter button { background: var(--primary); color: var(--bg); padding: 12px 20px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;}
@@ -231,7 +233,7 @@
             </div>
         </div>
         <div class="search-container">
-            <input type="search" class="search-box" id="searchInput" placeholder="Search hoodie, t-shirt, pants..." onkeyup="searchProducts()">
+            <input type="search" class="search-box" id="searchInput" placeholder="Cari hoodie, t-shirt, pants..." onkeyup="searchProducts()">
         </div>
     </header>
 
@@ -344,7 +346,6 @@
         let apiRegionData = { prov: [], city: [], dist: [], vill: [] }; 
         updateCartCount();
 
-        // 🔥 LOGIC SIDEBAR MENU 🔥
         function toggleMenu() {
             const sidebar = document.getElementById('sidebarMenu');
             const overlay = document.getElementById('sidebarOverlay');
@@ -396,9 +397,6 @@
             if (clickCount >= 5) { showToast("Admin Portal Opening... 🚀", 'success'); setTimeout(() => { window.location.assign('https://ganketi.store/admin.html?v=' + Date.now()); }, 800); }
         }
 
-        // =========================================================
-        // 🔥 ENGINE KOTAK UNGGULAN (FEATURED CARDS) 🔥
-        // =========================================================
         db.ref('ui_featured_cats').on('value', snap => {
             const data = snap.val(); const sec = document.getElementById('featuredSection'); const container = document.getElementById('featuredCardsContainer');
             if(!data) { sec.style.display = 'none'; return; }
@@ -407,9 +405,6 @@
             container.innerHTML = features.map(f => `<div class="f-card" onclick="filterCategory('${f.target}')"><img src="${f.image}"><div class="f-overlay"><span class="f-title">${f.title}</span></div></div>`).join('');
         });
 
-        // =========================================================
-        // 🔥 ENGINE PROMO BANNER 🔥
-        // =========================================================
         let bannersArr = []; let currentSlide = 0; let slideInterval;
         const track = document.getElementById('carouselTrack'); const dots = document.getElementById('carouselDots'); const promoHero = document.getElementById('promoHeroSec');
 
@@ -435,9 +430,6 @@
         promoHero.addEventListener('touchstart', e => { touchstartX = e.changedTouches[0].screenX; }, {passive: true});
         promoHero.addEventListener('touchend', e => { touchendX = e.changedTouches[0].screenX; if(touchendX < touchstartX - 40) nextSlide(); if(touchendX > touchstartX + 40) prevSlide(); }, {passive: true});
 
-        // =========================================================
-        // 🔥 ENGINE KATEGORI BUBBLE & SINKRON SIDEBAR 🔥
-        // =========================================================
         db.ref('ui_categories').on('value', snap => {
             const data = snap.val(); 
             const nav = document.getElementById('categoryIconNav');
@@ -475,7 +467,6 @@
             renderProducts();
         });
 
-        // 🔥 LOGIC FILTER & SORTING 🔥
         function filterCategory(cat) { 
             activeCategory = cat; 
             let titleText = cat === 'ALL' ? 'LATEST DROP' : cat;
@@ -510,7 +501,6 @@
             const keyword = document.getElementById('searchInput').value.toLowerCase();
             const sortMode = document.getElementById('sortSelect').value;
 
-            // FILTERING SAKTI (BISA CEK MULTI-TAG)
             let filteredProducts = globalProducts.filter(p => {
                 let matchSearch = true; let matchCat = true;
                 if(keyword) { matchSearch = p.name.toLowerCase().includes(keyword); }
@@ -525,7 +515,6 @@
                 return matchSearch && matchCat;
             });
 
-            // SORTING
             if(sortMode === 'price_asc') { filteredProducts.sort((a,b) => a.price - b.price); } 
             else if (sortMode === 'price_desc') { filteredProducts.sort((a,b) => b.price - a.price); } 
             else { filteredProducts.sort((a,b) => b.timestamp - a.timestamp); }
@@ -542,6 +531,7 @@
         function closeModal() { document.getElementById('mainModal').style.display = 'none'; }
         function hideAllAreas() { ['previewArea', 'cartArea', 'shippingArea', 'invoiceArea', 'historyArea', 'logoutConfirmArea', 'textInfoArea'].forEach(id => document.getElementById(id).style.display = 'none'); }
 
+        // 🔥 HALAMAN INFO TEKS KHUSUS (DIUBAH SESUAI REQUEST BOS) 🔥
         function openInfoModal(type) {
             hideAllAreas();
             const infoBox = document.getElementById('textInfoArea');
@@ -549,25 +539,137 @@
 
             if(type === 'about') {
                 title = "ABOUT GANKETI";
-                content = `<h4>About GANKETI Official</h4><p>GANKETI is an exclusive streetwear and lifestyle brand built for the modern urban youth. Established with a passion for authentic fashion, we provide premium quality apparel designed to elevate your everyday style.</p><p>We believe that clothing is more than just fabric; it's a statement. Therefore, every piece in our collection is crafted with attention to detail and high-grade materials.</p><h4>Our Mission</h4><p>To empower individuals to express their true selves through high-quality, comfortable, and trend-setting streetwear.</p>`;
-            } else if(type === 'privacy') {
+                content = `<h4>Our Story</h4>
+                <p>GANKETI adalah brand fashion modern yang lahir dari semangat untuk menghadirkan gaya yang elegan, kreatif, dan relevan dengan perkembangan tren global. Kami percaya bahwa fashion bukan hanya sekadar pakaian, tetapi juga cara seseorang mengekspresikan identitas, karakter, dan gaya hidupnya.</p>
+                <p>GANKETI menggabungkan inspirasi dari berbagai budaya dunia dengan sentuhan desain modern dan inovatif. Setiap produk dirancang dengan perhatian terhadap detail, kualitas, dan estetika agar mampu memberikan pengalaman fashion yang berbeda bagi para penggunanya.</p>
+                <p>Kami ingin menciptakan brand yang tidak hanya mengikuti tren, tetapi juga membangun identitas dan karakter yang kuat dalam dunia fashion dan lifestyle.</p>
+                <h4>Filosofi Nama GANKETI</h4>
+                <p>Nama GANKETI memiliki makna yang merepresentasikan nilai dan filosofi brand:</p>
+                <ul>
+                <li><b>G – Gracia (Spanyol):</b> Melambangkan keanggunan dan keindahan alami.</li>
+                <li><b>A – Arte (Portugis/Spanyol):</b> Mewakili seni dan kreativitas dalam desain.</li>
+                <li><b>N – Novo (Portugis):</b> Menggambarkan sesuatu yang baru, modern, dan selalu berkembang.</li>
+                <li><b>K – Kultura (Polandia):</b> Merepresentasikan budaya dan identitas.</li>
+                <li><b>E – Elegancia (Spanyol):</b> Menunjukkan kesan elegan, premium, dan eksklusif.</li>
+                <li><b>T – Tendencia (Spanyol):</b> Melambangkan tren dan gaya modern.</li>
+                <li><b>I – Inovação (Portugis):</b> Menggambarkan inovasi dan pendekatan futuristik.</li>
+                </ul>
+                <h4>Vision</h4>
+                <p>Menjadi brand fashion dan lifestyle modern yang dikenal secara global dengan identitas yang kuat, desain yang inovatif, serta kualitas produk yang premium.</p>
+                <h4>Mission</h4>
+                <ul>
+                <li>Menghadirkan produk fashion berkualitas dengan desain modern dan stylish.</li>
+                <li>Menggabungkan kreativitas, budaya, dan tren global dalam setiap koleksi.</li>
+                <li>Memberikan pengalaman fashion yang elegan dan berkelas bagi pelanggan.</li>
+                <li>Membangun identitas brand yang kuat di dunia fashion dan lifestyle.</li>
+                </ul>
+                <h4>Brand Identity</h4>
+                <p>GANKETI memiliki identitas brand yang mencerminkan gaya hidup modern, elegan, dan inovatif.</p>
+                <ul>
+                <li><b>Modern:</b> Desain mengikuti perkembangan tren global dan gaya urban.</li>
+                <li><b>Elegant:</b> Produk memiliki kesan premium dan berkelas.</li>
+                <li><b>Creative:</b> Setiap koleksi menghadirkan ide desain yang unik dan stylish.</li>
+                <li><b>Innovative:</b> Brand terus berkembang dengan konsep yang futuristik.</li>
+                </ul>`;
+            } 
+            else if(type === 'privacy') {
                 title = "PRIVACY POLICY";
-                content = `<h4>Privacy Policy</h4><p>Effective as of March 2026.</p><p>This Privacy Policy governs how GANKETI handles information and personal data from users of our site and webstore. We respect your concerns about privacy and commit to protect the security of your personal data.</p><h4>Information We Collect</h4><ul><li>Contact information (e.g., name, address, phone number).</li><li>Order details and secure payment records.</li><li>Geographic location for shipping purposes.</li></ul><p>We do not sell or otherwise disclose personal information about you to unauthorized third parties.</p>`;
-            } else if(type === 'terms') {
-                title = "TERMS & CONDITIONS";
-                content = `<h4>Terms and Conditions</h4><p>By accessing and using the GANKETI website, you agree to comply with our terms of service.</p><ul><li>All products are subject to availability.</li><li>Prices are subject to change without prior notice.</li><li>We reserve the right to refuse or cancel orders if fraud is suspected.</li></ul>`;
-            } else if(type === 'faq') {
+                content = `<h4>Privacy Policy</h4>
+                <p>GANKETI menghargai dan melindungi privasi setiap pengguna website kami. Kebijakan privasi ini menjelaskan bagaimana kami mengumpulkan, menggunakan, dan melindungi informasi pribadi pengguna.</p>
+                <h4>Information We Collect</h4>
+                <p>Kami dapat mengumpulkan informasi seperti:</p>
+                <ul>
+                <li>Nama</li>
+                <li>Alamat email</li>
+                <li>Nomor telepon</li>
+                <li>Alamat pengiriman</li>
+                <li>Informasi transaksi</li>
+                </ul>
+                <p>Informasi ini dikumpulkan saat pengguna melakukan pendaftaran akun, melakukan pembelian, atau menghubungi kami.</p>
+                <h4>How We Use Your Information</h4>
+                <p>Informasi yang kami kumpulkan digunakan untuk:</p>
+                <ul>
+                <li>Memproses pesanan pelanggan</li>
+                <li>Mengirimkan informasi mengenai pesanan</li>
+                <li>Meningkatkan layanan dan pengalaman pengguna</li>
+                <li>Memberikan informasi mengenai produk atau promosi terbaru</li>
+                </ul>
+                <h4>Data Security</h4>
+                <p>Kami menjaga keamanan data pengguna dengan menggunakan sistem keamanan yang sesuai untuk melindungi informasi pribadi dari akses yang tidak sah.</p>`;
+            }
+            else if(type === 'terms') {
+                title = "TERMS OF SERVICE";
+                content = `<h4>Terms of Service</h4>
+                <p>Dengan mengakses dan menggunakan website GANKETI, Anda setuju untuk mematuhi syarat dan ketentuan yang berlaku di website ini.</p>
+                <h4>Use of Website</h4>
+                <p>Pengguna setuju untuk menggunakan website ini hanya untuk tujuan yang sah dan tidak melanggar hukum yang berlaku.</p>
+                <h4>Product Information</h4>
+                <p>Kami berusaha memberikan informasi produk yang akurat. Namun, kami tidak menjamin bahwa semua informasi di website selalu bebas dari kesalahan atau perubahan.</p>
+                <h4>Intellectual Property</h4>
+                <p>Seluruh konten yang terdapat di website GANKETI, termasuk logo, desain, gambar, dan teks, merupakan milik GANKETI dan dilindungi oleh hukum hak kekayaan intelektual.</p>
+                <h4>Changes to Terms</h4>
+                <p>GANKETI berhak untuk memperbarui atau mengubah syarat dan ketentuan ini kapan saja tanpa pemberitahuan sebelumnya.</p>`;
+            }
+            else if(type === 'faq') {
                 title = "FAQ";
-                content = `<h4>Frequently Asked Questions</h4><p><b>Q: Do you ship internationally?</b><br>A: Currently, we only ship within Indonesia.</p><p><b>Q: How long does delivery take?</b><br>A: Standard delivery takes 2-5 business days depending on your location.</p><p><b>Q: Are the products original?</b><br>A: 100% Original and Authentic.</p>`;
-            } else if(type === 'return') {
-                title = "RETURN POLICY";
-                content = `<h4>Return & Exchange Policy</h4><p>We accept returns within 3 days of receiving your order, provided that the item is unwashed, unworn, and has all original tags attached.</p><p>Please note that shipping costs for returns are the responsibility of the customer unless the return is due to a defect on our part.</p><p>Contact our customer care to initiate a return process.</p>`;
-            } else if(type === 'contact') {
+                content = `<h4>General Questions</h4>
+                <p><b>Apa itu GANKETI?</b><br>GANKETI adalah brand fashion dan lifestyle modern yang menghadirkan produk dengan desain stylish, elegan, dan berkualitas. Kami menggabungkan kreativitas, tren global, dan identitas brand untuk menciptakan produk yang unik dan modern.</p>
+                <p><b>Apakah produk GANKETI original?</b><br>Ya. Semua produk yang dijual di website resmi GANKETI adalah produk original yang dirancang dan dikembangkan oleh brand GANKETI.</p>
+                <h4>Orders</h4>
+                <p><b>Bagaimana cara memesan produk di website GANKETI?</b></p>
+                <ul>
+                <li>Pilih produk yang ingin dibeli</li>
+                <li>Pilih ukuran atau variasi produk</li>
+                <li>Klik tombol Add to Cart / Add to Bag</li>
+                <li>Lanjutkan ke halaman checkout</li>
+                <li>Masukkan alamat pengiriman & pilih metode pembayaran</li>
+                <li>Selesaikan pembayaran</li>
+                </ul>
+                <p><b>Apakah saya bisa membatalkan pesanan?</b><br>Pesanan hanya dapat dibatalkan sebelum pesanan diproses atau dikirimkan. Silakan hubungi tim kami sesegera mungkin jika ingin melakukan pembatalan.</p>
+                <h4>Payment & Shipping</h4>
+                <p><b>Metode pembayaran apa saja yang tersedia?</b><br>Kami menerima Transfer Bank, E-Wallet, Virtual Account, dan Payment Gateway.</p>
+                <p><b>Berapa lama waktu pengiriman?</b><br>Dalam kota: 1–3 hari kerja. Antar kota: 2–5 hari kerja. Internasional: 5–10 hari kerja.</p>`;
+            }
+            else if(type === 'return') {
+                title = "SHIPPING & RETURNS";
+                content = `<h4>Shipping Policy</h4>
+                <p>GANKETI berkomitmen untuk mengirimkan pesanan dengan aman dan cepat kepada pelanggan. Setelah pembayaran berhasil dikonfirmasi, pesanan akan diproses dalam waktu 1–2 hari kerja sebelum dikirimkan.</p>
+                <h4>Delivery Time</h4>
+                <ul>
+                <li>Pengiriman lokal: 1–3 hari kerja</li>
+                <li>Pengiriman nasional: 2–5 hari kerja</li>
+                <li>Pengiriman internasional: 5–10 hari kerja</li>
+                </ul>
+                <h4>Return Policy</h4>
+                <p>Produk dapat dikembalikan atau ditukar jika produk rusak saat diterima atau tidak sesuai dengan pesanan. Pengajuan retur harus dilakukan dalam waktu maksimal 7 hari setelah produk diterima.</p>
+                <p>Produk yang dikembalikan harus dalam kondisi belum dipakai, tidak rusak, dan masih memiliki label serta kemasan asli.</p>
+                <h4>Refund Policy</h4>
+                <p>Jika retur disetujui, pengembalian dana akan diproses sesuai metode pembayaran yang digunakan oleh pelanggan (memerlukan waktu 3–7 hari kerja).</p>`;
+            }
+            else if(type === 'contact') {
                 title = "CONTACT US";
-                content = `<h4>Get in Touch</h4><p>If you have any query about your order or our products, please reach out to us:</p><p><b>WhatsApp:</b> +62 812 3456 7890<br><b>Email:</b> support@ganketi.store<br><b>Operating Hours:</b> Monday - Sunday, 09:00 AM - 09:00 PM WIB</p>`;
-            } else if(type === 'size') {
+                content = `<h4>Get In Touch</h4>
+                <p>Kami selalu terbuka untuk berkomunikasi dengan pelanggan, partner bisnis, maupun komunitas yang tertarik dengan brand GANKETI. Jika Anda memiliki pertanyaan, masukan, atau ingin bekerja sama dengan kami, silakan hubungi melalui informasi berikut:</p>
+                <ul>
+                <li><b>Email:</b> ganketi.store@gmail.com</li>
+                <li><b>Instagram:</b> @ganketi.store</li>
+                <li><b>Website:</b> www.ganketi.store</li>
+                </ul>
+                <h4>Send Us a Message</h4>
+                <p>Anda juga dapat mengirimkan pesan langsung melalui WhatsApp atau Email. Tim kami akan merespons secepat mungkin untuk membantu kebutuhan Anda.</p>`;
+            }
+            else if(type === 'size') {
                 title = "SIZE GUIDE";
-                content = `<h4>General Size Guide</h4><p>Measurements are in Centimeters (cm):</p><ul><li><b>S:</b> Chest 48 - Length 68</li><li><b>M:</b> Chest 50 - Length 70</li><li><b>L:</b> Chest 52 - Length 72</li><li><b>XL:</b> Chest 54 - Length 74</li><li><b>XXL:</b> Chest 56 - Length 76</li></ul><p><i>*Please allow 1-2 cm margin of error due to manual measurement.</i></p>`;
+                content = `<h4>General Size Guide</h4>
+                <p>Measurements are in Centimeters (cm):</p>
+                <ul>
+                    <li><b>S:</b> Chest 48 - Length 68</li>
+                    <li><b>M:</b> Chest 50 - Length 70</li>
+                    <li><b>L:</b> Chest 52 - Length 72</li>
+                    <li><b>XL:</b> Chest 54 - Length 74</li>
+                    <li><b>XXL:</b> Chest 56 - Length 76</li>
+                </ul>
+                <p><i>*Please allow 1-2 cm margin of error due to manual measurement.</i></p>`;
             }
 
             document.getElementById('modalTitle').innerText = title;
