@@ -338,8 +338,13 @@
                 <div class="form-group"><label>Street, Building, House No.</label><input type="text" id="cStreet" placeholder="Jl. Sudirman No. 10"></div>
                 <div style="display: flex; gap: 10px;"><div class="form-group" style="flex:1;"><label>RT</label><input type="number" id="cRT" placeholder="001"></div><div class="form-group" style="flex:1;"><label>RW</label><input type="number" id="cRW" placeholder="002"></div></div>
                 
+                <div class="form-group">
+                    <label>Provinsi</label>
+                    <input type="text" id="cProv" placeholder="Cth: Jawa Barat (Opsional untuk akurasi)">
+                </div>
+
                 <div class="form-group" style="position:relative;">
-                    <label>Kecamatan/Kota Tujuan (Wajib Pilih dari Dropdown!)</label>
+                    <label>Kota/Kecamatan Tujuan (Ketik & Pilih dari Dropdown!)</label>
                     <input type="text" id="cDestSearch" placeholder="Ketik min 3 huruf (Cth: Sarijadi)..." oninput="searchBiteshipDest(this.value)" autocomplete="off">
                     <input type="hidden" id="cDestId">
                     <input type="hidden" id="cDestName">
@@ -696,7 +701,7 @@
             if(existing) { existing.qty += 1; } else { cart.push({ ...product, cartItemId: cartItemId, name: `${product.name} (${selectedSize})`, qty: 1 }); }
             
             let cartItemIndex = cart.findIndex(c => c.cartItemId === cartItemId);
-            cart[cartItemIndex].origin = product.origin || 'KOTA JAKARTA SELATAN'; 
+            cart[cartItemIndex].origin = product.origin || 'JAKARTA SELATAN'; 
             cart[cartItemIndex].originId = product.originId || null; 
             cart[cartItemIndex].couriers = product.couriers || 'jne,jnt,sicepat';
 
@@ -731,23 +736,26 @@
             const resultBox = document.getElementById('cDestResults');
             if(query.length < 3) { resultBox.style.display = 'none'; return; }
             
+            // Gabungkan pencarian dengan Provinsi jika diisi, supaya lebih akurat
+            let prov = document.getElementById('cProv').value.trim();
+            let fullQuery = prov ? prov + ' ' + query : query;
+            
             clearTimeout(searchDestTimeout);
             searchDestTimeout = setTimeout(async () => {
                 resultBox.innerHTML = '<div style="padding:10px; font-size:11px; color:#aaa;">Mencari di sistem Kurir...</div>';
                 resultBox.style.display = 'block';
                 try {
-                    const res = await fetch(`https://api.biteship.com/v1/maps/areas?countries=ID&input=${encodeURIComponent(query)}&type=single`, {
+                    const res = await fetch(`https://api.biteship.com/v1/maps/areas?countries=ID&input=${encodeURIComponent(fullQuery)}&type=single`, {
                         headers: { 'Authorization': BITESHIP_KEY }
                     });
                     const data = await res.json();
                     if(data.success && data.areas && data.areas.length > 0) {
                         resultBox.innerHTML = data.areas.map(a => {
-                            let text = `${a.name}, ${a.administrative_division_level_2_name}, ${a.administrative_division_level_1_name}`;
-                            return `<div class="biteship-item" onclick="selectBiteshipDest('${a.id}', '${text.replace(/'/g, "\\'")}', '${a.postal_code}')">${text}</div>`;
+                            // TAMPILAN RAPI: a.name aslinya memang sudah lengkap format Biteship
+                            return `<div class="biteship-item" onclick="selectBiteshipDest('${a.id}', '${a.name.replace(/'/g, "\\'")}', '${a.postal_code}')">${a.name}</div>`;
                         }).join('');
                     } else {
-                        // Menampilkan pesan aslinya agar ketahuan apa error-nya
-                        let errorMsg = data.error || data.message || "Kecamatan/Kota tidak ditemukan. Coba ketik nama lain.";
+                        let errorMsg = data.error || data.message || "Kecamatan/Kota tidak ditemukan. Coba ketik lebih spesifik.";
                         resultBox.innerHTML = `<div style="padding:10px; font-size:11px; color:#ef4444;">Pesan Server: ${errorMsg}</div>`;
                     }
                 } catch(e) {
@@ -756,11 +764,14 @@
             }, 600);
         }
 
-        function selectBiteshipDest(id, text, zip) {
-            document.getElementById('cDestSearch').value = text;
+        function selectBiteshipDest(id, fullName, zip) {
+            // HANYA NAMA KOTA/KECAMATAN YANG DITAMPILKAN DI KOTAK INPUT (Biar Rapi Sesuai Request Bos)
+            let shortName = fullName.split(',')[0].trim();
+            document.getElementById('cDestSearch').value = shortName; 
+            
             document.getElementById('cDestId').value = id;
-            document.getElementById('cDestName').value = text;
-            if(zip) document.getElementById('cZip').value = zip;
+            document.getElementById('cDestName').value = fullName;
+            if(zip) document.getElementById('cZip').value = zip; // KODE POS OTOMATIS TERISI
             document.getElementById('cDestResults').style.display = 'none';
         }
 
@@ -787,7 +798,9 @@
             document.getElementById('cStreet').value = adr.street || '';
             document.getElementById('cRT').value = adr.rt || '';
             document.getElementById('cRW').value = adr.rw || '';
-            document.getElementById('cDestSearch').value = adr.destName || '';
+            document.getElementById('cProv').value = adr.prov || '';
+            // Tampilkan nama pendek di input box
+            document.getElementById('cDestSearch').value = adr.destName ? adr.destName.split(',')[0].trim() : ''; 
             document.getElementById('cDestId').value = adr.destId || '';
             document.getElementById('cDestName').value = adr.destName || '';
             document.getElementById('cZip').value = adr.zip || '';
@@ -796,7 +809,7 @@
         }
 
         function clearAddressForm() {
-            ['cName', 'cPhone', 'cStreet', 'cRT', 'cRW', 'cDestSearch', 'cDestId', 'cDestName', 'cZip'].forEach(id => document.getElementById(id).value = '');
+            ['cName', 'cPhone', 'cStreet', 'cRT', 'cRW', 'cProv', 'cDestSearch', 'cDestId', 'cDestName', 'cZip'].forEach(id => document.getElementById(id).value = '');
         }
 
         function goToShipping() { 
@@ -818,22 +831,23 @@
             const cStreet = document.getElementById('cStreet').value.trim(); 
             const cRT = document.getElementById('cRT').value.trim(); 
             const cRW = document.getElementById('cRW').value.trim();
+            const cProv = document.getElementById('cProv').value.trim();
             const cZip = document.getElementById('cZip').value.trim();
             const destId = document.getElementById('cDestId').value;
             const destName = document.getElementById('cDestName').value;
 
-            if(!cName || !cPhone || !cStreet || !cRT || !cRW || !cZip || !destId) { 
-                showToast("Pastikan semua data diisi dan KOTA DIPILIH dari dropdown hasil pencarian!", 'error'); 
+            if(!cName || !cPhone || !cStreet || !cZip || !destId) { 
+                showToast("Pastikan semua data diisi dan KOTA DIPILIH dari hasil pencarian Dropdown!", 'error'); 
                 return; 
             }
             
             if(document.getElementById('saveAddressCheck').checked) {
-                let newAdr = { name: cName, phone: cPhone, street: cStreet, rt: cRT, rw: cRW, destName: destName, destId: destId, zip: cZip };
+                let newAdr = { name: cName, phone: cPhone, street: cStreet, rt: cRT, rw: cRW, prov: cProv, destName: destName, destId: destId, zip: cZip };
                 let isDuplicate = savedAddresses.some(a => a.street === newAdr.street && a.name === newAdr.name);
                 if(!isDuplicate) { savedAddresses.push(newAdr); localStorage.setItem('ganketiAddresses', JSON.stringify(savedAddresses)); }
             }
 
-            const cAddress = `${cStreet}, RT ${cRT}/RW ${cRW}, ${destName} - ${cZip}`;
+            const cAddress = `${cStreet}, RT ${cRT}/RW ${cRW}, ${destName}`;
             let subTotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
 
             pendingOrderData = {
@@ -845,7 +859,7 @@
             hideAllAreas();
             document.getElementById('modalTitle').innerText = "OPSI PENGIRIMAN";
             document.getElementById('shippingOptionsArea').style.display = 'block';
-            document.getElementById('courierListContainer').innerHTML = '<p style="color:#aaa; text-align:center; padding:20px;">Mencari rute pengiriman asli... ⏳</p>';
+            document.getElementById('courierListContainer').innerHTML = '<p style="color:#aaa; text-align:center; padding:20px;">Menghitung ongkos kirim resmi... ⏳</p>';
 
             try {
                 let availableCouriers = cart[0].couriers || 'jne,jnt,sicepat';
@@ -853,7 +867,7 @@
                 
                 let originId = cart[0].originId;
                 
-                // Fallback pencarian ID asal jika ID hilang (untuk produk lama)
+                // Fallback pencarian ID asal jika ID hilang (untuk produk lama yg diupload sebelum ada update ini)
                 if(!originId) {
                     let baseOrigin = cart[0].origin || 'JAKARTA SELATAN';
                     let cleanOrigin = baseOrigin.replace(/KABUPATEN |KAB\. |KOTA /gi, '').trim();
@@ -869,7 +883,7 @@
                 }
 
                 if(!originId) {
-                    throw new Error("Lokasi toko tidak ditemukan.");
+                    throw new Error("Lokasi toko asal tidak valid/tidak ditemukan.");
                 }
 
                 let totalWeight = cart.reduce((sum, item) => sum + (500 * item.qty), 0);
@@ -880,7 +894,7 @@
                     headers: { 'Authorization': BITESHIP_KEY, 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         origin_area_id: originId,
-                        destination_area_id: destId, // Pakai ID yang sudah dipilih dari Dropdown
+                        destination_area_id: destId, // Pakai ID yang sudah dipilih pembeli dari Dropdown
                         couriers: formatCouriers,
                         items: [{ name: "Apparel", value: subTotal, weight: totalWeight, quantity: 1 }]
                     })
@@ -908,12 +922,14 @@
                     document.getElementById('courierListContainer').innerHTML = courierHtml;
                     setTimeout(() => { document.querySelector('input[name="courierOption"]:checked').parentElement.parentElement.click(); }, 100);
                 } else {
-                    throw new Error("Kurir API tidak merespon, gunakan fallback.");
+                    let errPricing = rateData.error || "Kurir API tidak merespon.";
+                    throw new Error(errPricing);
                 }
 
             } catch (e) {
                 console.warn("API Biteship error/limit, falling back to simulated rates:", e);
                 
+                // 🔥 FALLBACK SYSTEM: MUNCULKAN HARGA SIMULASI JIKA SERVER BITESHIP GANGGUAN 🔥
                 let availableCouriers = (cart[0].couriers || 'JNE,J&T').split(',').map(s => s.trim());
                 let baseCost = destName.toUpperCase().includes("JAWA") || destName.toUpperCase().includes("BANDUNG") || destName.toUpperCase().includes("JAKARTA") ? 15000 : 35000;
                 if(destName.toUpperCase().includes("SUMATERA")) baseCost = 25000;
