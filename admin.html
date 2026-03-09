@@ -17,8 +17,8 @@
         .tab-btn.active { background: #fff; color: #000; }
         .form-group { margin-bottom: 15px; }
         label { display: block; font-size: 11px; color: #aaa; margin-bottom: 5px; text-transform: uppercase; letter-spacing: 1px;}
-        input, select { width: 100%; padding: 12px; border: 1px solid #444; background: #222; color: white; border-radius: 8px; box-sizing: border-box; font-family: 'Poppins', sans-serif; outline: none;}
-        input:focus, select:focus { border-color: #4ade80; }
+        input, select, textarea { width: 100%; padding: 12px; border: 1px solid #444; background: #222; color: white; border-radius: 8px; box-sizing: border-box; font-family: 'Poppins', sans-serif; outline: none;}
+        input:focus, select:focus, textarea:focus { border-color: #4ade80; }
         .btn-action { width: 100%; padding: 15px; background: #fff; color: #000; border: none; border-radius: 8px; font-weight: 800; cursor: pointer; margin-top: 10px; text-transform: uppercase; letter-spacing: 1px; transition: 0.2s;}
         .btn-action:hover { opacity: 0.8; }
         
@@ -84,6 +84,11 @@
             <div class="form-group"><label>Nama Produk</label><input type="text" id="eName"></div>
             
             <div class="form-group">
+                <label>Deskripsi Produk (Bahan, Ukuran, Merek, dll)</label>
+                <textarea id="eDesc" rows="4" placeholder="Cth: Bahan Katun Denim tebal. Ukuran fit M-XL..."></textarea>
+            </div>
+            
+            <div class="form-group">
                 <label>Kategori (Bisa Pilih > 1)</label>
                 <div id="eCategoryContainer"><span style="color:#888; font-size:11px;">Memuat...</span></div>
             </div>
@@ -129,6 +134,11 @@
             <div id="tabUpload">
                 <div class="form-group"><label>Nama Produk</label><input type="text" id="pName"></div>
                 
+                <div class="form-group">
+                    <label>Deskripsi Produk (Bahan, Ukuran, Merek, dll)</label>
+                    <textarea id="pDesc" rows="4" placeholder="Cth: Bahan Katun Denim tebal. Ukuran fit M-XL..."></textarea>
+                </div>
+
                 <div class="form-group">
                     <label>Kategori (BISA DIKLIK LEBIH DARI SATU! Cth: Wanita + Sweater)</label>
                     <div id="pCategoryContainer"><span style="color:#ef4444; font-size:11px;">Memuat data...</span></div>
@@ -426,10 +436,11 @@
         });
 
         // =========================================================
-        // 🔥 MESIN UPLOAD & MANAGE PRODUK DENGAN MULTI-KATEGORI 🔥
+        // 🔥 MESIN UPLOAD & MANAGE PRODUK DENGAN DESKRIPSI 🔥
         // =========================================================
         function uploadProduct() { 
             const name = document.getElementById('pName').value; 
+            const desc = document.getElementById('pDesc').value.trim(); // 🔥 BACA DESKRIPSI 🔥
             const cost = document.getElementById('pCost').value; const price = document.getElementById('pPrice').value; const stock = document.getElementById('pStock').value; const orig = document.getElementById('pOriginalPrice').value; const files = document.getElementById('pImages').files;
             
             const link = document.getElementById('pLink').value.trim(); 
@@ -443,13 +454,13 @@
             document.getElementById('statusMessage').innerHTML = "<span style='color:white;'>Mengunggah...</span>";
             const readFiles = Array.from(files).map(file => new Promise(resolve => { const reader = new FileReader(); reader.onload = e => resolve(e.target.result); reader.readAsDataURL(file); }));
             Promise.all(readFiles).then(imgs => {
-                let data = { name, category: categoryString, cost: parseInt(cost), price: parseInt(price), stock: parseInt(stock), images: imgs, timestamp: Date.now(), isPopular: false };
+                let data = { name, desc: desc, category: categoryString, cost: parseInt(cost), price: parseInt(price), stock: parseInt(stock), images: imgs, timestamp: Date.now(), isPopular: false };
                 if(orig) data.originalPrice = parseInt(orig);
                 if(link) data.link = link; 
                 
                 db.ref('products').push(data).then(() => { 
                     document.getElementById('statusMessage').innerHTML = "<span style='color:#4ade80;'>✅ Upload sukses!</span>"; 
-                    ['pName','pCost','pPrice','pStock','pOriginalPrice','pLink','pImages'].forEach(id=>document.getElementById(id).value=''); 
+                    ['pName','pDesc','pCost','pPrice','pStock','pOriginalPrice','pLink','pImages'].forEach(id=>document.getElementById(id).value=''); 
                     document.querySelectorAll('.pCatCb').forEach(cb => cb.checked = false); 
                     setTimeout(() => { document.getElementById('statusMessage').innerHTML = ""; }, 3000);
                 });
@@ -490,7 +501,7 @@
 
         function openEditModal(id) { 
             currentEditId = id; let p = adminProductsData[id]; 
-            ['eName','eCost','ePrice','eStock','eOriginalPrice', 'eLink'].forEach(k=>document.getElementById(k).value=p[k.replace('e','').toLowerCase()]||''); 
+            ['eName','eDesc','eCost','ePrice','eStock','eOriginalPrice', 'eLink'].forEach(k=>document.getElementById(k).value=p[k.replace('e','').toLowerCase()]||''); 
             
             document.querySelectorAll('.eCatCb').forEach(cb => {
                 cb.checked = p.category ? p.category.includes(cb.value) : false;
@@ -506,7 +517,7 @@
             if(checkedCats.length === 0) return alert("Pilih minimal 1 kategori!");
             const categoryString = checkedCats.join(', ');
 
-            let u = { name: document.getElementById('eName').value, category: categoryString, cost: parseInt(document.getElementById('eCost').value), price: parseInt(document.getElementById('ePrice').value), stock: parseInt(document.getElementById('eStock').value) };
+            let u = { name: document.getElementById('eName').value, desc: document.getElementById('eDesc').value.trim(), category: categoryString, cost: parseInt(document.getElementById('eCost').value), price: parseInt(document.getElementById('ePrice').value), stock: parseInt(document.getElementById('eStock').value) };
             let o = document.getElementById('eOriginalPrice').value; if(o) u.originalPrice = parseInt(o); else u.originalPrice = null;
             let l = document.getElementById('eLink').value.trim(); if(l) u.link = l; else u.link = null; 
             let files = document.getElementById('eImages').files;
