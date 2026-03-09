@@ -26,6 +26,7 @@
         .cat-label { display: inline-block; background: #222; color: #888; padding: 8px 15px; border-radius: 20px; font-size: 11px; cursor: pointer; border: 1px solid #444; margin: 0 5px 8px 0; transition: 0.3s; font-weight: bold;}
         .cat-checkbox:checked + .cat-label { background: #3b82f6; color: white; border-color: #3b82f6; }
 
+        /* 🔥 CSS AUTOCOMPLETE BITESHIP 🔥 */
         .autocomplete-box { position: absolute; width: 100%; max-height: 180px; overflow-y: auto; z-index: 1000; border: 1px solid #444; border-radius: 4px; box-shadow: 0 4px 10px rgba(0,0,0,0.8); display: none; background: #1a1a1a; margin-top: 2px; }
         .biteship-item { padding: 12px 10px; border-bottom: 1px solid #333; font-size: 12px; cursor: pointer; color: #ccc; line-height: 1.4; }
         .biteship-item:hover { background: #3b82f6; color: white; font-weight: bold; }
@@ -346,9 +347,7 @@
         function loginGoogle() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
         function logout() { auth.signOut(); }
 
-        // =========================================================
-        // 🔥 ENGINE API PENCARIAN AREA BITESHIP (HURUF KECIL & DIAGNOSTIK ERROR) 🔥
-        // =========================================================
+        // 🔥 ENGINE API PENCARIAN AREA BITESHIP (HURUF KECIL 'b' & DIAGNOSTIK ERROR) 🔥
         const BITESHIP_KEY = 'biteship_live.eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiR2Fua2V0aSIsInVzZXJJZCI6IjY5YWVlODYzM2NjODBhMWUzMjE3ZGJkYyIsImlhdCI6MTc3MzA3OTg3MX0.ot-KA-1HmE0xMsc7OhHeQBaDGo7KrDKU1tuS4bk5fCo';
         let searchTimeout;
 
@@ -368,11 +367,11 @@
                     
                     if(data.success && data.areas && data.areas.length > 0) {
                         resultBox.innerHTML = data.areas.map(a => {
-                            let text = `${a.name}, ${a.administrative_division_level_2_name}, ${a.administrative_division_level_1_name}`;
-                            return `<div class="biteship-item" onclick="selectBiteshipOrigin('${a.id}', '${text.replace(/'/g, "\\'")}', '${type}')">${text}</div>`;
+                            let fullText = `${a.name}, ${a.administrative_division_level_2_name}, ${a.administrative_division_level_1_name}`;
+                            // Meneruskan shortName (a.name) ke fungsi select
+                            return `<div class="biteship-item" onclick="selectBiteshipOrigin('${a.id}', '${a.name.replace(/'/g, "\\'")}', '${type}')">${fullText}</div>`;
                         }).join('');
                     } else {
-                        // Memunculkan error asli dari server Biteship jika ditolak
                         let errorMsg = data.error || data.message || "Kecamatan/Kota tidak ditemukan.";
                         resultBox.innerHTML = `<div style="padding:10px; font-size:11px; color:#ef4444;">Pesan Server: ${errorMsg}</div>`;
                     }
@@ -382,15 +381,13 @@
             }, 600);
         }
 
-        function selectBiteshipOrigin(id, text, type) {
-            document.getElementById(type + 'Origin').value = text;
+        function selectBiteshipOrigin(id, shortName, type) {
+            document.getElementById(type + 'Origin').value = shortName; // Cuma nama pendeknya aja biar rapi
             document.getElementById(type + 'OriginId').value = id;
             document.getElementById(type + 'OriginResults').style.display = 'none';
         }
 
-        // =========================================================
         // ENGINE KATEGORI 
-        // =========================================================
         db.ref('ui_categories').on('value', snap => {
             const data = snap.val(); 
             const pCat = document.getElementById('pCategoryContainer'); 
@@ -472,9 +469,7 @@
             } else { db.ref('ui_categories').push(baseData); document.getElementById('catName').value = ''; document.getElementById('catIcon').value = ''; }
         }
 
-        // =========================================================
         // ENGINE KOTAK UNGGULAN
-        // =========================================================
         function uploadFeaturedCat() {
             const title = document.getElementById('fcTitle').value.trim();
             const checkedTargets = Array.from(document.querySelectorAll('.fcCatCb:checked')).map(cb => cb.value);
@@ -509,9 +504,7 @@
             }).join('');
         });
 
-        // =========================================================
-        // 🔥 MESIN UPLOAD & MANAGE PRODUK 🔥
-        // =========================================================
+        // MESIN UPLOAD & MANAGE PRODUK 
         function uploadProduct() { 
             const name = document.getElementById('pName').value; 
             const desc = document.getElementById('pDesc').value.trim();
@@ -618,9 +611,7 @@
             else { db.ref('products/'+currentEditId).update(u).then(()=>{closeEditModal(); alert('Tersimpan!');}); }
         }
 
-        // =========================================================
         // ENGINE BANNER
-        // =========================================================
         function uploadBanners() { 
             const files = document.getElementById('promoBanners').files;
             if(files.length === 0) return alert("Pilih gambar banner dulu!");
@@ -637,9 +628,7 @@
             list.innerHTML = Object.keys(data).map(key => `<div class="list-item-admin"><img src="${data[key].image}" style="height:40px; border-radius:4px;"> <button onclick="if(confirm('Hapus banner ini?')) db.ref('ui_banners/${key}').remove()" style="background:none; border:1px solid #ef4444; color:#ef4444; cursor:pointer; padding:5px; border-radius:4px;">Hapus</button></div>`).join('');
         });
 
-        // =========================================================
         // ENGINE PESANAN
-        // =========================================================
         function fetchDataSuper() {
             db.ref('orders').on('value', snap => {
                 allOrdersData = snap.val() ? Object.keys(snap.val()).map(k => ({id:k, ...snap.val()[k]})) : [];
@@ -724,9 +713,7 @@
             db.ref('orders/' + orderId).update({ status: 'SHIPPED', resi: resiVal }).then(() => alert('Pesanan Berhasil Dikirim dengan Resi: ' + resiVal));
         }
 
-        // =========================================================
         // ENGINE FINANCE
-        // =========================================================
         function setFinanceFilter(type) {
             currentFinFilter = type;
             ['hari','bulan','tahun','semua'].forEach(t => document.getElementById('f-'+t).className = (t === type) ? 'btn-filter active' : 'btn-filter');
