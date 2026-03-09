@@ -25,22 +25,51 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
         body { background: var(--bg); color: var(--text); -webkit-font-smoothing: antialiased; overflow-x: hidden;}
 
-        header { background: rgba(5,5,5,0.95); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--border); }
-        .head-top { display: flex; justify-content: space-between; align-items: center; padding: 12px 20px; } 
+        /* 🔥 HEADER MEWAH (LOGO TENGAH) 🔥 */
+        header { background: var(--bg); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
+        .head-top { display: grid; grid-template-columns: auto 1fr auto; align-items: center; padding: 12px 20px; gap: 15px;} 
         
-        .logo { cursor: pointer; user-select: none; touch-action: manipulation; -webkit-tap-highlight-color: transparent; display: flex; align-items: center;}
+        .hamburger-btn { background: none; border: none; color: var(--primary); font-size: 24px; cursor: pointer; display: flex; align-items: center; padding: 0; margin: 0;}
+        
+        .logo { cursor: pointer; user-select: none; touch-action: manipulation; -webkit-tap-highlight-color: transparent; display: flex; justify-content: center; align-items: center;}
         .logo img { max-height: 45px; width: auto; object-fit: contain; } 
         
-        .nav-icons { display: flex; gap: 15px; align-items: center; }
-        .icon-btn { background: none; border: none; color: var(--text); font-size: 13px; font-weight: 600; cursor: pointer; display: flex; align-items: center; gap: 5px; }
-        .cart-badge { background: var(--primary); color: var(--bg); font-size: 10px; font-weight: 800; padding: 2px 6px; border-radius: 20px; }
+        .nav-icons { display: flex; gap: 15px; align-items: center; justify-content: flex-end;}
+        .icon-btn { background: none; border: none; color: var(--text); font-size: 18px; font-weight: 600; cursor: pointer; display: flex; align-items: center; position: relative;}
+        .cart-badge { position: absolute; top: -5px; right: -10px; background: #ef4444; color: white; font-size: 9px; font-weight: 800; padding: 2px 6px; border-radius: 20px; }
         
-        .search-container { padding: 0 20px 15px 20px; }
-        .search-box { width: 100%; padding: 10px 15px; background: #1a1a1a; border: 1px solid #333; border-radius: 8px; color: white; outline: none; font-family: 'Inter'; font-size: 13px; }
+        .search-container { padding: 0 20px; margin-top: 5px; }
+        .search-box { width: 100%; padding: 10px 15px; background: #1a1a1a; border: 1px solid #333; border-radius: 4px; color: white; outline: none; font-family: 'Inter'; font-size: 13px; }
         .search-box:focus { border-color: var(--primary); }
 
-        /* 🔥 BUBBLE CATEGORY UI (Text Wrap Aman) 🔥 */
-        .icon-nav-container { display: flex; gap: 15px; padding: 15px 20px; overflow-x: auto; scrollbar-width: none; background: var(--bg); border-bottom: 1px solid var(--border); align-items: flex-start;}
+        /* 🔥 LACI SAMPING (SIDEBAR MENU) 🔥 */
+        .sidebar-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 999; display: none; backdrop-filter: blur(2px); }
+        .sidebar { position: fixed; top: 0; left: -100%; width: 85%; max-width: 320px; height: 100%; background: #ffffff; z-index: 1000; transition: 0.3s ease-in-out; display: flex; flex-direction: column; overflow-y: auto;}
+        .sidebar.active { left: 0; }
+        .sidebar-header { padding: 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; position: relative; }
+        .sidebar-close { font-size: 26px; color: #000; cursor: pointer; line-height: 1; }
+        
+        .sidebar-content { flex: 1; display: flex; flex-direction: column; }
+        .sidebar-item { padding: 18px 20px; color: #000; font-size: 13px; font-weight: 600; text-transform: uppercase; border-bottom: 1px solid #f5f5f5; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: 0.2s;}
+        .sidebar-item:hover { background: #f9f9f9; }
+        
+        .sub-menu { display: none; background: #fafafa; border-bottom: 1px solid #eee; }
+        .sub-item { padding: 15px 20px 15px 40px; color: #333; font-size: 12px; cursor: pointer; text-transform: uppercase; border-bottom: 1px solid #f5f5f5; transition: 0.2s;}
+        .sub-item:hover { background: #f0f0f0; color: #000; font-weight: bold;}
+        
+        .sidebar-divider { height: 10px; background: #f0f0f0; }
+
+        /* 🔥 KOTAK KATEGORI UNGGULAN (3 KOTAK) 🔥 */
+        .featured-section { padding: 20px 20px 10px 20px; }
+        .featured-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .f-card { position: relative; width: 100%; aspect-ratio: 3/4; border-radius: 4px; overflow: hidden; cursor: pointer; background: #222; }
+        .f-card img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
+        .f-card:hover img { transform: scale(1.05); }
+        .f-overlay { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); width: 85%; text-align: center;}
+        .f-title { display: block; background: #e5e0d8; color: #000; font-family: 'Oswald', sans-serif; font-size: 11px; font-weight: bold; padding: 5px 0; border-radius: 2px; letter-spacing: 1px; box-shadow: 0 4px 6px rgba(0,0,0,0.5);}
+
+        /* BUBBLE CATEGORY UI */
+        .icon-nav-container { display: flex; gap: 15px; padding: 10px 20px 20px 20px; overflow-x: auto; scrollbar-width: none; align-items: flex-start;}
         .icon-nav-container::-webkit-scrollbar { display: none; }
         .icon-item { display: flex; flex-direction: column; align-items: center; gap: 8px; min-width: 60px; max-width: 80px; cursor: pointer; }
         .icon-circle { width: 50px; height: 50px; border-radius: 50%; background: #1a1a1a; display: flex; justify-content: center; align-items: center; overflow: hidden; border: 1px solid #333; transition: 0.3s; flex-shrink: 0;}
@@ -50,36 +79,36 @@
         .icon-item.active .icon-circle { border-color: var(--primary); }
         .icon-item.active .icon-text { color: var(--primary); }
 
-        /* HERO PROMO BANNER */
-        .promo-hero { position: relative; width: 100%; height: 40vh; overflow: hidden; background: #111; display: flex; align-items: center; justify-content: center; text-align: center;}
+        /* PROMO HERO BANNER */
+        .promo-hero { position: relative; width: 100%; height: 35vh; overflow: hidden; background: #111; display: flex; align-items: center; justify-content: center; text-align: center;}
         .carousel-track { display: flex; position: absolute; top:0; left:0; width: 100%; height: 100%; transition: transform 0.5s ease-in-out; z-index: 1; }
         .carousel-slide { min-width: 100%; height: 100%; position: relative; }
         .carousel-slide img { width: 100%; height: 100%; object-fit: cover; }
-        
         .carousel-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: linear-gradient(to bottom, rgba(0,0,0,0.6), var(--bg)); z-index: 2; pointer-events: none; }
-        
         .hero-content { position: relative; z-index: 3; padding: 0 20px; pointer-events: none; }
-        .hero-content h1 { font-family: 'Oswald', sans-serif; font-size: 38px; letter-spacing: 2px; color: var(--primary); text-transform: uppercase; margin-bottom: 5px; text-shadow: 2px 2px 10px rgba(0,0,0,0.8);}
-        .hero-content p { color: #ddd; font-size: 14px; text-shadow: 1px 1px 5px rgba(0,0,0,0.8); }
-        
+        .hero-content h1 { font-family: 'Oswald', sans-serif; font-size: 32px; letter-spacing: 2px; color: var(--primary); text-transform: uppercase; margin-bottom: 5px; text-shadow: 2px 2px 10px rgba(0,0,0,0.8);}
+        .hero-content p { color: #ddd; font-size: 13px; text-shadow: 1px 1px 5px rgba(0,0,0,0.8); }
         .carousel-dots { position: absolute; bottom: 15px; left: 50%; transform: translateX(-50%); display: flex; gap: 5px; z-index: 4; }
-        .dot { width: 8px; height: 8px; border-radius: 50%; background: rgba(255,255,255,0.3); transition: 0.3s; cursor: pointer; }
-        .dot.active { background: white; width: 20px; border-radius: 4px; }
+        .dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.3); transition: 0.3s; cursor: pointer; }
+        .dot.active { background: white; width: 18px; border-radius: 4px; }
+
+        /* 🔥 FITUR URUTKAN (SORT BY) 🔥 */
+        .sort-bar { display: flex; justify-content: space-between; align-items: center; padding: 0 20px 15px 20px; border-bottom: 1px solid var(--border); margin-bottom: 20px;}
+        .sort-info { font-size: 12px; color: var(--text-dim); }
+        .sort-select { background: transparent; color: white; border: 1px solid #333; padding: 5px 10px; border-radius: 4px; font-size: 12px; outline: none; font-family: 'Inter'; cursor: pointer;}
+        .sort-select option { background: #111; color: white; }
 
         /* PRODUCT GRID */
-        .container { padding: 30px 20px; max-width: 1200px; margin: 0 auto; min-height: 50vh; }
+        .container { padding: 0 20px 30px 20px; max-width: 1200px; margin: 0 auto; min-height: 50vh; }
         .section-title { font-family: 'Oswald', sans-serif; font-size: 20px; letter-spacing: 1px; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px; display:flex; justify-content: space-between; align-items:center;}
-        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); gap: 20px; }
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; }
         .card { background: var(--surface); border-radius: 8px; overflow: hidden; border: 1px solid var(--border); cursor: pointer; transition: 0.3s; display: flex; flex-direction: column; }
         .img-box { width: 100%; aspect-ratio: 1 / 1; background: #1a1a1a; position: relative; overflow: hidden; }
         .img-box img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
         .card:hover .img-box img { transform: scale(1.05); }
         .badge { position: absolute; top: 10px; left: 10px; background: var(--primary); color: var(--bg); font-size: 10px; font-weight: 800; padding: 4px 8px; text-transform: uppercase; border-radius: 2px;}
         .info { padding: 15px; display: flex; flex-direction: column; flex-grow: 1; }
-        
-        /* 🔥 Desain Tag Kategori Produk 🔥 */
         .cat { font-size: 9px; color: var(--bg); background: var(--text-dim); padding: 3px 6px; border-radius: 4px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; font-weight: bold; align-self: flex-start;}
-        
         .name { font-size: 14px; font-weight: 600; margin-bottom: 10px; line-height: 1.4; color: var(--primary); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
         .price { font-family: 'Oswald', sans-serif; font-weight: 500; font-size: 16px; margin-top: auto; color: var(--primary); display: flex; flex-direction: column; }
         .price-strike { font-family: 'Inter', sans-serif; font-size: 11px; text-decoration: line-through; color: #ef4444; font-weight: 400; margin-bottom: 2px;}
@@ -134,47 +163,83 @@
 
     <div id="toast-container" class="toast-container"></div>
 
+    <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleMenu()"></div>
+    <div class="sidebar" id="sidebarMenu">
+        <div class="sidebar-header">
+            <div style="width:24px;"></div> <h2 style="margin:0; color:#000; font-family:'Oswald', sans-serif; font-size:22px; letter-spacing:1px;">GANKETI</h2>
+            <div class="sidebar-close" onclick="toggleMenu()">×</div>
+        </div>
+        
+        <div class="sidebar-content">
+            <div class="sidebar-item" onclick="toggleSubMenu('catSubMenu')">
+                SHOP BY CATEGORY <span id="arrow-catSubMenu" style="transition:0.3s; font-size:18px;">›</span>
+            </div>
+            <div class="sub-menu" id="catSubMenu">
+                <div class="sub-item" onclick="filterCategory('ALL'); toggleMenu();" style="font-weight:bold;">🔥 SEMUA KOLEKSI</div>
+                <div id="sidebarCatList"></div>
+            </div>
+            
+            <div class="sidebar-divider"></div>
+            
+            <div class="sidebar-item" onclick="openMyOrders(); toggleMenu();" style="text-transform:none; font-weight:normal;">Track Order</div>
+            <div class="sidebar-item" onclick="toggleMenu(); showToast('Toko kami 100% Online Kak!', 'info')" style="text-transform:none; font-weight:normal;">Store Location</div>
+            <div class="sidebar-item" id="sideLoginBtn" onclick="handleAuth(); toggleMenu();" style="text-transform:none; font-weight:normal;">Sign In</div>
+        </div>
+    </div>
+
     <header>
         <div class="head-top">
+            <button class="hamburger-btn" onclick="toggleMenu()">☰</button>
             <div class="logo" id="mainLogo" onclick="secretAdminLogin()">
                 <img src="ganketilogo.png" alt="GANKETI">
             </div>
             <div class="nav-icons">
-                <button class="icon-btn" id="loginBtn" onclick="handleAuth()">👤 LOGIN</button>
-                <button class="icon-btn" onclick="openMyOrders()">📝 PESANAN</button>
                 <button class="icon-btn" onclick="openCart()">🛒 <span class="cart-badge" id="cartCount">0</span></button>
             </div>
         </div>
         <div class="search-container">
-            <input type="search" class="search-box" id="searchInput" placeholder="Cari hoodie, t-shirt, jacket..." onkeyup="searchProducts()">
+            <input type="search" class="search-box" id="searchInput" placeholder="Cari hoodie, t-shirt, celana..." onkeyup="searchProducts()">
         </div>
     </header>
 
-    <div class="icon-nav-container" id="categoryIconNav">
-        <div class="icon-item active" onclick="filterCategory('ALL')"><div class="icon-circle" style="background:#fff; color:black; font-weight:bold;">ALL</div><div class="icon-text">Semua</div></div>
-    </div>
-
-    <div class="promo-hero" id="promoHeroSec">
-        <div class="carousel-track" id="carouselTrack">
-            <div class="carousel-slide"><img src="https://images.unsplash.com/photo-1556821840-3a63f95609a7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"></div>
-        </div>
+    <div class="promo-hero" id="promoHeroSec" style="display:none;">
+        <div class="carousel-track" id="carouselTrack"></div>
         <div class="carousel-overlay"></div>
         <div class="hero-content">
             <h1 id="heroTitle">Authentic Streetwear</h1>
             <p id="heroSub">Premium Original Collection. Est. 2026</p>
         </div>
-        <div class="carousel-dots" id="carouselDots">
-            <div class="dot active"></div>
+        <div class="carousel-dots" id="carouselDots"></div>
+    </div>
+
+    <div class="featured-section" id="featuredSection" style="display:none;">
+        <div class="featured-grid" id="featuredCardsContainer">
+            </div>
+    </div>
+
+    <div class="icon-nav-container" id="categoryIconNav">
+        <div class="icon-item active" onclick="filterCategory('ALL')"><div class="icon-circle" style="background:#fff; color:black; font-weight:bold;">ALL</div><div class="icon-text">Semua</div></div>
+    </div>
+
+    <div class="sort-bar">
+        <div class="sort-info"><span id="productCountUi" style="color:var(--primary); font-weight:bold;">0</span> Produk</div>
+        <div>
+            <span style="font-size:12px; color:#888; margin-right:5px;">Urutkan:</span>
+            <select class="sort-select" id="sortSelect" onchange="renderProducts()">
+                <option value="newest">Terbaru</option>
+                <option value="price_asc">Harga Terendah</option>
+                <option value="price_desc">Harga Tertinggi</option>
+            </select>
         </div>
     </div>
 
-    <div class="container" id="popularContainer" style="display:none; padding-bottom: 0; min-height: auto;">
-        <h2 class="section-title" style="color: #f59e0b; border-color: #333;">🔥 SEDANG TREN</h2>
+    <div class="container" id="popularContainer" style="display:none; padding-top: 0; min-height: auto;">
+        <h2 class="section-title" style="color: #f59e0b; border-color: #333; margin-top:0;">🔥 SEDANG TREN</h2>
         <div class="grid" id="popularGrid"></div>
     </div>
 
     <div class="container">
-        <h2 class="section-title" id="secTitle">LATEST DROP</h2>
+        <h2 class="section-title" id="secTitle" style="display: none;">LATEST DROP</h2>
         <div class="grid" id="productGrid"><p style="text-align: center; width: 100%; color: var(--text-dim);">Memuat etalase...</p></div>
     </div>
 
@@ -232,6 +297,29 @@
         let apiRegionData = { prov: [], city: [], dist: [], vill: [] }; 
         updateCartCount();
 
+        // 🔥 LOGIC SIDEBAR MENU 🔥
+        function toggleMenu() {
+            const sidebar = document.getElementById('sidebarMenu');
+            const overlay = document.getElementById('sidebarOverlay');
+            if (sidebar.classList.contains('active')) {
+                sidebar.classList.remove('active'); overlay.style.display = 'none';
+            } else {
+                sidebar.classList.add('active'); overlay.style.display = 'block';
+            }
+        }
+        
+        function toggleSubMenu(id) {
+            const el = document.getElementById(id);
+            const arrow = document.getElementById('arrow-' + id);
+            if (el.style.display === 'block') {
+                el.style.display = 'none';
+                if(arrow) arrow.style.transform = 'rotate(0deg)';
+            } else {
+                el.style.display = 'block';
+                if(arrow) arrow.style.transform = 'rotate(90deg)';
+            }
+        }
+
         function showToast(message, type = 'info') {
             const container = document.getElementById('toast-container'); const toast = document.createElement('div');
             toast.className = `modern-toast ${type}`; let icon = type === 'success' ? '✅' : type === 'error' ? '❌' : '💡';
@@ -240,8 +328,13 @@
         }
 
         auth.onAuthStateChanged(user => {
-            if (user) { currentUser = user; document.getElementById('loginBtn').innerHTML = `👤 ${user.displayName.split(' ')[0].toUpperCase()}`; } 
-            else { currentUser = null; document.getElementById('loginBtn').innerHTML = `👤 LOGIN`; }
+            if (user) { 
+                currentUser = user; 
+                document.getElementById('sideLoginBtn').innerHTML = `SIGN OUT (${user.displayName.split(' ')[0]})`;
+            } else { 
+                currentUser = null; 
+                document.getElementById('sideLoginBtn').innerHTML = `SIGN IN / LOGIN`; 
+            }
         });
 
         function handleAuth() {
@@ -257,61 +350,72 @@
         }
 
         // =========================================================
-        // 🔥 ENGINE PROMO BANNER (AUTO SLIDE + SWIPE MANUAL) 🔥
+        // 🔥 ENGINE KOTAK UNGGULAN (FEATURED CARDS) 🔥
+        // =========================================================
+        db.ref('ui_featured_cats').on('value', snap => {
+            const data = snap.val(); const sec = document.getElementById('featuredSection'); const container = document.getElementById('featuredCardsContainer');
+            if(!data) { sec.style.display = 'none'; return; }
+            sec.style.display = 'block';
+            
+            let features = Object.keys(data).map(k => data[k]).sort((a,b) => a.timestamp - b.timestamp).slice(0, 3);
+            container.innerHTML = features.map(f => `
+                <div class="f-card" onclick="filterCategory('${f.target}')">
+                    <img src="${f.image}">
+                    <div class="f-overlay"><span class="f-title">${f.title}</span></div>
+                </div>
+            `).join('');
+        });
+
+        // =========================================================
+        // 🔥 ENGINE PROMO BANNER SLIDE 🔥
         // =========================================================
         let bannersArr = []; let currentSlide = 0; let slideInterval;
-        const track = document.getElementById('carouselTrack');
-        const dots = document.getElementById('carouselDots');
-        const promoHero = document.getElementById('promoHeroSec');
+        const track = document.getElementById('carouselTrack'); const dots = document.getElementById('carouselDots'); const promoHero = document.getElementById('promoHeroSec');
 
         db.ref('ui_banners').on('value', snap => {
             const data = snap.val();
             if(data) {
+                promoHero.style.display = 'flex';
                 bannersArr = Object.keys(data).map(k => data[k]).sort((a,b) => a.timestamp - b.timestamp);
                 track.innerHTML = bannersArr.map(b => `<div class="carousel-slide"><img src="${b.image}"></div>`).join('');
                 dots.innerHTML = bannersArr.map((b, i) => `<div class="dot ${i===0?'active':''}" onclick="goToSlide(${i})"></div>`).join('');
-            } else {
-                bannersArr = [];
-                track.innerHTML = `<div class="carousel-slide"><img src="https://images.unsplash.com/photo-1556821840-3a63f95609a7?ixlib=rb-4.0.3&auto=format&fit=crop&w=1200&q=80"></div>`;
-                dots.innerHTML = `<div class="dot active"></div>`;
-            }
-            startAutoSlide();
+                startAutoSlide();
+            } else { promoHero.style.display = 'none'; clearInterval(slideInterval); }
         });
 
-        function updateSliderUI() {
-            if(bannersArr.length <= 1) return;
-            track.style.transform = `translateX(-${currentSlide * 100}%)`;
-            Array.from(dots.children).forEach((d, i) => d.className = i === currentSlide ? 'dot active' : 'dot');
-        }
-
+        function updateSliderUI() { if(bannersArr.length <= 1) return; track.style.transform = `translateX(-${currentSlide * 100}%)`; Array.from(dots.children).forEach((d, i) => d.className = i === currentSlide ? 'dot active' : 'dot'); }
         function nextSlide() { if(bannersArr.length <= 1) return; currentSlide = (currentSlide + 1) % bannersArr.length; updateSliderUI(); resetAutoSlide(); }
         function prevSlide() { if(bannersArr.length <= 1) return; currentSlide = (currentSlide - 1 + bannersArr.length) % bannersArr.length; updateSliderUI(); resetAutoSlide(); }
         function goToSlide(index) { currentSlide = index; updateSliderUI(); resetAutoSlide(); }
         function startAutoSlide() { clearInterval(slideInterval); if(bannersArr.length > 1) { slideInterval = setInterval(nextSlide, 4000); } }
         function resetAutoSlide() { clearInterval(slideInterval); startAutoSlide(); }
-
+        
         let touchstartX = 0; let touchendX = 0;
         promoHero.addEventListener('touchstart', e => { touchstartX = e.changedTouches[0].screenX; }, {passive: true});
-        promoHero.addEventListener('touchend', e => { 
-            touchendX = e.changedTouches[0].screenX; 
-            if(touchendX < touchstartX - 40) nextSlide(); 
-            if(touchendX > touchstartX + 40) prevSlide(); 
-        }, {passive: true});
+        promoHero.addEventListener('touchend', e => { touchendX = e.changedTouches[0].screenX; if(touchendX < touchstartX - 40) nextSlide(); if(touchendX > touchstartX + 40) prevSlide(); }, {passive: true});
+
 
         // =========================================================
-
-        // 🔥 PERBAIKAN ENGINE KATEGORI BUBBLE (TEXT FULL AMAN & SYNC ORDER) 🔥
+        // 🔥 ENGINE KATEGORI (SINKRON KE SIDEBAR & BUBBLE) 🔥
+        // =========================================================
         db.ref('ui_categories').on('value', snap => {
-            const data = snap.val(); const nav = document.getElementById('categoryIconNav');
-            let baseHtml = `<div class="icon-item ${activeCategory === 'ALL' ? 'active' : ''}" onclick="filterCategory('ALL')"><div class="icon-circle" style="background:#fff; color:black; font-weight:bold; font-size:12px;">ALL</div><div class="icon-text">Semua</div></div>`;
+            const data = snap.val(); 
+            const nav = document.getElementById('categoryIconNav');
+            const sideNav = document.getElementById('sidebarCatList');
+            
+            let bubbleHtml = `<div class="icon-item ${activeCategory === 'ALL' ? 'active' : ''}" onclick="filterCategory('ALL')"><div class="icon-circle" style="background:#fff; color:black; font-weight:bold; font-size:12px;">ALL</div><div class="icon-text">Semua</div></div>`;
+            let sidebarHtml = ``;
+
             if(data) {
                 let cats = Object.keys(data).map(k => data[k]).sort((a,b) => (a.order || a.timestamp) - (b.order || b.timestamp));
                 cats.forEach(c => { 
                     let iconImg = c.icon ? `<img src="${c.icon}">` : `<span style="color:#555; font-size:10px;">IMG</span>`;
-                    baseHtml += `<div class="icon-item ${activeCategory === c.name ? 'active' : ''}" onclick="filterCategory('${c.name}')"><div class="icon-circle">${iconImg}</div><div class="icon-text">${c.name}</div></div>`; 
+                    bubbleHtml += `<div class="icon-item ${activeCategory === c.name ? 'active' : ''}" onclick="filterCategory('${c.name}')"><div class="icon-circle">${iconImg}</div><div class="icon-text">${c.name}</div></div>`; 
+                    sidebarHtml += `<div class="sub-item" onclick="filterCategory('${c.name}'); toggleMenu();">${c.name}</div>`;
                 });
             }
-            nav.innerHTML = baseHtml;
+            nav.innerHTML = bubbleHtml;
+            sideNav.innerHTML = sidebarHtml;
         });
 
         db.ref('ui_settings').on('value', snap => {
@@ -320,7 +424,6 @@
                 const logoEl = document.getElementById('mainLogo');
                 if(s.logoImg) { logoEl.innerHTML = `<img src="${s.logoImg}" alt="GANKETI">`; } 
                 else { logoEl.innerHTML = `<img src="ganketilogo.png" alt="GANKETI">`; }
-                
                 if(s.heroTitle) document.getElementById('heroTitle').innerText = s.heroTitle;
                 if(s.heroSub) document.getElementById('heroSub').innerText = s.heroSub;
             }
@@ -328,12 +431,12 @@
 
         db.ref('products').on('value', (snapshot) => {
             const data = snapshot.val(); const grid = document.getElementById('productGrid');
-            if(!data) { grid.innerHTML = '<p style="text-align:center; width:100%; color:var(--text-dim);">Belum ada koleksi yang dirilis.</p>'; return; }
-            globalProducts = Object.keys(data).map(key => ({ id: key, ...data[key] })).sort((a, b) => b.timestamp - a.timestamp);
+            if(!data) { grid.innerHTML = '<p style="text-align:center; width:100%; color:var(--text-dim);">Belum ada koleksi yang dirilis.</p>'; document.getElementById('productCountUi').innerText = '0'; return; }
+            globalProducts = Object.keys(data).map(key => ({ id: key, ...data[key] }));
             renderProducts();
         });
 
-        // 🔥 LOGIC FILTER MULTI-KATEGORI 🔥
+        // 🔥 LOGIC FILTER & SORTING 🔥
         function filterCategory(cat) { 
             activeCategory = cat; 
             document.getElementById('secTitle').innerText = cat === 'ALL' ? 'LATEST DROP' : cat; 
@@ -342,7 +445,7 @@
             document.querySelectorAll('.icon-item').forEach(el => { 
                 el.classList.remove('active'); 
                 if(el.innerText.trim().toUpperCase() === cat.toUpperCase() || (cat === 'ALL' && el.innerText.trim().toUpperCase() === 'SEMUA')) { 
-                    el.classList.add('active'); 
+                    el.classList.add('active'); el.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
                 } 
             });
             renderProducts(); 
@@ -350,38 +453,51 @@
 
         function searchProducts() {
             const keyword = document.getElementById('searchInput').value.toLowerCase(); activeCategory = 'ALL'; 
-            document.querySelectorAll('.icon-item').forEach(el => el.classList.remove('active')); document.querySelector('.icon-item').classList.add('active'); 
-            let filtered = globalProducts.filter(p => p.name.toLowerCase().includes(keyword));
-            document.getElementById('popularContainer').style.display = 'none'; document.getElementById('secTitle').innerText = keyword ? `HASIL: ${keyword.toUpperCase()}` : 'LATEST DROP';
-            const grid = document.getElementById('productGrid');
-            if(filtered.length === 0) grid.innerHTML = '<p style="text-align:center; width:100%; color:var(--text-dim);">Produk tidak ditemukan.</p>';
-            else grid.innerHTML = filtered.map(p => createProductCard(p)).join('');
+            document.querySelectorAll('.icon-item').forEach(el => el.classList.remove('active')); 
+            if(document.querySelector('.icon-item')) document.querySelector('.icon-item').classList.add('active'); 
+            renderProducts();
         }
 
         function createProductCard(p) {
             let imgThumb = p.images ? p.images[0] : p.image; let isHabis = (!p.stock || p.stock <= 0);
             let priceHtml = p.originalPrice ? `<span class="price-strike">Rp ${p.originalPrice.toLocaleString('id-ID')}</span>Rp ${p.price.toLocaleString('id-ID')}` : `Rp ${p.price.toLocaleString('id-ID')}`;
-            // Tampilkan Kategori Utama Saja di Kartu Biar Rapi
             let displayCat = p.category ? p.category.split(',')[0] : '';
             return `<div class="card" onclick="openPreview('${p.id}')"><div class="img-box"><div class="badge" style="background: ${isHabis ? '#ef4444' : 'var(--primary)'}; color: ${isHabis ? 'white' : 'black'};">${isHabis ? 'SOLD OUT' : 'ORIGINAL'}</div><img src="${imgThumb}" style="${isHabis ? 'filter: grayscale(100%); opacity: 0.5;' : ''}"></div><div class="info"><div class="cat">${displayCat}</div><div class="name">${p.name}</div><div class="price">${priceHtml}</div></div></div>`;
         }
 
         function renderProducts() {
-            const keyword = document.getElementById('searchInput').value; if(keyword) return searchProducts(); 
-            
-            const popProds = globalProducts.filter(p => p.isPopular); const popContainer = document.getElementById('popularContainer');
-            if(popProds.length > 0 && activeCategory === 'ALL') { popContainer.style.display = 'block'; document.getElementById('popularGrid').innerHTML = popProds.map(p => createProductCard(p)).join(''); } else { popContainer.style.display = 'none'; }
-            
             const grid = document.getElementById('productGrid'); 
-            
-            // LOGIC FILTER SAKTI (CEK MULTI-TAG)
-            let filteredProducts = activeCategory === 'ALL' ? globalProducts : globalProducts.filter(p => {
-                if(!p.category) return false;
-                let catArr = p.category.split(',').map(s => s.trim().toUpperCase());
-                return catArr.includes(activeCategory.toUpperCase());
+            const keyword = document.getElementById('searchInput').value.toLowerCase();
+            const sortMode = document.getElementById('sortSelect').value;
+
+            // 1. FILTERING
+            let filteredProducts = globalProducts.filter(p => {
+                let matchSearch = true; let matchCat = true;
+                
+                if(keyword) { matchSearch = p.name.toLowerCase().includes(keyword); }
+                
+                if(activeCategory !== 'ALL' && !keyword) {
+                    if(!p.category) matchCat = false;
+                    else {
+                        let catArr = p.category.split(',').map(s => s.trim().toUpperCase());
+                        matchCat = catArr.includes(activeCategory.toUpperCase());
+                    }
+                }
+                return matchSearch && matchCat;
             });
 
-            if(filteredProducts.length === 0) return grid.innerHTML = '<p style="text-align:center; width:100%; color:var(--text-dim);">Kategori kosong.</p>';
+            // 2. SORTING
+            if(sortMode === 'price_asc') {
+                filteredProducts.sort((a,b) => a.price - b.price);
+            } else if (sortMode === 'price_desc') {
+                filteredProducts.sort((a,b) => b.price - a.price);
+            } else {
+                filteredProducts.sort((a,b) => b.timestamp - a.timestamp); // newest
+            }
+
+            document.getElementById('productCountUi').innerText = filteredProducts.length;
+
+            if(filteredProducts.length === 0) return grid.innerHTML = '<p style="text-align:center; width:100%; color:var(--text-dim); margin-top:20px;">Produk tidak ditemukan.</p>';
             grid.innerHTML = filteredProducts.map(p => createProductCard(p)).join('');
         }
 
