@@ -22,7 +22,6 @@
         .btn-action { width: 100%; padding: 15px; background: #fff; color: #000; border: none; border-radius: 8px; font-weight: 800; cursor: pointer; margin-top: 10px; text-transform: uppercase; letter-spacing: 1px; transition: 0.2s;}
         .btn-action:hover { opacity: 0.8; }
         
-        /* 🔥 CSS KHUSUS KATEGORI MULTI-PILIHAN 🔥 */
         .cat-checkbox { display: none; }
         .cat-label { display: inline-block; background: #222; color: #888; padding: 8px 15px; border-radius: 20px; font-size: 11px; cursor: pointer; border: 1px solid #444; margin: 0 5px 8px 0; transition: 0.3s; font-weight: bold;}
         .cat-checkbox:checked + .cat-label { background: #3b82f6; color: white; border-color: #3b82f6; }
@@ -44,7 +43,6 @@
         .modal-content { background: #141414; padding: 25px; border-radius: 12px; width: 90%; max-width: 500px; border: 1px solid #444; max-height: 90vh; overflow-y: auto; }
         .modal-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 10px; }
 
-        /* FINANCE DASHBOARD */
         .fin-filters { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 20px; background: #1a1a1a; padding: 15px; border-radius: 8px; border: 1px solid #333; align-items: center; justify-content: space-between;}
         .btn-filter { background: #222; color: #aaa; border: 1px solid #444; padding: 8px 15px; border-radius: 6px; font-size: 11px; font-weight: bold; cursor: pointer; transition: 0.3s; }
         .btn-filter.active { background: #3b82f6; color: white; border-color: #3b82f6; }
@@ -59,7 +57,6 @@
         .data-table th { text-align: left; padding: 10px; border-bottom: 1px solid #444; color: #aaa; }
         .data-table td { padding: 10px; border-bottom: 1px solid #222; }
 
-        /* PRINT LAYER (PDF) */
         #printLayer { display: none; }
         @media print {
             @page { size: A4 portrait; margin: 15mm; }
@@ -96,6 +93,17 @@
             <div style="display: flex; gap: 10px;"><div class="form-group" style="flex:1;"><label>Modal Supplier</label><input type="number" id="eCost"></div><div class="form-group" style="flex:1;"><label>Harga Jual</label><input type="number" id="ePrice"></div></div>
             <div style="display: flex; gap: 10px;"><div class="form-group" style="flex:1;"><label>Jumlah Stok</label><input type="number" id="eStock"></div><div class="form-group" style="flex:1;"><label>Harga Coret</label><input type="number" id="eOriginalPrice"></div></div>
             
+            <div class="form-group"><label>Dikirim Dari (Kota Asal Dropshipper)</label><input type="text" id="eOrigin" placeholder="Cth: KOTA BATAM"></div>
+            <div class="form-group">
+                <label>Kurir Pengiriman (Bisa Pilih > 1)</label>
+                <div style="display:flex; gap:5px; flex-wrap:wrap;">
+                    <label><input type="checkbox" class="cat-checkbox eCourierCb" value="JNE"><span class="cat-label">JNE</span></label>
+                    <label><input type="checkbox" class="cat-checkbox eCourierCb" value="J&T"><span class="cat-label">J&T</span></label>
+                    <label><input type="checkbox" class="cat-checkbox eCourierCb" value="Sicepat"><span class="cat-label">Sicepat</span></label>
+                    <label><input type="checkbox" class="cat-checkbox eCourierCb" value="AnterAja"><span class="cat-label">AnterAja</span></label>
+                </div>
+            </div>
+
             <div class="form-group"><label>Link URL Supplier (Dropship)</label><input type="url" id="eLink" placeholder="https://shopee.co.id/..."></div>
 
             <div class="form-group"><label>Ganti Foto</label><input type="file" id="eImages" accept="image/*" multiple style="padding: 9px;"><p style="font-size: 10px; color: #888;">*Akan menimpa foto lama.</p></div>
@@ -147,6 +155,17 @@
                 <div style="display: flex; gap: 10px;"><div class="form-group" style="flex:1;"><label>Modal Supplier</label><input type="number" id="pCost"></div><div class="form-group" style="flex:1;"><label>Harga Jual</label><input type="number" id="pPrice"></div></div>
                 <div style="display: flex; gap: 10px;"><div class="form-group" style="flex:1;"><label>Jumlah Stok</label><input type="number" id="pStock" placeholder="50"></div><div class="form-group" style="flex:1;"><label>Harga Coret</label><input type="number" id="pOriginalPrice" placeholder="Opsional"></div></div>
                 
+                <div class="form-group"><label>Dikirim Dari (Kota Asal Dropshipper)</label><input type="text" id="pOrigin" placeholder="Cth: KOTA BATAM"></div>
+                <div class="form-group">
+                    <label>Kurir Pengiriman (Bisa Pilih > 1)</label>
+                    <div style="display:flex; gap:5px; flex-wrap:wrap;">
+                        <label><input type="checkbox" class="cat-checkbox pCourierCb" value="JNE"><span class="cat-label">JNE</span></label>
+                        <label><input type="checkbox" class="cat-checkbox pCourierCb" value="J&T"><span class="cat-label">J&T</span></label>
+                        <label><input type="checkbox" class="cat-checkbox pCourierCb" value="Sicepat"><span class="cat-label">Sicepat</span></label>
+                        <label><input type="checkbox" class="cat-checkbox pCourierCb" value="AnterAja"><span class="cat-label">AnterAja</span></label>
+                    </div>
+                </div>
+
                 <div class="form-group"><label>Link URL Supplier (Dropship - Khusus Admin)</label><input type="url" id="pLink" placeholder="Masukkan Link Shopee/Tokopedia dll... (Opsional)"></div>
 
                 <div class="form-group"><label>Foto Produk</label><input type="file" id="pImages" accept="image/*" multiple style="padding: 9px;"></div>
@@ -290,8 +309,6 @@
         let adminProductsData = {}; let currentEditId = null;
         let allOrdersData = []; let allExpensesData = [];
         let currentFinFilter = 'hari'; let customFinDate = ''; let finChart = null;
-
-        // VARIABEL KATEGORI
         let currentCategoriesData = []; let currentEditCatId = null;
 
         function switchTab(tabName) {
@@ -321,7 +338,7 @@
             const pCat = document.getElementById('pCategoryContainer'); 
             const eCat = document.getElementById('eCategoryContainer'); 
             const bList = document.getElementById('categoryBubbleList');
-            const fcCat = document.getElementById('fcCategoryContainer'); // Container untuk Featured Target
+            const fcCat = document.getElementById('fcCategoryContainer'); 
             
             if(!data) {
                 currentCategoriesData = [];
@@ -350,7 +367,6 @@
                 </div>`).join('');
             }
             
-            // Build Checkboxes untuk Multi-Select Category (Upload, Edit, & Featured Target)
             let cbHtmlUpload = currentCategoriesData.map(c => `<label><input type="checkbox" class="cat-checkbox pCatCb" value="${c.name}"><span class="cat-label">${c.name}</span></label>`).join('');
             let cbHtmlEdit = currentCategoriesData.map(c => `<label><input type="checkbox" class="cat-checkbox eCatCb" value="${c.name}"><span class="cat-label">${c.name}</span></label>`).join('');
             let cbHtmlFc = currentCategoriesData.map(c => `<label><input type="checkbox" class="cat-checkbox fcCatCb" value="${c.name}"><span class="cat-label">${c.name}</span></label>`).join('');
@@ -399,7 +415,7 @@
         }
 
         // =========================================================
-        // 🔥 ENGINE KOTAK UNGGULAN (DENGAN MULTI-TARGET CHIPS) 🔥
+        // 🔥 ENGINE KOTAK UNGGULAN (FEATURED CARDS) 🔥
         // =========================================================
         function uploadFeaturedCat() {
             const title = document.getElementById('fcTitle').value.trim();
@@ -436,46 +452,54 @@
         });
 
         // =========================================================
-        // 🔥 MESIN UPLOAD & MANAGE PRODUK DENGAN DESKRIPSI 🔥
+        // 🔥 MESIN UPLOAD & MANAGE PRODUK DENGAN LOKASI & KURIR 🔥
         // =========================================================
         function uploadProduct() { 
             const name = document.getElementById('pName').value; 
-            const desc = document.getElementById('pDesc').value.trim(); // 🔥 BACA DESKRIPSI 🔥
+            const desc = document.getElementById('pDesc').value.trim();
             const cost = document.getElementById('pCost').value; const price = document.getElementById('pPrice').value; const stock = document.getElementById('pStock').value; const orig = document.getElementById('pOriginalPrice').value; const files = document.getElementById('pImages').files;
-            
             const link = document.getElementById('pLink').value.trim(); 
             
+            // 🔥 BACA KOTA ASAL & KURIR 🔥
+            const origin = document.getElementById('pOrigin').value.trim();
+            const checkedCouriers = Array.from(document.querySelectorAll('.pCourierCb:checked')).map(cb => cb.value);
+            const courierString = checkedCouriers.join(', ');
+
             const checkedCats = Array.from(document.querySelectorAll('.pCatCb:checked')).map(cb => cb.value);
             if(checkedCats.length === 0) return alert("Pilih minimal 1 kategori!");
             const categoryString = checkedCats.join(', ');
 
-            if(!name || !cost || !price || !stock || files.length===0) return alert("Lengkapi data dan pilih foto!");
+            // Validasi bertambah
+            if(!name || !cost || !price || !stock || !origin || checkedCouriers.length === 0 || files.length===0) return alert("Lengkapi data, kurir, kota asal, dan pilih foto!");
             
             document.getElementById('statusMessage').innerHTML = "<span style='color:white;'>Mengunggah...</span>";
             const readFiles = Array.from(files).map(file => new Promise(resolve => { const reader = new FileReader(); reader.onload = e => resolve(e.target.result); reader.readAsDataURL(file); }));
             Promise.all(readFiles).then(imgs => {
-                let data = { name, desc: desc, category: categoryString, cost: parseInt(cost), price: parseInt(price), stock: parseInt(stock), images: imgs, timestamp: Date.now(), isPopular: false };
+                // Simpan Origin & Couriers ke Database
+                let data = { name, desc: desc, origin: origin, couriers: courierString, category: categoryString, cost: parseInt(cost), price: parseInt(price), stock: parseInt(stock), images: imgs, timestamp: Date.now(), isPopular: false };
                 if(orig) data.originalPrice = parseInt(orig);
                 if(link) data.link = link; 
                 
                 db.ref('products').push(data).then(() => { 
                     document.getElementById('statusMessage').innerHTML = "<span style='color:#4ade80;'>✅ Upload sukses!</span>"; 
-                    ['pName','pDesc','pCost','pPrice','pStock','pOriginalPrice','pLink','pImages'].forEach(id=>document.getElementById(id).value=''); 
+                    ['pName','pDesc','pOrigin','pCost','pPrice','pStock','pOriginalPrice','pLink','pImages'].forEach(id=>document.getElementById(id).value=''); 
                     document.querySelectorAll('.pCatCb').forEach(cb => cb.checked = false); 
+                    document.querySelectorAll('.pCourierCb').forEach(cb => cb.checked = false); 
                     setTimeout(() => { document.getElementById('statusMessage').innerHTML = ""; }, 3000);
                 });
             });
         }
 
-        // 🔥 TAMBAH TOMBOL LINK SUPPLIER DI TAB KELOLA 🔥
         function loadManageProducts() {
             db.ref('products').on('value', snap => {
                 const data = snap.val(); adminProductsData = data || {}; const list = document.getElementById('manageProductsList');
                 if(!data) return list.innerHTML = '<p style="color:#aaa; text-align:center;">Belum ada produk.</p>';
                 list.innerHTML = Object.keys(data).sort((a,b)=>data[b].timestamp - data[a].timestamp).map(k => {
                     let p = data[k]; 
-                    
                     let linkSupplierHtml = p.link ? `<a href="${p.link}" target="_blank" style="display:inline-block; margin-top:5px; font-size:10px; background:#4285F4; color:white; padding:3px 8px; border-radius:4px; text-decoration:none;">🔗 Cek Supplier</a>` : '';
+                    
+                    // Tampilkan Kota Asal & Kurir di Daftar Kelola Admin
+                    let originHtml = p.origin ? `<span style="font-size:9px; color:#f59e0b;">📍 ${p.origin} | 🚚 ${p.couriers || '-'}</span><br>` : '';
 
                     return `<div style="background:#1a1a1a; padding:15px; border:1px solid #333; margin-bottom:10px; border-radius:6px; display:flex; justify-content:space-between;">
                         <div style="display:flex; gap:15px;">
@@ -483,6 +507,7 @@
                             <div>
                                 <b>${p.name}</b><br>
                                 <span style="color:#888; font-size:10px;">[${p.category}]</span><br>
+                                ${originHtml}
                                 <span style="color:#4ade80; font-size:12px; font-weight:bold;">Rp ${p.price.toLocaleString('id-ID')}</span><br>
                                 ${linkSupplierHtml}
                             </div>
@@ -501,11 +526,16 @@
 
         function openEditModal(id) { 
             currentEditId = id; let p = adminProductsData[id]; 
-            ['eName','eDesc','eCost','ePrice','eStock','eOriginalPrice', 'eLink'].forEach(k=>document.getElementById(k).value=p[k.replace('e','').toLowerCase()]||''); 
             
-            document.querySelectorAll('.eCatCb').forEach(cb => {
-                cb.checked = p.category ? p.category.includes(cb.value) : false;
-            });
+            // Baca data ke form edit, termasuk Origin
+            ['eName','eDesc','eOrigin','eCost','ePrice','eStock','eOriginalPrice', 'eLink'].forEach(k=>{
+                let val = p[k.replace('e','').toLowerCase()] || '';
+                if(k==='eDesc' && p.desc) val = p.desc;
+                if(document.getElementById(k)) document.getElementById(k).value = val;
+            }); 
+            
+            document.querySelectorAll('.eCatCb').forEach(cb => { cb.checked = p.category ? p.category.includes(cb.value) : false; });
+            document.querySelectorAll('.eCourierCb').forEach(cb => { cb.checked = p.couriers ? p.couriers.includes(cb.value) : false; });
             
             document.getElementById('editModal').style.display='flex'; 
         }
@@ -514,10 +544,14 @@
         
         function saveEditedProduct() {
             const checkedCats = Array.from(document.querySelectorAll('.eCatCb:checked')).map(cb => cb.value);
+            const checkedCouriers = Array.from(document.querySelectorAll('.eCourierCb:checked')).map(cb => cb.value);
             if(checkedCats.length === 0) return alert("Pilih minimal 1 kategori!");
+            if(checkedCouriers.length === 0) return alert("Pilih minimal 1 kurir!");
+            
             const categoryString = checkedCats.join(', ');
+            const courierString = checkedCouriers.join(', ');
 
-            let u = { name: document.getElementById('eName').value, desc: document.getElementById('eDesc').value.trim(), category: categoryString, cost: parseInt(document.getElementById('eCost').value), price: parseInt(document.getElementById('ePrice').value), stock: parseInt(document.getElementById('eStock').value) };
+            let u = { name: document.getElementById('eName').value, desc: document.getElementById('eDesc').value.trim(), origin: document.getElementById('eOrigin').value.trim(), couriers: courierString, category: categoryString, cost: parseInt(document.getElementById('eCost').value), price: parseInt(document.getElementById('ePrice').value), stock: parseInt(document.getElementById('eStock').value) };
             let o = document.getElementById('eOriginalPrice').value; if(o) u.originalPrice = parseInt(o); else u.originalPrice = null;
             let l = document.getElementById('eLink').value.trim(); if(l) u.link = l; else u.link = null; 
             let files = document.getElementById('eImages').files;
@@ -546,7 +580,7 @@
         });
 
         // =========================================================
-        // 🔥 ENGINE RENDER PESANAN (MUNCULKAN TOMBOL LINK SUPPLIER) 🔥
+        // 🔥 ENGINE RENDER PESANAN (MUNCULKAN ONGKIR & KURIR) 🔥
         // =========================================================
         function fetchDataSuper() {
             db.ref('orders').on('value', snap => {
@@ -566,14 +600,16 @@
             list.innerHTML = allOrdersData.sort((a,b)=>b.timestamp-a.timestamp).map(o => {
                 let itemsHtml = o.items.map(i => {
                     let imgUrl = i.images ? i.images[0] : (i.image ? i.image : 'https://via.placeholder.com/45');
-                    
                     let supplierLinkHtml = i.link ? `<a href="${i.link}" target="_blank" style="display:inline-block; margin-top:3px; font-size:9px; background:#4ade80; color:black; padding:3px 6px; border-radius:4px; text-decoration:none; font-weight:bold;">🛒 Checkout di Supplier</a>` : '';
+                    
+                    // Tampilkan Kota Asal Barang di Rincian Pesanan
+                    let kurirInfo = i.origin ? `<br><span style="color:#f59e0b; font-size:10px;">(Asal: ${i.origin})</span>` : '';
 
                     return `
                     <div class="item-row">
                         <img src="${imgUrl}" class="item-img">
                         <div style="flex:1;">
-                            <div style="font-size:12px; font-weight:bold; color:#fff;">${i.name}</div>
+                            <div style="font-size:12px; font-weight:bold; color:#fff;">${i.name} ${kurirInfo}</div>
                             <div style="font-size:10px; color:#888;">${i.qty}x @ Rp ${i.price.toLocaleString('id-ID')} <br> ${supplierLinkHtml}</div>
                         </div>
                         <div style="font-size:12px; font-weight:bold; color:#4ade80;">
@@ -581,6 +617,9 @@
                         </div>
                     </div>`;
                 }).join('');
+
+                // 🔥 TAMPILKAN ONGKOS KIRIM DI INVOICE ADMIN JIKA ADA 🔥
+                let ongkirHtml = o.shippingCost ? `<div style="display:flex; justify-content:space-between; padding:8px 12px; background:#111; border-top:1px dashed #333; align-items:center;"><span style="font-size:11px; color:#888;">Ongkos Kirim (${o.courier || '-'})</span><b style="color:#fff; font-size:13px;">Rp ${o.shippingCost.toLocaleString('id-ID')}</b></div>` : '';
 
                 return `
                 <div class="order-card">
@@ -601,6 +640,7 @@
                     <div style="background:#0a0a0a; border-radius:8px; border: 1px solid #222; overflow:hidden; margin-bottom:15px;">
                         <div style="background:#111; padding:8px 12px; font-size:10px; color:#888; text-transform:uppercase; border-bottom:1px solid #222;">Rincian Produk</div>
                         ${itemsHtml}
+                        ${ongkirHtml}
                         <div style="display:flex; justify-content:space-between; padding:12px; background:#111; border-top:1px dashed #333; align-items:center;">
                             <span style="font-size:11px; color:#888;">Grand Total</span>
                             <b style="color:#4ade80; font-size:15px;">Rp ${o.total.toLocaleString('id-ID')}</b>
