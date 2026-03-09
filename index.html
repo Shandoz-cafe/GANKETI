@@ -30,7 +30,7 @@
         .head-top { display: grid; grid-template-columns: auto 1fr auto; align-items: center; padding: 12px 20px; gap: 15px;} 
         .hamburger-btn { background: none; border: none; color: var(--primary); font-size: 24px; cursor: pointer; display: flex; align-items: center; padding: 0; margin: 0;}
         .logo { cursor: pointer; user-select: none; touch-action: manipulation; -webkit-tap-highlight-color: transparent; display: flex; justify-content: center; align-items: center;}
-        .logo img { max-height: 45px; width: auto; object-fit: contain; } 
+        .logo img { max-height: 35px; width: auto; object-fit: contain; } 
         .nav-icons { display: flex; gap: 15px; align-items: center; justify-content: flex-end;}
         .icon-btn { background: none; border: none; color: var(--text); font-size: 18px; font-weight: 600; cursor: pointer; display: flex; align-items: center; position: relative;}
         .cart-badge { position: absolute; top: -5px; right: -10px; background: #ef4444; color: white; font-size: 9px; font-weight: 800; padding: 2px 6px; border-radius: 20px; }
@@ -39,23 +39,22 @@
         .search-box { width: 100%; padding: 10px 15px; background: #1a1a1a; border: 1px solid #333; border-radius: 4px; color: white; outline: none; font-family: 'Inter'; font-size: 13px; }
         .search-box:focus { border-color: var(--primary); }
 
-        /* 🔥 LACI SAMPING (SIDEBAR MENU) - DARK & TRANSPARENT 🔥 */
+        /* LACI SAMPING (SIDEBAR MENU) */
         .sidebar-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 999; display: none; backdrop-filter: blur(2px); }
-        .sidebar { position: fixed; top: 0; left: -100%; width: 85%; max-width: 320px; height: 100%; background: rgba(18, 18, 18, 0.95); backdrop-filter: blur(10px); z-index: 1000; transition: 0.3s ease-in-out; display: flex; flex-direction: column; overflow-y: auto; border-right: 1px solid #333;}
+        .sidebar { position: fixed; top: 0; left: -100%; width: 85%; max-width: 320px; height: 100%; background: #ffffff; z-index: 1000; transition: 0.3s ease-in-out; display: flex; flex-direction: column; overflow-y: auto;}
         .sidebar.active { left: 0; }
-        .sidebar-header { padding: 20px; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; position: relative; }
-        .sidebar-close { font-size: 26px; color: #fff; cursor: pointer; line-height: 1; }
+        .sidebar-header { padding: 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; position: relative; background: #fff;}
+        .sidebar-close { font-size: 26px; color: #000; cursor: pointer; line-height: 1; }
         
-        .sidebar-content { flex: 1; display: flex; flex-direction: column; padding-bottom: 30px;}
-        .sidebar-item { padding: 18px 20px; color: #fff; font-size: 13px; font-weight: 600; text-transform: uppercase; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: 0.2s;}
-        .sidebar-item:hover { background: rgba(255,255,255,0.05); }
-        .sidebar-item-sub { padding: 18px 20px; color: #ccc; font-size: 13px; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: 0.2s;}
-        .sidebar-item-sub:hover { background: rgba(255,255,255,0.05); color: #fff;}
+        .sidebar-content { flex: 1; display: flex; flex-direction: column; background: #fff; padding-bottom: 30px;}
+        .sidebar-item { padding: 18px 20px; color: #000; font-size: 13px; font-weight: 600; text-transform: uppercase; border-bottom: 1px solid #f5f5f5; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: 0.2s;}
+        .sidebar-item:hover { background: #f9f9f9; }
+        .sidebar-item-sub { padding: 18px 20px; color: #333; font-size: 13px; border-bottom: 1px solid #f5f5f5; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: 0.2s;}
         
-        .sub-menu { display: none; background: rgba(10, 10, 10, 0.5); border-bottom: 1px solid #333; }
-        .sub-item { padding: 15px 20px 15px 40px; color: #aaa; font-size: 12px; cursor: pointer; transition: 0.2s;}
-        .sub-item:hover { background: rgba(255,255,255,0.05); color: #fff; font-weight: bold;}
-        .sidebar-divider { height: 8px; background: #0a0a0a; border-top: 1px solid #222; border-bottom: 1px solid #222;}
+        .sub-menu { display: none; background: #fafafa; border-bottom: 1px solid #eee; }
+        .sub-item { padding: 15px 20px 15px 40px; color: #555; font-size: 12px; cursor: pointer; transition: 0.2s;}
+        .sub-item:hover { background: #f0f0f0; color: #000; font-weight: bold;}
+        .sidebar-divider { height: 8px; background: #f0f0f0; border-top: 1px solid #e0e0e0; border-bottom: 1px solid #e0e0e0;}
 
         /* BUBBLE CATEGORY UI */
         .icon-nav-container { display: flex; gap: 15px; padding: 10px 20px 20px 20px; overflow-x: auto; scrollbar-width: none; align-items: flex-start;}
@@ -136,6 +135,14 @@
         .form-group input, .form-group select { width: 100%; padding: 12px; background: #0a0a0a; border: 1px solid var(--border); color: white; font-family: 'Inter', sans-serif; font-size: 14px; border-radius: 8px; box-sizing: border-box; outline: none;}
         .form-group input:focus, .form-group select:focus { border-color: var(--primary); }
         .form-group input:disabled, .form-group input:read-only { background: #1a1a1a; color: #555; cursor: not-allowed; border-color: #222; }
+        
+        /* 🔥 CSS UNTUK BUKU ALAMAT / PAYMENT 🔥 */
+        .saved-address-card { background: #1a1a1a; border: 1px solid #333; padding: 15px; border-radius: 8px; margin-bottom: 10px; cursor: pointer; transition: 0.2s; font-size: 12px; color: #ccc;}
+        .saved-address-card:hover { border-color: #3b82f6; }
+        .saved-address-card.active { border-color: #4ade80; background: rgba(74, 222, 128, 0.05); }
+        .payment-method-card { display: flex; align-items: center; justify-content: space-between; background: #1a1a1a; border: 1px solid #333; padding: 15px; border-radius: 8px; margin-bottom: 10px; cursor: pointer; transition: 0.2s;}
+        .payment-method-card:hover { border-color: var(--primary); }
+
         .btn-main { background: var(--primary); color: var(--bg); width: 100%; padding: 15px; border: none; font-weight: 700; font-family: 'Inter', sans-serif; font-size: 14px; border-radius: 8px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px;}
         .btn-main:disabled { background: #333; color: #666; cursor: not-allowed; }
         
@@ -179,7 +186,7 @@
     <div class="sidebar" id="sidebarMenu">
         <div class="sidebar-header">
             <div style="width:24px;"></div>
-            <img src="ganketilogo.png" alt="GANKETI" style="max-height: 28px; object-fit: contain;">
+            <h2 style="margin:0; color:#000; font-family:'Oswald', sans-serif; font-size:22px; letter-spacing:1px;">GANKETI</h2>
             <div class="sidebar-close" onclick="toggleMenu()">×</div>
         </div>
         
@@ -188,7 +195,7 @@
                 SHOP BY CATEGORY <span id="arrow-catSubMenu" style="transition:0.3s; font-size:18px;">›</span>
             </div>
             <div class="sub-menu" id="catSubMenu">
-                <div class="sub-item" onclick="filterCategory('ALL'); toggleMenu();" style="font-weight:bold; color: #fff;">SEMUA KOLEKSI</div>
+                <div class="sub-item" onclick="filterCategory('ALL'); toggleMenu();" style="font-weight:bold; color: #ef4444;">SEMUA KOLEKSI</div>
                 <div id="sidebarCatList"></div>
             </div>
             
@@ -216,7 +223,7 @@
             <div class="sidebar-divider"></div>
 
             <div class="sidebar-item-sub" onclick="openMyOrders(); toggleMenu();" style="margin-top: 10px;">Track Order</div>
-            <div class="sidebar-item-sub" id="sideLoginBtn" onclick="handleAuth(); toggleMenu();" style="font-weight:bold; color:#fff;">Sign In</div>
+            <div class="sidebar-item-sub" id="sideLoginBtn" onclick="handleAuth(); toggleMenu();" style="font-weight:bold; color:#000;">Sign In</div>
         </div>
     </div>
 
@@ -301,6 +308,15 @@
 
             <div id="shippingArea" style="display:none;">
                 <p style="font-size: 12px; color: #4ade80; margin-bottom: 15px;">✅ Secure Checkout.</p>
+                
+                <div id="savedAddressesContainer" style="display:none; margin-bottom: 20px;">
+                    <h3 style="font-size: 12px; margin-bottom: 10px; color: #888; text-transform:uppercase;">Alamat Tersimpan</h3>
+                    <div id="savedAddressesList"></div>
+                    <div style="text-align:right; margin-top:5px;">
+                        <span style="font-size:11px; color:#3b82f6; cursor:pointer;" onclick="clearAddressForm()">+ Tambah Alamat Baru</span>
+                    </div>
+                </div>
+
                 <div class="form-group"><label>Email</label><input type="email" id="cEmail" readonly></div>
                 <div class="form-group"><label>Full Name</label><input type="text" id="cName" placeholder="Full Name"></div>
                 <div class="form-group"><label>WhatsApp Number</label><input type="number" id="cPhone" placeholder="08..."></div>
@@ -313,14 +329,48 @@
                 <div class="form-group"><label>District</label><input type="text" id="cDist" list="distList" placeholder="Select District..." oninput="checkDist()" autocomplete="off" disabled><datalist id="distList"></datalist></div>
                 <div class="form-group"><label>Village</label><input type="text" id="cVill" list="villList" placeholder="Select Village..." oninput="checkVill()" autocomplete="off" disabled><datalist id="villList"></datalist></div>
                 <div class="form-group"><label>Postal Code</label><input type="number" id="cZip" placeholder="12345"></div>
-                <button class="btn-main" onclick="buatPesananSekarang()" style="margin-top: 10px; background:#f59e0b; color:#000;">PLACE SECURE ORDER 🔒</button>
+                
+                <div style="margin-bottom: 20px;">
+                    <label style="display:flex; align-items:center; gap:8px; font-size:12px; color:#ccc; cursor:pointer;">
+                        <input type="checkbox" id="saveAddressCheck" checked style="width:16px; height:16px; accent-color:#f59e0b;"> Simpan alamat ini untuk pembelian selanjutnya
+                    </label>
+                </div>
+
+                <button class="btn-main" onclick="goToPayment()" style="margin-top: 10px; background:#f59e0b; color:#000;">PROCEED TO PAYMENT ➔</button>
+            </div>
+
+            <div id="paymentArea" style="display:none;">
+                <p style="font-size: 12px; color: #4ade80; margin-bottom: 15px; text-align:center;">🔒 Secured by Xendit</p>
+                <div style="text-align:center; margin-bottom:20px;">
+                    <span style="font-size:12px; color:#888;">Total Pembayaran</span><br>
+                    <b style="font-size:24px; color:var(--primary);" id="payTotalDisplay">Rp 0</b>
+                </div>
+
+                <h3 style="font-size: 14px; margin-bottom: 15px; color: #fff; border-bottom:1px solid #333; padding-bottom:5px;">Pilih Metode Pembayaran</h3>
+                
+                <div class="payment-method-card" onclick="selectPaymentMethod(this)">
+                    <div><b style="font-size:13px; color:#fff;">QRIS</b><br><span style="font-size:11px; color:#888;">Gopay, ShopeePay, Dana, LinkAja</span></div>
+                    <span style="font-size:16px;">📱</span>
+                </div>
+                <div class="payment-method-card" onclick="selectPaymentMethod(this)">
+                    <div><b style="font-size:13px; color:#fff;">Virtual Account</b><br><span style="font-size:11px; color:#888;">BCA, Mandiri, BRI, BNI</span></div>
+                    <span style="font-size:16px;">🏦</span>
+                </div>
+                <div class="payment-method-card" onclick="selectPaymentMethod(this)">
+                    <div><b style="font-size:13px; color:#fff;">E-Wallet</b><br><span style="font-size:11px; color:#888;">OVO, Dana, ShopeePay</span></div>
+                    <span style="font-size:16px;">💳</span>
+                </div>
+
+                <p style="font-size:10px; color:#666; text-align:center; margin-top:20px;">*Sistem pembayaran sedang dalam tahap integrasi.</p>
+                
+                <button class="btn-main" onclick="simulateXenditSuccess()" style="margin-top: 10px; background:#3b82f6; color:#fff;">[DEV] SIMULASIKAN PEMBAYARAN SUKSES</button>
             </div>
 
             <div id="textInfoArea" style="display:none;" class="info-content"></div>
 
             <div id="invoiceArea" style="display:none;">
-                <p style="text-align:center; color:#4ade80; font-weight:bold; margin-bottom:5px;">✅ ORDER PLACED!</p>
-                <p style="text-align:center; font-size:12px; color:var(--text-dim);">Your invoice is saved in your account.</p>
+                <p style="text-align:center; color:#4ade80; font-weight:bold; margin-bottom:5px;">✅ PAYMENT SUCCESSFUL!</p>
+                <p style="text-align:center; font-size:12px; color:var(--text-dim);">Your order is confirmed and invoice is saved.</p>
                 <div class="receipt" id="invoicePaper"></div>
                 <button class="btn-main" style="margin-top: 15px; background: #25D366; color: white;" onclick="closeModal()">DONE</button>
             </div>
@@ -342,6 +392,11 @@
         let cart = JSON.parse(localStorage.getItem('ganketiCart') || '[]');
         let currentUser = null; 
         let apiRegionData = { prov: [], city: [], dist: [], vill: [] }; 
+        
+        // Data alamat tersimpan di perangkat pelanggan
+        let savedAddresses = JSON.parse(localStorage.getItem('ganketiAddresses') || '[]');
+        let pendingOrderData = null; // Menyimpan data order sementara sebelum dibayar
+
         updateCartCount();
 
         function toggleMenu() {
@@ -527,7 +582,7 @@
         }
 
         function closeModal() { document.getElementById('mainModal').style.display = 'none'; }
-        function hideAllAreas() { ['previewArea', 'cartArea', 'shippingArea', 'invoiceArea', 'historyArea', 'logoutConfirmArea', 'textInfoArea'].forEach(id => document.getElementById(id).style.display = 'none'); }
+        function hideAllAreas() { ['previewArea', 'cartArea', 'shippingArea', 'paymentArea', 'invoiceArea', 'historyArea', 'logoutConfirmArea', 'textInfoArea'].forEach(id => document.getElementById(id).style.display = 'none'); }
 
         function openInfoModal(type) {
             hideAllAreas();
@@ -536,137 +591,25 @@
 
             if(type === 'about') {
                 title = "ABOUT GANKETI";
-                content = `<h4>Our Story</h4>
-                <p>GANKETI adalah brand fashion modern yang lahir dari semangat untuk menghadirkan gaya yang elegan, kreatif, dan relevan dengan perkembangan tren global. Kami percaya bahwa fashion bukan hanya sekadar pakaian, tetapi juga cara seseorang mengekspresikan identitas, karakter, dan gaya hidupnya.</p>
-                <p>GANKETI menggabungkan inspirasi dari berbagai budaya dunia dengan sentuhan desain modern dan inovatif. Setiap produk dirancang dengan perhatian terhadap detail, kualitas, dan estetika agar mampu memberikan pengalaman fashion yang berbeda bagi para penggunanya.</p>
-                <p>Kami ingin menciptakan brand yang tidak hanya mengikuti tren, tetapi juga membangun identitas dan karakter yang kuat dalam dunia fashion dan lifestyle.</p>
-                <h4>Filosofi Nama GANKETI</h4>
-                <p>Nama GANKETI memiliki makna yang merepresentasikan nilai dan filosofi brand:</p>
-                <ul>
-                <li><b>G – Gracia (Spanyol):</b> Melambangkan keanggunan dan keindahan alami.</li>
-                <li><b>A – Arte (Portugis/Spanyol):</b> Mewakili seni dan kreativitas dalam desain.</li>
-                <li><b>N – Novo (Portugis):</b> Menggambarkan sesuatu yang baru, modern, dan selalu berkembang.</li>
-                <li><b>K – Kultura (Polandia):</b> Merepresentasikan budaya dan identitas.</li>
-                <li><b>E – Elegancia (Spanyol):</b> Menunjukkan kesan elegan, premium, dan eksklusif.</li>
-                <li><b>T – Tendencia (Spanyol):</b> Melambangkan tren dan gaya modern.</li>
-                <li><b>I – Inovação (Portugis):</b> Menggambarkan inovasi dan pendekatan futuristik.</li>
-                </ul>
-                <h4>Vision</h4>
-                <p>Menjadi brand fashion dan lifestyle modern yang dikenal secara global dengan identitas yang kuat, desain yang inovatif, serta kualitas produk yang premium.</p>
-                <h4>Mission</h4>
-                <ul>
-                <li>Menghadirkan produk fashion berkualitas dengan desain modern dan stylish.</li>
-                <li>Menggabungkan kreativitas, budaya, dan tren global dalam setiap koleksi.</li>
-                <li>Memberikan pengalaman fashion yang elegan dan berkelas bagi pelanggan.</li>
-                <li>Membangun identitas brand yang kuat di dunia fashion dan lifestyle.</li>
-                </ul>
-                <h4>Brand Identity</h4>
-                <p>GANKETI memiliki identitas brand yang mencerminkan gaya hidup modern, elegan, dan inovatif.</p>
-                <ul>
-                <li><b>Modern:</b> Desain mengikuti perkembangan tren global dan gaya urban.</li>
-                <li><b>Elegant:</b> Produk memiliki kesan premium dan berkelas.</li>
-                <li><b>Creative:</b> Setiap koleksi menghadirkan ide desain yang unik dan stylish.</li>
-                <li><b>Innovative:</b> Brand terus berkembang dengan konsep yang futuristik.</li>
-                </ul>`;
-            } 
-            else if(type === 'privacy') {
+                content = `<h4>Our Story</h4><p>GANKETI adalah brand fashion modern yang lahir dari semangat untuk menghadirkan gaya yang elegan, kreatif, dan relevan dengan perkembangan tren global. Kami percaya bahwa fashion bukan hanya sekadar pakaian, tetapi juga cara seseorang mengekspresikan identitas, karakter, dan gaya hidupnya.</p><p>GANKETI menggabungkan inspirasi dari berbagai budaya dunia dengan sentuhan desain modern dan inovatif. Setiap produk dirancang dengan perhatian terhadap detail, kualitas, dan estetika agar mampu memberikan pengalaman fashion yang berbeda bagi para penggunanya.</p><p>Kami ingin menciptakan brand yang tidak hanya mengikuti tren, tetapi juga membangun identitas dan karakter yang kuat dalam dunia fashion dan lifestyle.</p><h4>Filosofi Nama GANKETI</h4><p>Nama GANKETI memiliki makna yang merepresentasikan nilai dan filosofi brand:</p><ul><li><b>G – Gracia (Spanyol):</b> Melambangkan keanggunan dan keindahan alami.</li><li><b>A – Arte (Portugis/Spanyol):</b> Mewakili seni dan kreativitas dalam desain.</li><li><b>N – Novo (Portugis):</b> Menggambarkan sesuatu yang baru, modern, dan selalu berkembang.</li><li><b>K – Kultura (Polandia):</b> Merepresentasikan budaya dan identitas.</li><li><b>E – Elegancia (Spanyol):</b> Menunjukkan kesan elegan, premium, dan eksklusif.</li><li><b>T – Tendencia (Spanyol):</b> Melambangkan tren dan gaya modern.</li><li><b>I – Inovação (Portugis):</b> Menggambarkan inovasi dan pendekatan futuristik.</li></ul><h4>Vision</h4><p>Menjadi brand fashion dan lifestyle modern yang dikenal secara global dengan identitas yang kuat, desain yang inovatif, serta kualitas produk yang premium.</p><h4>Mission</h4><ul><li>Menghadirkan produk fashion berkualitas dengan desain modern dan stylish.</li><li>Menggabungkan kreativitas, budaya, dan tren global dalam setiap koleksi.</li><li>Memberikan pengalaman fashion yang elegan dan berkelas bagi pelanggan.</li><li>Membangun identitas brand yang kuat di dunia fashion dan lifestyle.</li></ul><h4>Brand Identity</h4><p>GANKETI memiliki identitas brand yang mencerminkan gaya hidup modern, elegan, dan inovatif.</p><ul><li><b>Modern:</b> Desain mengikuti perkembangan tren global dan gaya urban.</li><li><b>Elegant:</b> Produk memiliki kesan premium dan berkelas.</li><li><b>Creative:</b> Setiap koleksi menghadirkan ide desain yang unik dan stylish.</li><li><b>Innovative:</b> Brand terus berkembang dengan konsep yang futuristik.</li></ul>`;
+            } else if(type === 'privacy') {
                 title = "PRIVACY POLICY";
-                content = `<h4>Privacy Policy</h4>
-                <p>GANKETI menghargai dan melindungi privasi setiap pengguna website kami. Kebijakan privasi ini menjelaskan bagaimana kami mengumpulkan, menggunakan, dan melindungi informasi pribadi pengguna.</p>
-                <h4>Information We Collect</h4>
-                <p>Kami dapat mengumpulkan informasi seperti:</p>
-                <ul>
-                <li>Nama</li>
-                <li>Alamat email</li>
-                <li>Nomor telepon</li>
-                <li>Alamat pengiriman</li>
-                <li>Informasi transaksi</li>
-                </ul>
-                <p>Informasi ini dikumpulkan saat pengguna melakukan pendaftaran akun, melakukan pembelian, atau menghubungi kami.</p>
-                <h4>How We Use Your Information</h4>
-                <p>Informasi yang kami kumpulkan digunakan untuk:</p>
-                <ul>
-                <li>Memproses pesanan pelanggan</li>
-                <li>Mengirimkan informasi mengenai pesanan</li>
-                <li>Meningkatkan layanan dan pengalaman pengguna</li>
-                <li>Memberikan informasi mengenai produk atau promosi terbaru</li>
-                </ul>
-                <h4>Data Security</h4>
-                <p>Kami menjaga keamanan data pengguna dengan menggunakan sistem keamanan yang sesuai untuk melindungi informasi pribadi dari akses yang tidak sah.</p>`;
-            }
-            else if(type === 'terms') {
+                content = `<h4>Privacy Policy</h4><p>GANKETI menghargai dan melindungi privasi setiap pengguna website kami. Kebijakan privasi ini menjelaskan bagaimana kami mengumpulkan, menggunakan, dan melindungi informasi pribadi pengguna.</p><h4>Information We Collect</h4><p>Kami dapat mengumpulkan informasi seperti:</p><ul><li>Nama</li><li>Alamat email</li><li>Nomor telepon</li><li>Alamat pengiriman</li><li>Informasi transaksi</li></ul><p>Informasi ini dikumpulkan saat pengguna melakukan pendaftaran akun, melakukan pembelian, atau menghubungi kami.</p><h4>How We Use Your Information</h4><p>Informasi yang kami kumpulkan digunakan untuk:</p><ul><li>Memproses pesanan pelanggan</li><li>Mengirimkan informasi mengenai pesanan</li><li>Meningkatkan layanan dan pengalaman pengguna</li><li>Memberikan informasi mengenai produk atau promosi terbaru</li></ul><h4>Data Security</h4><p>Kami menjaga keamanan data pengguna dengan menggunakan sistem keamanan yang sesuai untuk melindungi informasi pribadi dari akses yang tidak sah.</p>`;
+            } else if(type === 'terms') {
                 title = "TERMS OF SERVICE";
-                content = `<h4>Terms of Service</h4>
-                <p>Dengan mengakses dan menggunakan website GANKETI, Anda setuju untuk mematuhi syarat dan ketentuan yang berlaku di website ini.</p>
-                <h4>Use of Website</h4>
-                <p>Pengguna setuju untuk menggunakan website ini hanya untuk tujuan yang sah dan tidak melanggar hukum yang berlaku.</p>
-                <h4>Product Information</h4>
-                <p>Kami berusaha memberikan informasi produk yang akurat. Namun, kami tidak menjamin bahwa semua informasi di website selalu bebas dari kesalahan atau perubahan.</p>
-                <h4>Intellectual Property</h4>
-                <p>Seluruh konten yang terdapat di website GANKETI, termasuk logo, desain, gambar, dan teks, merupakan milik GANKETI dan dilindungi oleh hukum hak kekayaan intelektual.</p>
-                <h4>Changes to Terms</h4>
-                <p>GANKETI berhak untuk memperbarui atau mengubah syarat dan ketentuan ini kapan saja tanpa pemberitahuan sebelumnya.</p>`;
-            }
-            else if(type === 'faq') {
+                content = `<h4>Terms of Service</h4><p>Dengan mengakses dan menggunakan website GANKETI, Anda setuju untuk mematuhi syarat dan ketentuan yang berlaku di website ini.</p><h4>Use of Website</h4><p>Pengguna setuju untuk menggunakan website ini hanya untuk tujuan yang sah dan tidak melanggar hukum yang berlaku.</p><h4>Product Information</h4><p>Kami berusaha memberikan informasi produk yang akurat. Namun, kami tidak menjamin bahwa semua informasi di website selalu bebas dari kesalahan atau perubahan.</p><h4>Intellectual Property</h4><p>Seluruh konten yang terdapat di website GANKETI, termasuk logo, desain, gambar, dan teks, merupakan milik GANKETI dan dilindungi oleh hukum hak kekayaan intelektual.</p><h4>Changes to Terms</h4><p>GANKETI berhak untuk memperbarui atau mengubah syarat dan ketentuan ini kapan saja tanpa pemberitahuan sebelumnya.</p>`;
+            } else if(type === 'faq') {
                 title = "FAQ";
-                content = `<h4>General Questions</h4>
-                <p><b>Apa itu GANKETI?</b><br>GANKETI adalah brand fashion dan lifestyle modern yang menghadirkan produk dengan desain stylish, elegan, dan berkualitas. Kami menggabungkan kreativitas, tren global, dan identitas brand untuk menciptakan produk yang unik dan modern.</p>
-                <p><b>Apakah produk GANKETI original?</b><br>Ya. Semua produk yang dijual di website resmi GANKETI adalah produk original yang dirancang dan dikembangkan oleh brand GANKETI.</p>
-                <h4>Orders</h4>
-                <p><b>Bagaimana cara memesan produk di website GANKETI?</b></p>
-                <ul>
-                <li>Pilih produk yang ingin dibeli</li>
-                <li>Pilih ukuran atau variasi produk</li>
-                <li>Klik tombol Add to Cart / Add to Bag</li>
-                <li>Lanjutkan ke halaman checkout</li>
-                <li>Masukkan alamat pengiriman & pilih metode pembayaran</li>
-                <li>Selesaikan pembayaran</li>
-                </ul>
-                <p><b>Apakah saya bisa membatalkan pesanan?</b><br>Pesanan hanya dapat dibatalkan sebelum pesanan diproses atau dikirimkan. Silakan hubungi tim kami sesegera mungkin jika ingin melakukan pembatalan.</p>
-                <h4>Payment & Shipping</h4>
-                <p><b>Metode pembayaran apa saja yang tersedia?</b><br>Kami menerima Transfer Bank, E-Wallet, Virtual Account, dan Payment Gateway.</p>
-                <p><b>Berapa lama waktu pengiriman?</b><br>Dalam kota: 1–3 hari kerja. Antar kota: 2–5 hari kerja. Internasional: 5–10 hari kerja.</p>`;
-            }
-            else if(type === 'return') {
+                content = `<h4>General Questions</h4><p><b>Apa itu GANKETI?</b><br>GANKETI adalah brand fashion dan lifestyle modern yang menghadirkan produk dengan desain stylish, elegan, dan berkualitas. Kami menggabungkan kreativitas, tren global, dan identitas brand untuk menciptakan produk yang unik dan modern.</p><p><b>Apakah produk GANKETI original?</b><br>Ya. Semua produk yang dijual di website resmi GANKETI adalah produk original yang dirancang dan dikembangkan oleh brand GANKETI.</p><h4>Orders</h4><p><b>Bagaimana cara memesan produk di website GANKETI?</b></p><ul><li>Pilih produk yang ingin dibeli</li><li>Pilih ukuran atau variasi produk</li><li>Klik tombol Add to Cart / Add to Bag</li><li>Lanjutkan ke halaman checkout</li><li>Masukkan alamat pengiriman & pilih metode pembayaran</li><li>Selesaikan pembayaran</li></ul><p><b>Apakah saya bisa membatalkan pesanan?</b><br>Pesanan hanya dapat dibatalkan sebelum pesanan diproses atau dikirimkan. Silakan hubungi tim kami sesegera mungkin jika ingin melakukan pembatalan.</p><h4>Payment & Shipping</h4><p><b>Metode pembayaran apa saja yang tersedia?</b><br>Kami menerima Transfer Bank, E-Wallet, Virtual Account, dan Payment Gateway.</p><p><b>Berapa lama waktu pengiriman?</b><br>Dalam kota: 1–3 hari kerja. Antar kota: 2–5 hari kerja. Internasional: 5–10 hari kerja.</p>`;
+            } else if(type === 'return') {
                 title = "SHIPPING & RETURNS";
-                content = `<h4>Shipping Policy</h4>
-                <p>GANKETI berkomitmen untuk mengirimkan pesanan dengan aman dan cepat kepada pelanggan. Setelah pembayaran berhasil dikonfirmasi, pesanan akan diproses dalam waktu 1–2 hari kerja sebelum dikirimkan.</p>
-                <h4>Delivery Time</h4>
-                <ul>
-                <li>Pengiriman lokal: 1–3 hari kerja</li>
-                <li>Pengiriman nasional: 2–5 hari kerja</li>
-                <li>Pengiriman internasional: 5–10 hari kerja</li>
-                </ul>
-                <h4>Return Policy</h4>
-                <p>Produk dapat dikembalikan atau ditukar jika produk rusak saat diterima atau tidak sesuai dengan pesanan. Pengajuan retur harus dilakukan dalam waktu maksimal 7 hari setelah produk diterima.</p>
-                <p>Produk yang dikembalikan harus dalam kondisi belum dipakai, tidak rusak, dan masih memiliki label serta kemasan asli.</p>
-                <h4>Refund Policy</h4>
-                <p>Jika retur disetujui, pengembalian dana akan diproses sesuai metode pembayaran yang digunakan oleh pelanggan (memerlukan waktu 3–7 hari kerja).</p>`;
-            }
-            else if(type === 'contact') {
+                content = `<h4>Shipping Policy</h4><p>GANKETI berkomitmen untuk mengirimkan pesanan dengan aman dan cepat kepada pelanggan. Setelah pembayaran berhasil dikonfirmasi, pesanan akan diproses dalam waktu 1–2 hari kerja sebelum dikirimkan.</p><h4>Delivery Time</h4><ul><li>Pengiriman lokal: 1–3 hari kerja</li><li>Pengiriman nasional: 2–5 hari kerja</li><li>Pengiriman internasional: 5–10 hari kerja</li></ul><h4>Return Policy</h4><p>Produk dapat dikembalikan atau ditukar jika produk rusak saat diterima atau tidak sesuai dengan pesanan. Pengajuan retur harus dilakukan dalam waktu maksimal 7 hari setelah produk diterima.</p><p>Produk yang dikembalikan harus dalam kondisi belum dipakai, tidak rusak, dan masih memiliki label serta kemasan asli.</p><h4>Refund Policy</h4><p>Jika retur disetujui, pengembalian dana akan diproses sesuai metode pembayaran yang digunakan oleh pelanggan (memerlukan waktu 3–7 hari kerja).</p>`;
+            } else if(type === 'contact') {
                 title = "CONTACT US";
-                content = `<h4>Get In Touch</h4>
-                <p>Kami selalu terbuka untuk berkomunikasi dengan pelanggan, partner bisnis, maupun komunitas yang tertarik dengan brand GANKETI. Jika Anda memiliki pertanyaan, masukan, atau ingin bekerja sama dengan kami, silakan hubungi melalui informasi berikut:</p>
-                <ul>
-                <li><b>Email:</b> ganketi.store@gmail.com</li>
-                <li><b>Instagram:</b> @ganketi.store</li>
-                <li><b>Website:</b> www.ganketi.store</li>
-                </ul>
-                <h4>Send Us a Message</h4>
-                <p>Anda juga dapat mengirimkan pesan langsung melalui WhatsApp atau Email. Tim kami akan merespons secepat mungkin untuk membantu kebutuhan Anda.</p>`;
-            }
-            else if(type === 'size') {
+                content = `<h4>Get In Touch</h4><p>Kami selalu terbuka untuk berkomunikasi dengan pelanggan, partner bisnis, maupun komunitas yang tertarik dengan brand GANKETI. Jika Anda memiliki pertanyaan, masukan, atau ingin bekerja sama dengan kami, silakan hubungi melalui informasi berikut:</p><ul><li><b>Email:</b> ganketi.store@gmail.com</li><li><b>Instagram:</b> @ganketi.store</li><li><b>Website:</b> www.ganketi.store</li></ul><h4>Send Us a Message</h4><p>Anda juga dapat mengirimkan pesan langsung melalui WhatsApp atau Email. Tim kami akan merespons secepat mungkin untuk membantu kebutuhan Anda.</p>`;
+            } else if(type === 'size') {
                 title = "SIZE GUIDE";
-                content = `<h4>General Size Guide</h4>
-                <p>Measurements are in Centimeters (cm):</p>
-                <ul>
-                    <li><b>S:</b> Chest 48 - Length 68</li>
-                    <li><b>M:</b> Chest 50 - Length 70</li>
-                    <li><b>L:</b> Chest 52 - Length 72</li>
-                    <li><b>XL:</b> Chest 54 - Length 74</li>
-                    <li><b>XXL:</b> Chest 56 - Length 76</li>
-                </ul>
-                <p><i>*Please allow 1-2 cm margin of error due to manual measurement.</i></p>`;
+                content = `<h4>General Size Guide</h4><p>Measurements are in Centimeters (cm):</p><ul><li><b>S:</b> Chest 48 - Length 68</li><li><b>M:</b> Chest 50 - Length 70</li><li><b>L:</b> Chest 52 - Length 72</li><li><b>XL:</b> Chest 54 - Length 74</li><li><b>XXL:</b> Chest 56 - Length 76</li></ul><p><i>*Please allow 1-2 cm margin of error due to manual measurement.</i></p>`;
             }
 
             document.getElementById('modalTitle').innerText = title;
@@ -761,37 +704,133 @@
         function checkDist() { const val = document.getElementById('cDist').value.trim().toUpperCase(); const match = apiRegionData.dist.find(x => x.name.toUpperCase() === val); if(match) { document.getElementById('cDist').value = match.name; resetDownstream('dist'); document.getElementById('cVill').placeholder = "Loading villages..."; loadRegionAPI('vill', match.id); } else { resetDownstream('dist'); } }
         function checkVill() { const val = document.getElementById('cVill').value.trim().toUpperCase(); const match = apiRegionData.vill.find(x => x.name.toUpperCase() === val); if(match) { document.getElementById('cVill').value = match.name; } }
 
+        // 🔥 LOGIC MENAMPILKAN BUKU ALAMAT 🔥
+        function renderSavedAddresses() {
+            const container = document.getElementById('savedAddressesContainer');
+            const list = document.getElementById('savedAddressesList');
+            if(savedAddresses.length > 0) {
+                container.style.display = 'block';
+                list.innerHTML = savedAddresses.map((adr, index) => `
+                    <div class="saved-address-card" onclick="useSavedAddress(${index})">
+                        <b style="color:var(--primary); font-size:14px;">${adr.name}</b> <span style="color:#888;">(${adr.phone})</span><br>
+                        ${adr.street}, RT ${adr.rt}/RW ${adr.rw}, Kel. ${adr.vill}, Kec. ${adr.dist}, ${adr.city}, ${adr.prov} - ${adr.zip}
+                    </div>
+                `).join('');
+            } else {
+                container.style.display = 'none';
+            }
+        }
+
+        function useSavedAddress(index) {
+            let adr = savedAddresses[index];
+            document.getElementById('cName').value = adr.name || '';
+            document.getElementById('cPhone').value = adr.phone || '';
+            document.getElementById('cStreet').value = adr.street || '';
+            document.getElementById('cRT').value = adr.rt || '';
+            document.getElementById('cRW').value = adr.rw || '';
+            document.getElementById('cProv').value = adr.prov || '';
+            document.getElementById('cCity').value = adr.city || '';
+            document.getElementById('cDist').value = adr.dist || '';
+            document.getElementById('cVill').value = adr.vill || '';
+            document.getElementById('cZip').value = adr.zip || '';
+            
+            document.getElementById('cCity').disabled = false;
+            document.getElementById('cDist').disabled = false;
+            document.getElementById('cVill').disabled = false;
+            
+            showToast("Alamat otomatis terisi!", "success");
+        }
+
+        function clearAddressForm() {
+            ['cName', 'cPhone', 'cStreet', 'cRT', 'cRW', 'cProv', 'cCity', 'cDist', 'cVill', 'cZip'].forEach(id => document.getElementById(id).value = '');
+            resetDownstream('prov');
+        }
+
         function goToShipping() { 
             if(cart.length === 0) { showToast("Your cart is empty!", 'warning'); return; }
             if(!currentUser) { closeModal(); showToast("Please Sign In first!", 'warning'); setTimeout(() => handleAuth(), 1500); return; }
             hideAllAreas(); document.getElementById('modalTitle').innerText = "SHIPPING INFO"; 
             document.getElementById('cEmail').value = currentUser.email;
+            
+            // Tampilkan alamat yang tersimpan
+            renderSavedAddresses();
+            
             if(document.getElementById('cName').value === "") document.getElementById('cName').value = currentUser.displayName;
             document.getElementById('shippingArea').style.display = 'block'; 
             if(apiRegionData.prov.length === 0) { document.getElementById('cProv').placeholder = "Loading provinces..."; loadRegionAPI('prov'); }
         }
 
-        function buatPesananSekarang() {
+        // 🔥 LOGIC TRANSISI KE PAYMENT GATEWAY (SIMULASI XENDIT) 🔥
+        function goToPayment() {
             const cEmail = document.getElementById('cEmail').value; const cName = document.getElementById('cName').value.trim(); const cPhone = document.getElementById('cPhone').value.trim(); 
             const cStreet = document.getElementById('cStreet').value.trim(); const cRT = document.getElementById('cRT').value.trim(); const cRW = document.getElementById('cRW').value.trim();
             const cZip = document.getElementById('cZip').value.trim();
             const provName = document.getElementById('cProv').value.trim().toUpperCase(); const cityName = document.getElementById('cCity').value.trim().toUpperCase(); const distName = document.getElementById('cDist').value.trim().toUpperCase(); const villName = document.getElementById('cVill').value.trim().toUpperCase();
 
             if(!cName || !cPhone || !cStreet || !cRT || !cRW || !cZip || !provName || !cityName || !distName || !villName) { showToast("Please fill all shipping details!", 'error'); return; }
-            if(!apiRegionData.prov.find(x => x.name.toUpperCase() === provName)) { showToast("Invalid Province!", 'error'); return; }
-            if(!apiRegionData.city.find(x => x.name.toUpperCase() === cityName)) { showToast("Invalid City!", 'error'); return; }
-            if(!apiRegionData.dist.find(x => x.name.toUpperCase() === distName)) { showToast("Invalid District!", 'error'); return; }
-            if(!apiRegionData.vill.find(x => x.name.toUpperCase() === villName)) { showToast("Invalid Village!", 'error'); return; }
+            
+            // Simpan alamat baru ke LocalStorage jika checkbox dicentang
+            if(document.getElementById('saveAddressCheck').checked) {
+                let newAdr = { name: cName, phone: cPhone, street: cStreet, rt: cRT, rw: cRW, prov: provName, city: cityName, dist: distName, vill: villName, zip: cZip };
+                let isDuplicate = savedAddresses.some(a => a.street === newAdr.street && a.name === newAdr.name);
+                if(!isDuplicate) {
+                    savedAddresses.push(newAdr);
+                    localStorage.setItem('ganketiAddresses', JSON.stringify(savedAddresses));
+                }
+            }
 
             const cAddress = `${cStreet}, RT ${cRT}/RW ${cRW}, Kel. ${villName}, Kec. ${distName}, ${cityName}, Prov. ${provName} - ${cZip}`;
-            const invoiceNumber = "INV-GKT-" + Date.now(); const orderDate = new Date().toLocaleString('id-ID');
             let grandTotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
 
-            db.ref('orders').push({ invoice_no: invoiceNumber, date: orderDate, customer: { email: cEmail, name: cName, phone: cPhone, address: cAddress }, items: cart, total: grandTotal, status: "UNPAID", timestamp: Date.now() }); 
-            cart.forEach(item => { const prodRef = db.ref('products/' + item.id); prodRef.once('value').then(snap => { const currentData = snap.val(); if(currentData) { prodRef.update({ stock: Math.max(0, (currentData.stock || 0) - item.qty) }); }});});
-            let itemsHtml = cart.map(i => `${i.qty}x ${i.name.substring(0,20)} <span style="float:right;">${(i.price * i.qty).toLocaleString('id-ID')}</span>`).join('<br>');
-            document.getElementById('invoicePaper').innerHTML = `<div style="text-align:center; font-weight:bold; font-size:16px; margin-bottom:10px; border-bottom:2px dashed #000; padding-bottom:10px;">GANKETI OFFICIAL</div>INV NO : <b style="color:blue;">${invoiceNumber}</b><br>DATE   : ${orderDate}<br>NAME   : ${cName}<br><hr style="border-top:1px dashed #000; margin:10px 0;">${itemsHtml}<hr style="border-top:1px dashed #000; margin:10px 0;"><b style="font-size: 14px;">GRAND TOTAL : <span style="float:right;">Rp ${grandTotal.toLocaleString('id-ID')}</span></b><div style="margin-top:20px; text-align:center; font-size:10px; color:#666;">Complete payment via Admin instructions.</div>`;
-            cart = []; localStorage.setItem('ganketiCart', JSON.stringify(cart)); updateCartCount(); hideAllAreas(); document.getElementById('modalTitle').innerText = "ORDER CONFIRMED"; document.getElementById('invoiceArea').style.display = 'block'; showToast("Order Placed Successfully! 🎉", "success");
+            // Simpan data order sementara
+            pendingOrderData = {
+                customer: { email: cEmail, name: cName, phone: cPhone, address: cAddress },
+                items: cart,
+                total: grandTotal
+            };
+
+            hideAllAreas();
+            document.getElementById('modalTitle').innerText = "PAYMENT";
+            document.getElementById('payTotalDisplay').innerText = `Rp ${grandTotal.toLocaleString('id-ID')}`;
+            document.getElementById('paymentArea').style.display = 'block';
+        }
+
+        function selectPaymentMethod(el) {
+            document.querySelectorAll('.payment-method-card').forEach(card => card.style.borderColor = '#333');
+            el.style.borderColor = '#4ade80';
+        }
+
+        // 🔥 LOGIC SIMULASI PEMBAYARAN BERHASIL (NANTI DIGANTI API XENDIT) 🔥
+        function simulateXenditSuccess() {
+            if(!pendingOrderData) return;
+            
+            const invoiceNumber = "INV-GKT-" + Date.now(); 
+            const orderDate = new Date().toLocaleString('id-ID');
+
+            // Simpan ke Database
+            db.ref('orders').push({ 
+                invoice_no: invoiceNumber, 
+                date: orderDate, 
+                customer: pendingOrderData.customer, 
+                items: pendingOrderData.items, 
+                total: pendingOrderData.total, 
+                status: "PAID", // Otomatis Lunas
+                timestamp: Date.now() 
+            }); 
+            
+            // Kurangi Stok
+            pendingOrderData.items.forEach(item => { const prodRef = db.ref('products/' + item.id); prodRef.once('value').then(snap => { const currentData = snap.val(); if(currentData) { prodRef.update({ stock: Math.max(0, (currentData.stock || 0) - item.qty) }); }});});
+            
+            // Buat Kertas Invoice
+            let itemsHtml = pendingOrderData.items.map(i => `${i.qty}x ${i.name.substring(0,20)} <span style="float:right;">${(i.price * i.qty).toLocaleString('id-ID')}</span>`).join('<br>');
+            document.getElementById('invoicePaper').innerHTML = `<div style="text-align:center; font-weight:bold; font-size:16px; margin-bottom:10px; border-bottom:2px dashed #000; padding-bottom:10px;">GANKETI OFFICIAL</div>INV NO : <b style="color:blue;">${invoiceNumber}</b><br>DATE   : ${orderDate}<br>NAME   : ${pendingOrderData.customer.name}<br>STATUS : <b style="color:#4ade80;">PAID</b><hr style="border-top:1px dashed #000; margin:10px 0;">${itemsHtml}<hr style="border-top:1px dashed #000; margin:10px 0;"><b style="font-size: 14px;">GRAND TOTAL : <span style="float:right;">Rp ${pendingOrderData.total.toLocaleString('id-ID')}</span></b><div style="margin-top:20px; text-align:center; font-size:10px; color:#666;">Payment Verified by System.</div>`;
+            
+            // Kosongkan Keranjang
+            cart = []; localStorage.setItem('ganketiCart', JSON.stringify(cart)); updateCartCount(); 
+            pendingOrderData = null; // Reset
+            
+            // Tampilkan Invoice
+            hideAllAreas(); document.getElementById('modalTitle').innerText = "ORDER CONFIRMED"; document.getElementById('invoiceArea').style.display = 'block'; showToast("Payment Successful! 🎉", "success");
         }
 
         function openMyOrders() {
