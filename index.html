@@ -30,7 +30,10 @@
         .head-top { display: grid; grid-template-columns: auto 1fr auto; align-items: center; padding: 12px 20px; gap: 15px;} 
         .hamburger-btn { background: none; border: none; color: var(--primary); font-size: 24px; cursor: pointer; display: flex; align-items: center; padding: 0; margin: 0;}
         .logo { cursor: pointer; user-select: none; touch-action: manipulation; -webkit-tap-highlight-color: transparent; display: flex; justify-content: center; align-items: center;}
-        .logo img { max-height: 35px; width: auto; object-fit: contain; } 
+        
+        /* 🔥 LOGO TRANSPARANT CSS MAGIC 🔥 */
+        .logo img { max-height: 35px; width: auto; object-fit: contain; mix-blend-mode: screen; } 
+        
         .nav-icons { display: flex; gap: 15px; align-items: center; justify-content: flex-end;}
         .icon-btn { background: none; border: none; color: var(--text); font-size: 18px; font-weight: 600; cursor: pointer; display: flex; align-items: center; position: relative;}
         .cart-badge { position: absolute; top: -5px; right: -10px; background: #ef4444; color: white; font-size: 9px; font-weight: 800; padding: 2px 6px; border-radius: 20px; }
@@ -39,7 +42,7 @@
         .search-box { width: 100%; padding: 10px 15px; background: #1a1a1a; border: 1px solid #333; border-radius: 4px; color: white; outline: none; font-family: 'Inter'; font-size: 13px; }
         .search-box:focus { border-color: var(--primary); }
 
-        /* LACI SAMPING (SIDEBAR MENU) - DARK & TRANSPARENT */
+        /* LACI SAMPING (SIDEBAR MENU) */
         .sidebar-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 999; display: none; backdrop-filter: blur(2px); }
         .sidebar { position: fixed; top: 0; left: -100%; width: 85%; max-width: 320px; height: 100%; background: rgba(18, 18, 18, 0.95); backdrop-filter: blur(10px); z-index: 1000; transition: 0.3s ease-in-out; display: flex; flex-direction: column; overflow-y: auto; border-right: 1px solid #333;}
         .sidebar.active { left: 0; }
@@ -189,7 +192,7 @@
     <div class="sidebar" id="sidebarMenu">
         <div class="sidebar-header">
             <div style="width:24px;"></div>
-            <img src="ganketilogo.png" alt="GANKETI" style="max-height: 28px; object-fit: contain;">
+            <img src="ganketilogo.png" alt="GANKETI" style="max-height: 28px; object-fit: contain; mix-blend-mode: screen;">
             <div class="sidebar-close" onclick="toggleMenu()">×</div>
         </div>
         
@@ -533,8 +536,8 @@
             const s = snap.val();
             if(s) {
                 const logoEl = document.getElementById('mainLogo');
-                if(s.logoImg) { logoEl.innerHTML = `<img src="${s.logoImg}" alt="GANKETI">`; } 
-                else { logoEl.innerHTML = `<img src="ganketilogo.png" alt="GANKETI">`; }
+                if(s.logoImg) { logoEl.innerHTML = `<img src="${s.logoImg}" alt="GANKETI" style="mix-blend-mode: screen;">`; } 
+                else { logoEl.innerHTML = `<img src="ganketilogo.png" alt="GANKETI" style="mix-blend-mode: screen;">`; }
                 if(s.heroTitle) document.getElementById('heroTitle').innerText = s.heroTitle;
                 if(s.heroSub) document.getElementById('heroSub').innerText = s.heroSub;
             }
@@ -790,7 +793,6 @@
             if(apiRegionData.prov.length === 0) { document.getElementById('cProv').placeholder = "Loading provinces..."; loadRegionAPI('prov'); }
         }
 
-        // 🔥 FUNGSI REVISI: PAKAI KUNCI LIVE BOS (DENGAN FALLBACK AMAN) 🔥
         async function calculateShipping() {
             const cEmail = document.getElementById('cEmail').value; const cName = document.getElementById('cName').value.trim(); const cPhone = document.getElementById('cPhone').value.trim(); 
             const cStreet = document.getElementById('cStreet').value.trim(); const cRT = document.getElementById('cRT').value.trim(); const cRW = document.getElementById('cRW').value.trim();
@@ -820,7 +822,7 @@
             document.getElementById('courierListContainer').innerHTML = '<p style="color:#aaa; text-align:center; padding:20px;">Mencari rute pengiriman asli... ⏳</p>';
 
             try {
-                // 🔥 INI DIA KUNCI LIVE DARI BOS! 🔥
+                // 🔥 KUNCI LIVE DARI BOS 🔥
                 const API_KEY = 'Biteship_live.eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiR2Fua2V0aSIsInVzZXJJZCI6IjY5YWVlODYzM2NjODBhMWUzMjE3ZGJkYyIsImlhdCI6MTc3MzA3OTg3MX0.ot-KA-1HmE0xMsc7OhHeQBaDGo7KrDKU1tuS4bk5fCo';
 
                 let baseOrigin = cart[0].origin || 'JAKARTA SELATAN';
@@ -890,7 +892,6 @@
             } catch (e) {
                 console.warn("API Biteship error/limit, falling back to simulated rates:", e);
                 
-                // 🔥 FALLBACK SYSTEM: MUNCULKAN HARGA SIMULASI JIKA API ERROR 🔥
                 let availableCouriers = (cart[0].couriers || 'JNE,J&T').split(',').map(s => s.trim());
                 let baseCost = 15000;
                 if(provName.includes("SUMATERA")) baseCost = 25000;
@@ -925,7 +926,6 @@
             }
         }
 
-        // UPDATE TOTAL HARGA ONGKIR + PRODUK
         function updateShippingTotal(fee, courierName) {
             selectedShippingCost = fee;
             selectedCourierName = courierName;
