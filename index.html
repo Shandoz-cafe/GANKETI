@@ -55,7 +55,7 @@
         .sidebar-item-sub { padding: 18px 20px; color: #ccc; font-size: 13px; border-bottom: 1px solid #333; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: 0.2s;}
         .sidebar-item-sub:hover { background: rgba(255,255,255,0.05); color: #fff;}
         
-        .sub-menu { display: none; background: rgba(10, 10, 0.5); border-bottom: 1px solid #333; }
+        .sub-menu { display: none; background: rgba(10, 10, 10, 0.5); border-bottom: 1px solid #333; }
         .sub-item { padding: 15px 20px 15px 40px; color: #aaa; font-size: 12px; cursor: pointer; transition: 0.2s;}
         .sub-item:hover { background: rgba(255,255,255,0.05); color: #fff; font-weight: bold;}
         .sidebar-divider { height: 8px; background: #0a0a0a; border-top: 1px solid #222; border-bottom: 1px solid #222;}
@@ -140,6 +140,11 @@
         .form-group input:focus, .form-group select:focus { border-color: var(--primary); }
         .form-group input:disabled, .form-group input:read-only { background: #1a1a1a; color: #555; cursor: not-allowed; border-color: #222; }
         
+        /* 🔥 CSS PENCARIAN KOTA BITESHIP 🔥 */
+        .autocomplete-box { position: absolute; width: 100%; max-height: 180px; overflow-y: auto; z-index: 1000; border: 1px solid #444; border-radius: 4px; box-shadow: 0 4px 10px rgba(0,0,0,0.8); display: none; background: #1a1a1a; margin-top: 2px; }
+        .biteship-item { padding: 12px 10px; border-bottom: 1px solid #333; font-size: 12px; cursor: pointer; color: #ccc; line-height: 1.4; }
+        .biteship-item:hover { background: #3b82f6; color: white; font-weight: bold; }
+
         /* CSS BUKU ALAMAT / PAYMENT / SHIPPING */
         .saved-address-card { background: #1a1a1a; border: 1px solid #333; padding: 15px; border-radius: 8px; margin-bottom: 10px; cursor: pointer; transition: 0.2s; font-size: 12px; color: #ccc;}
         .saved-address-card:hover { border-color: #3b82f6; }
@@ -326,14 +331,21 @@
                 <div class="form-group"><label>Email</label><input type="email" id="cEmail" readonly></div>
                 <div class="form-group"><label>Full Name</label><input type="text" id="cName" placeholder="Full Name"></div>
                 <div class="form-group"><label>WhatsApp Number</label><input type="number" id="cPhone" placeholder="08..."></div>
+                
                 <div style="border-top: 1px solid var(--border); margin: 20px 0; padding-top: 15px;"></div>
                 <h3 style="font-size: 14px; margin-bottom: 15px; color: var(--primary);">Shipping Address</h3>
+                
                 <div class="form-group"><label>Street, Building, House No.</label><input type="text" id="cStreet" placeholder="Jl. Sudirman No. 10"></div>
                 <div style="display: flex; gap: 10px;"><div class="form-group" style="flex:1;"><label>RT</label><input type="number" id="cRT" placeholder="001"></div><div class="form-group" style="flex:1;"><label>RW</label><input type="number" id="cRW" placeholder="002"></div></div>
-                <div class="form-group"><label>Province</label><input type="text" id="cProv" list="provList" placeholder="Select Province..." oninput="checkProv()" autocomplete="off"><datalist id="provList"></datalist></div>
-                <div class="form-group"><label>City / Regency</label><input type="text" id="cCity" list="cityList" placeholder="Select City..." oninput="checkCity()" autocomplete="off" disabled><datalist id="cityList"></datalist></div>
-                <div class="form-group"><label>District</label><input type="text" id="cDist" list="distList" placeholder="Select District..." oninput="checkDist()" autocomplete="off" disabled><datalist id="distList"></datalist></div>
-                <div class="form-group"><label>Village</label><input type="text" id="cVill" list="villList" placeholder="Select Village..." oninput="checkVill()" autocomplete="off" disabled><datalist id="villList"></datalist></div>
+                
+                <div class="form-group" style="position:relative;">
+                    <label>Kecamatan/Kota Tujuan (Wajib Pilih dari Dropdown!)</label>
+                    <input type="text" id="cDestSearch" placeholder="Ketik min 3 huruf (Cth: Sarijadi)..." oninput="searchBiteshipDest(this.value)" autocomplete="off">
+                    <input type="hidden" id="cDestId">
+                    <input type="hidden" id="cDestName">
+                    <div id="cDestResults" class="autocomplete-box"></div>
+                </div>
+
                 <div class="form-group"><label>Postal Code</label><input type="number" id="cZip" placeholder="12345"></div>
                 
                 <div style="margin-bottom: 20px;">
@@ -419,13 +431,15 @@
         let globalProducts = []; let activeCategory = 'ALL'; 
         let cart = JSON.parse(localStorage.getItem('ganketiCart') || '[]');
         let currentUser = null; 
-        let apiRegionData = { prov: [], city: [], dist: [], vill: [] }; 
         
         let savedAddresses = JSON.parse(localStorage.getItem('ganketiAddresses') || '[]');
         
         let pendingOrderData = null; 
         let selectedShippingCost = 0;
         let selectedCourierName = "";
+
+        // 🔥 KUNCI API LIVE (SUDAH DIPERBAIKI) 🔥
+        const BITESHIP_KEY = 'Biteship_live.eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiR2Fua2V0aSIsInVzZXJJZCI6IjY5YWVlODYzM2NjODBhMWUzMjE3ZGJkYyIsImlhdCI6MTc3MzA3OTg3MX0.ot-KA-1HmE0xMsc7OhHeQBaDGo7KrDKU1tuS4bk5fCo';
 
         updateCartCount();
 
@@ -621,7 +635,7 @@
 
             if(type === 'about') {
                 title = "ABOUT GANKETI";
-                content = `<h4>Our Story</h4><p>GANKETI adalah brand fashion modern yang lahir dari semangat untuk menghadirkan gaya yang elegan, kreatif, dan relevan dengan perkembangan tren global. Kami percaya bahwa fashion bukan hanya sekadar pakaian, tetapi juga cara seseorang mengekspresikan identitas, karakter, dan gaya hidupnya.</p><p>GANKETI menggabungkan inspirasi dari berbagai budaya dunia dengan sentuhan desain modern dan inovatif. Setiap produk dirancang dengan perhatian terhadap detail, kualitas, dan estetika agar mampu memberikan pengalaman fashion yang berbeda bagi para penggunanya.</p><p>Kami ingin menciptakan brand yang tidak hanya mengikuti tren, tetapi juga membangun identitas dan karakter yang kuat dalam dunia fashion dan lifestyle.</p><h4>Filosofi Nama GANKETI</h4><p>Nama GANKETI memiliki makna yang merepresentasikan nilai dan filosofi brand:</p><ul><li><b>G – Gracia (Spanyol):</b> Melambangkan keanggunan dan keindahan alami.</li><li><b>A – Arte (Portugis/Spanyol):</b> Mewakili seni dan kreativitas dalam desain.</li><li><b>N – Novo (Portugis):</b> Menggambarkan sesuatu yang baru, modern, dan selalu berkembang.</li><li><b>K – Kultura (Polandia):</b> Merepresentasikan budaya dan identitas.</li><li><b>E – Elegancia (Spanyol):</b> Menunjukkan kesan elegan, premium, dan eksklusif.</li><li><b>T – Tendencia (Spanyol):</b> Melambangkan tren dan gaya modern.</li><li><b>I – Inovação (Portugis):</b> Menggambarkan inovasi dan pendekatan futuristik.</li></ul><h4>Vision</h4><p>Menjadi brand fashion dan lifestyle modern yang dikenal secara global dengan identitas yang kuat, desain yang inovatif, serta kualitas produk yang premium.</p><h4>Mission</h4><ul><li>Menghadirkan produk fashion berkualitas dengan desain modern dan stylish.</li><li>Menggabungkan kreativitas, budaya, dan tren global dalam setiap koleksi.</li><li>Memberikan pengalaman fashion yang elegan dan berkelas bagi pelanggan.</li><li>Membangun identitas brand yang kuat di dunia fashion dan lifestyle.</li></ul><h4>Brand Identity</h4><p>GANKETI memiliki identitas brand yang mencerminkan gaya hidup modern, elegan, dan inovatif.</p><ul><li><b>Modern:</b> Desain mengikuti perkembangan tren global dan gaya urban.</li><li><b>Elegant:</b> Produk memiliki kesan premium dan berkelas.</li><li><b>Creative:</b> Setiap koleksi menghadirkan ide desain yang unik dan stylish.</li><li><b>Innovative:</b> Brand terus berkembang dengan konsep yang futuristik.</li></ul>`;
+                content = `<h4>Our Story</h4><p>GANKETI adalah brand fashion modern yang lahir dari semangat untuk menghadirkan gaya yang elegan, kreatif, dan relevan dengan perkembangan tren global. Kami percaya bahwa fashion bukan hanya sekadar pakaian, tetapi juga cara seseorang mengekspresikan identitas, karakter, dan gaya hidupnya.</p><p>GANKETI menggabungkan inspirasi dari berbagai budaya dunia dengan sentuhan desain modern dan inovatif. Setiap produk dirancang dengan perhatian terhadap detail, kualitas, dan estetika agar mampu memberikan pengalaman fashion yang berbeda bagi para penggunanya.</p><p>Kami ingin menciptakan brand yang tidak hanya mengikuti tren, calculations juga membangun identitas dan karakter yang kuat dalam dunia fashion dan lifestyle.</p><h4>Filosofi Nama GANKETI</h4><p>Nama GANKETI memiliki makna yang merepresentasikan nilai dan filosofi brand:</p><ul><li><b>G – Gracia (Spanyol):</b> Melambangkan keanggunan dan keindahan alami.</li><li><b>A – Arte (Portugis/Spanyol):</b> Mewakili seni dan kreativitas dalam desain.</li><li><b>N – Novo (Portugis):</b> Menggambarkan sesuatu yang baru, modern, dan selalu berkembang.</li><li><b>K – Kultura (Polandia):</b> Merepresentasikan budaya dan identitas.</li><li><b>E – Elegancia (Spanyol):</b> Menunjukkan kesan elegan, premium, dan eksklusif.</li><li><b>T – Tendencia (Spanyol):</b> Melambangkan tren dan gaya modern.</li><li><b>I – Inovação (Portugis):</b> Menggambarkan inovasi dan pendekatan futuristik.</li></ul><h4>Vision</h4><p>Menjadi brand fashion dan lifestyle modern yang dikenal secara global dengan identitas yang kuat, desain yang inovatif, serta kualitas produk yang premium.</p><h4>Mission</h4><ul><li>Menghadirkan produk fashion berkualitas dengan desain modern dan stylish.</li><li>Menggabungkan kreativitas, budaya, dan tren global dalam setiap koleksi.</li><li>Memberikan pengalaman fashion yang elegan dan berkelas bagi pelanggan.</li><li>Membangun identitas brand yang kuat di dunia fashion dan lifestyle.</li></ul><h4>Brand Identity</h4><p>GANKETI memiliki identitas brand yang mencerminkan gaya hidup modern, elegan, dan inovatif.</p><ul><li><b>Modern:</b> Desain mengikuti perkembangan tren global dan gaya urban.</li><li><b>Elegant:</b> Produk memiliki kesan premium dan berkelas.</li><li><b>Creative:</b> Setiap koleksi menghadirkan ide desain yang unik dan stylish.</li><li><b>Innovative:</b> Brand terus berkembang dengan konsep yang futuristik.</li></ul>`;
             } else if(type === 'privacy') {
                 title = "PRIVACY POLICY";
                 content = `<h4>Privacy Policy</h4><p>GANKETI menghargai dan melindungi privasi setiap pengguna website kami. Kebijakan privasi ini menjelaskan bagaimana kami mengumpulkan, menggunakan, dan melindungi informasi pribadi pengguna.</p><h4>Information We Collect</h4><p>Kami dapat mengumpulkan informasi seperti:</p><ul><li>Nama</li><li>Alamat email</li><li>Nomor telepon</li><li>Alamat pengiriman</li><li>Informasi transaksi</li></ul><p>Informasi ini dikumpulkan saat pengguna melakukan pendaftaran akun, melakukan pembelian, atau menghubungi kami.</p><h4>How We Use Your Information</h4><p>Informasi yang kami kumpulkan digunakan untuk:</p><ul><li>Memproses pesanan pelanggan</li><li>Mengirimkan informasi mengenai pesanan</li><li>Meningkatkan layanan dan pengalaman pengguna</li><li>Memberikan informasi mengenai produk atau promosi terbaru</li></ul><h4>Data Security</h4><p>Kami menjaga keamanan data pengguna dengan menggunakan sistem keamanan yang sesuai untuk melindungi informasi pribadi dari akses yang tidak sah.</p>`;
@@ -683,6 +697,7 @@
             
             let cartItemIndex = cart.findIndex(c => c.cartItemId === cartItemId);
             cart[cartItemIndex].origin = product.origin || 'KOTA JAKARTA SELATAN'; 
+            cart[cartItemIndex].originId = product.originId || null; 
             cart[cartItemIndex].couriers = product.couriers || 'jne,jnt,sicepat';
 
             localStorage.setItem('ganketiCart', JSON.stringify(cart)); updateCartCount(); closeModal(); showToast('Added to Cart! 🛒', 'success');
@@ -710,34 +725,42 @@
         }
         function removeItem(index) { cart.splice(index, 1); localStorage.setItem('ganketiCart', JSON.stringify(cart)); updateCartCount(); openCart(); }
 
-        async function loadRegionAPI(level, parentId = null) {
-            let url = '';
-            if (level === 'prov') url = 'https://www.emsifa.com/api-wilayah-indonesia/api/provinces.json';
-            else if (level === 'city') url = `https://www.emsifa.com/api-wilayah-indonesia/api/regencies/${parentId}.json`;
-            else if (level === 'dist') url = `https://www.emsifa.com/api-wilayah-indonesia/api/districts/${parentId}.json`;
-            else if (level === 'vill') url = `https://www.emsifa.com/api-wilayah-indonesia/api/villages/${parentId}.json`;
-
-            try {
-                const res = await fetch(url); const data = await res.json();
-                apiRegionData[level] = data; 
-                const datalist = document.getElementById(level + 'List');
-                datalist.innerHTML = data.map(item => `<option value="${item.name}">`).join('');
-                const inputEl = document.getElementById('c' + level.charAt(0).toUpperCase() + level.slice(1));
-                inputEl.placeholder = "Select from list..."; inputEl.disabled = false;
-            } catch(e) { showToast("Failed loading region data.", "error"); }
+        // 🔥 MESIN PENCARI KOTA BITESHIP (UNTUK PEMBELI) 🔥
+        let searchDestTimeout;
+        function searchBiteshipDest(query) {
+            const resultBox = document.getElementById('cDestResults');
+            if(query.length < 3) { resultBox.style.display = 'none'; return; }
+            
+            clearTimeout(searchDestTimeout);
+            searchDestTimeout = setTimeout(async () => {
+                resultBox.innerHTML = '<div style="padding:10px; font-size:11px; color:#aaa;">Mencari di sistem Kurir...</div>';
+                resultBox.style.display = 'block';
+                try {
+                    const res = await fetch(`https://api.biteship.com/v1/maps/areas?countries=ID&input=${encodeURIComponent(query)}&type=single`, {
+                        headers: { 'Authorization': BITESHIP_KEY }
+                    });
+                    const data = await res.json();
+                    if(data.success && data.areas && data.areas.length > 0) {
+                        resultBox.innerHTML = data.areas.map(a => {
+                            let text = `${a.name}, ${a.administrative_division_level_2_name}, ${a.administrative_division_level_1_name}`;
+                            return `<div class="biteship-item" onclick="selectBiteshipDest('${a.id}', '${text.replace(/'/g, "\\'")}', '${a.postal_code}')">${text}</div>`;
+                        }).join('');
+                    } else {
+                        resultBox.innerHTML = '<div style="padding:10px; font-size:11px; color:#ef4444;">Kecamatan/Kota tidak ditemukan. Coba ketik nama lain.</div>';
+                    }
+                } catch(e) {
+                    resultBox.innerHTML = '<div style="padding:10px; font-size:11px; color:#ef4444;">Gagal menghubungi server ongkir.</div>';
+                }
+            }, 600);
         }
 
-        function resetDownstream(fromLevel) {
-            if(fromLevel === 'prov') { resetField('cCity', 'Select Province First'); resetField('cDist', 'Select City First'); resetField('cVill', 'Select District First'); }
-            else if(fromLevel === 'city') { resetField('cDist', 'Select City First'); resetField('cVill', 'Select District First'); }
-            else if(fromLevel === 'dist') { resetField('cVill', 'Select District First'); }
+        function selectBiteshipDest(id, text, zip) {
+            document.getElementById('cDestSearch').value = text;
+            document.getElementById('cDestId').value = id;
+            document.getElementById('cDestName').value = text;
+            if(zip) document.getElementById('cZip').value = zip;
+            document.getElementById('cDestResults').style.display = 'none';
         }
-        function resetField(id, placeholderText) { const el = document.getElementById(id); el.value = ''; el.disabled = true; el.placeholder = placeholderText; document.getElementById(id.replace('c', '').toLowerCase() + 'List').innerHTML = ''; }
-
-        function checkProv() { const val = document.getElementById('cProv').value.trim().toUpperCase(); const match = apiRegionData.prov.find(x => x.name.toUpperCase() === val); if(match) { document.getElementById('cProv').value = match.name; resetDownstream('prov'); document.getElementById('cCity').placeholder = "Loading cities..."; loadRegionAPI('city', match.id); } else { resetDownstream('prov'); } }
-        function checkCity() { const val = document.getElementById('cCity').value.trim().toUpperCase(); const match = apiRegionData.city.find(x => x.name.toUpperCase() === val); if(match) { document.getElementById('cCity').value = match.name; resetDownstream('city'); document.getElementById('cDist').placeholder = "Loading districts..."; loadRegionAPI('dist', match.id); } else { resetDownstream('city'); } }
-        function checkDist() { const val = document.getElementById('cDist').value.trim().toUpperCase(); const match = apiRegionData.dist.find(x => x.name.toUpperCase() === val); if(match) { document.getElementById('cDist').value = match.name; resetDownstream('dist'); document.getElementById('cVill').placeholder = "Loading villages..."; loadRegionAPI('vill', match.id); } else { resetDownstream('dist'); } }
-        function checkVill() { const val = document.getElementById('cVill').value.trim().toUpperCase(); const match = apiRegionData.vill.find(x => x.name.toUpperCase() === val); if(match) { document.getElementById('cVill').value = match.name; } }
 
         function renderSavedAddresses() {
             const container = document.getElementById('savedAddressesContainer');
@@ -747,7 +770,7 @@
                 list.innerHTML = savedAddresses.map((adr, index) => `
                     <div class="saved-address-card" onclick="useSavedAddress(${index})">
                         <b style="color:var(--primary); font-size:14px;">${adr.name}</b> <span style="color:#888;">(${adr.phone})</span><br>
-                        ${adr.street}, RT ${adr.rt}/RW ${adr.rw}, Kel. ${adr.vill}, Kec. ${adr.dist}, ${adr.city}, ${adr.prov} - ${adr.zip}
+                        ${adr.street}, RT ${adr.rt}/RW ${adr.rw}, ${adr.destName} - ${adr.zip}
                     </div>
                 `).join('');
             } else {
@@ -762,22 +785,16 @@
             document.getElementById('cStreet').value = adr.street || '';
             document.getElementById('cRT').value = adr.rt || '';
             document.getElementById('cRW').value = adr.rw || '';
-            document.getElementById('cProv').value = adr.prov || '';
-            document.getElementById('cCity').value = adr.city || '';
-            document.getElementById('cDist').value = adr.dist || '';
-            document.getElementById('cVill').value = adr.vill || '';
+            document.getElementById('cDestSearch').value = adr.destName || '';
+            document.getElementById('cDestId').value = adr.destId || '';
+            document.getElementById('cDestName').value = adr.destName || '';
             document.getElementById('cZip').value = adr.zip || '';
-            
-            document.getElementById('cCity').disabled = false;
-            document.getElementById('cDist').disabled = false;
-            document.getElementById('cVill').disabled = false;
             
             showToast("Alamat otomatis terisi!", "success");
         }
 
         function clearAddressForm() {
-            ['cName', 'cPhone', 'cStreet', 'cRT', 'cRW', 'cProv', 'cCity', 'cDist', 'cVill', 'cZip'].forEach(id => document.getElementById(id).value = '');
-            resetDownstream('prov');
+            ['cName', 'cPhone', 'cStreet', 'cRT', 'cRW', 'cDestSearch', 'cDestId', 'cDestName', 'cZip'].forEach(id => document.getElementById(id).value = '');
         }
 
         function goToShipping() { 
@@ -790,25 +807,32 @@
             
             if(document.getElementById('cName').value === "") document.getElementById('cName').value = currentUser.displayName;
             document.getElementById('shippingArea').style.display = 'block'; 
-            if(apiRegionData.prov.length === 0) { document.getElementById('cProv').placeholder = "Loading provinces..."; loadRegionAPI('prov'); }
         }
 
         // 🔥 FUNGSI REVISI: PAKAI KUNCI LIVE BOS (DENGAN FALLBACK AMAN) 🔥
         async function calculateShipping() {
-            const cEmail = document.getElementById('cEmail').value; const cName = document.getElementById('cName').value.trim(); const cPhone = document.getElementById('cPhone').value.trim(); 
-            const cStreet = document.getElementById('cStreet').value.trim(); const cRT = document.getElementById('cRT').value.trim(); const cRW = document.getElementById('cRW').value.trim();
+            const cEmail = document.getElementById('cEmail').value; 
+            const cName = document.getElementById('cName').value.trim(); 
+            const cPhone = document.getElementById('cPhone').value.trim(); 
+            const cStreet = document.getElementById('cStreet').value.trim(); 
+            const cRT = document.getElementById('cRT').value.trim(); 
+            const cRW = document.getElementById('cRW').value.trim();
             const cZip = document.getElementById('cZip').value.trim();
-            const provName = document.getElementById('cProv').value.trim().toUpperCase(); const cityName = document.getElementById('cCity').value.trim().toUpperCase(); const distName = document.getElementById('cDist').value.trim().toUpperCase(); const villName = document.getElementById('cVill').value.trim().toUpperCase();
+            const destId = document.getElementById('cDestId').value;
+            const destName = document.getElementById('cDestName').value;
 
-            if(!cName || !cPhone || !cStreet || !cRT || !cRW || !cZip || !provName || !cityName || !distName || !villName) { showToast("Please fill all shipping details!", 'error'); return; }
+            if(!cName || !cPhone || !cStreet || !cRT || !cRW || !cZip || !destId) { 
+                showToast("Pastikan semua data diisi dan KOTA DIPILIH dari dropdown hasil pencarian!", 'error'); 
+                return; 
+            }
             
             if(document.getElementById('saveAddressCheck').checked) {
-                let newAdr = { name: cName, phone: cPhone, street: cStreet, rt: cRT, rw: cRW, prov: provName, city: cityName, dist: distName, vill: villName, zip: cZip };
+                let newAdr = { name: cName, phone: cPhone, street: cStreet, rt: cRT, rw: cRW, destName: destName, destId: destId, zip: cZip };
                 let isDuplicate = savedAddresses.some(a => a.street === newAdr.street && a.name === newAdr.name);
                 if(!isDuplicate) { savedAddresses.push(newAdr); localStorage.setItem('ganketiAddresses', JSON.stringify(savedAddresses)); }
             }
 
-            const cAddress = `${cStreet}, RT ${cRT}/RW ${cRW}, Kel. ${villName}, Kec. ${distName}, ${cityName}, Prov. ${provName} - ${cZip}`;
+            const cAddress = `${cStreet}, RT ${cRT}/RW ${cRW}, ${destName} - ${cZip}`;
             let subTotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
 
             pendingOrderData = {
@@ -823,32 +847,28 @@
             document.getElementById('courierListContainer').innerHTML = '<p style="color:#aaa; text-align:center; padding:20px;">Mencari rute pengiriman asli... ⏳</p>';
 
             try {
-                // 🔥 INI DIA KUNCI LIVE DARI BOS! 🔥
-                const API_KEY = 'Biteship_live.eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiR2Fua2V0aSIsInVzZXJJZCI6IjY5YWVlODYzM2NjODBhMWUzMjE3ZGJkYyIsImlhdCI6MTc3MzA3OTg3MX0.ot-KA-1HmE0xMsc7OhHeQBaDGo7KrDKU1tuS4bk5fCo';
-
-                let baseOrigin = cart[0].origin || 'JAKARTA SELATAN';
                 let availableCouriers = cart[0].couriers || 'jne,jnt,sicepat';
                 let formatCouriers = availableCouriers.toLowerCase().replace(/j\&t/g, 'jnt').replace(/ /g, '');
                 
-                let cleanOrigin = baseOrigin.replace(/KABUPATEN |KAB\. |KOTA /gi, '').trim();
-                let cleanCity = cityName.replace(/KABUPATEN |KAB\. |KOTA /gi, '').trim();
-                let cleanDist = distName.replace(/KECAMATAN |KEC\. /gi, '').trim();
+                let originId = cart[0].originId;
+                
+                // Fallback pencarian ID asal jika ID hilang (untuk produk lama)
+                if(!originId) {
+                    let baseOrigin = cart[0].origin || 'JAKARTA SELATAN';
+                    let cleanOrigin = baseOrigin.replace(/KABUPATEN |KAB\. |KOTA /gi, '').trim();
+                    const getAreaId = async (searchQuery) => {
+                        const res = await fetch(`https://api.biteship.com/v1/maps/areas?countries=ID&input=${encodeURIComponent(searchQuery)}`, {
+                            headers: { 'Authorization': BITESHIP_KEY }
+                        });
+                        const data = await res.json();
+                        if(data && data.areas && data.areas.length > 0) return data.areas[0].id;
+                        return null;
+                    };
+                    originId = await getAreaId(cleanOrigin);
+                }
 
-                const getAreaId = async (searchQuery) => {
-                    const res = await fetch(`https://api.biteship.com/v1/maps/areas?countries=ID&input=${encodeURIComponent(searchQuery)}`, {
-                        headers: { 'Authorization': `Bearer ${API_KEY}` }
-                    });
-                    const data = await res.json();
-                    if(data && data.areas && data.areas.length > 0) return data.areas[0].id;
-                    return null;
-                };
-
-                let originId = await getAreaId(cleanOrigin);
-                let destId = await getAreaId(`${cleanDist} ${cleanCity}`);
-                if(!destId) destId = await getAreaId(cleanCity);
-
-                if(!originId || !destId) {
-                    throw new Error("Lokasi tidak ditemukan di API, gunakan fallback.");
+                if(!originId) {
+                    throw new Error("Lokasi toko tidak ditemukan.");
                 }
 
                 let totalWeight = cart.reduce((sum, item) => sum + (500 * item.qty), 0);
@@ -856,10 +876,10 @@
 
                 const rateRes = await fetch('https://api.biteship.com/v1/rates/couriers', {
                     method: 'POST',
-                    headers: { 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json' },
+                    headers: { 'Authorization': BITESHIP_KEY, 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         origin_area_id: originId,
-                        destination_area_id: destId,
+                        destination_area_id: destId, // Pakai ID yang sudah dipilih dari Dropdown
                         couriers: formatCouriers,
                         items: [{ name: "Apparel", value: subTotal, weight: totalWeight, quantity: 1 }]
                     })
@@ -895,11 +915,11 @@
                 
                 // 🔥 FALLBACK SYSTEM: MUNCULKAN HARGA SIMULASI JIKA API ERROR 🔥
                 let availableCouriers = (cart[0].couriers || 'JNE,J&T').split(',').map(s => s.trim());
-                let baseCost = 15000;
-                if(provName.includes("SUMATERA")) baseCost = 25000;
-                if(provName.includes("KALIMANTAN")) baseCost = 35000;
-                if(provName.includes("SULAWESI") || provName.includes("BALI")) baseCost = 45000;
-                if(provName.includes("PAPUA") || provName.includes("MALUKU") || provName.includes("NTT")) baseCost = 60000;
+                let baseCost = destName.toUpperCase().includes("JAWA") || destName.toUpperCase().includes("BANDUNG") || destName.toUpperCase().includes("JAKARTA") ? 15000 : 35000;
+                if(destName.toUpperCase().includes("SUMATERA")) baseCost = 25000;
+                if(destName.toUpperCase().includes("KALIMANTAN")) baseCost = 35000;
+                if(destName.toUpperCase().includes("SULAWESI") || destName.toUpperCase().includes("BALI")) baseCost = 45000;
+                if(destName.toUpperCase().includes("PAPUA") || destName.toUpperCase().includes("MALUKU") || destName.toUpperCase().includes("NTT")) baseCost = 60000;
                 
                 let courierHtml = availableCouriers.map((c, idx) => {
                     let fee = baseCost;
