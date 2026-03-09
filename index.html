@@ -39,7 +39,7 @@
         .search-box { width: 100%; padding: 10px 15px; background: #1a1a1a; border: 1px solid #333; border-radius: 4px; color: white; outline: none; font-family: 'Inter'; font-size: 13px; }
         .search-box:focus { border-color: var(--primary); }
 
-        /* LACI SAMPING (SIDEBAR MENU) */
+        /* LACI SAMPING (SIDEBAR MENU) - DARK & TRANSPARENT */
         .sidebar-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 999; display: none; backdrop-filter: blur(2px); }
         .sidebar { position: fixed; top: 0; left: -100%; width: 85%; max-width: 320px; height: 100%; background: rgba(18, 18, 18, 0.95); backdrop-filter: blur(10px); z-index: 1000; transition: 0.3s ease-in-out; display: flex; flex-direction: column; overflow-y: auto; border-right: 1px solid #333;}
         .sidebar.active { left: 0; }
@@ -790,7 +790,7 @@
             if(apiRegionData.prov.length === 0) { document.getElementById('cProv').placeholder = "Loading provinces..."; loadRegionAPI('prov'); }
         }
 
-        // 🔥 FUNGSI REVISI: PENCARIAN KOTA LEBIH PINTAR UNTUK BITESHIP 🔥
+        // 🔥 FUNGSI REVISI: PENCARIAN KOTA LEBIH PINTAR UNTUK BITESHIP DENGAN FALLBACK 🔥
         async function calculateShipping() {
             const cEmail = document.getElementById('cEmail').value; const cName = document.getElementById('cName').value.trim(); const cPhone = document.getElementById('cPhone').value.trim(); 
             const cStreet = document.getElementById('cStreet').value.trim(); const cRT = document.getElementById('cRT').value.trim(); const cRW = document.getElementById('cRW').value.trim();
@@ -820,20 +820,19 @@
             document.getElementById('courierListContainer').innerHTML = '<p style="color:#aaa; text-align:center; padding:20px;">Mencari rute pengiriman... ⏳</p>';
 
             try {
-                const API_KEY = 'Biteship_live.eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiR2Fua2V0aSIsInVzZXJJZCI6IjY5YWVlODYzM2NjODBhMWUzMjE3ZGJkYyIsImlhdCI6MTc3MzA3MTE4Nn0.mXk-V_Qh1ilf6PQ_IYOUW4PP1KznZ9YS3qeOQ5Gni3I';
+                // 🔥 KUNCI TESTING BARU DARI BOS 🔥
+                const API_KEY = 'Biteship_test.eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiR2Fua2V0aSIsInVzZXJJZCI6IjY5YWVlODYzM2NjODBhMWUzMjE3ZGJkYyIsImlhdCI6MTc3MzA3NTMwNH0.1QZ5MtmvFnAqDiAlU2EeWfqxiLoHjsrqGQr_cZ3UASI';
 
                 let baseOrigin = cart[0].origin || 'JAKARTA SELATAN';
                 let availableCouriers = cart[0].couriers || 'jne,jnt,sicepat';
                 let formatCouriers = availableCouriers.toLowerCase().replace(/j\&t/g, 'jnt').replace(/ /g, '');
                 
-                // BERSIHKAN KATA-KATA YANG BIKIN BINGUNG API (seperti KAB. KOTA.)
                 let cleanOrigin = baseOrigin.replace(/KABUPATEN |KAB\. |KOTA /gi, '').trim();
                 let cleanCity = cityName.replace(/KABUPATEN |KAB\. |KOTA /gi, '').trim();
                 let cleanDist = distName.replace(/KECAMATAN |KEC\. /gi, '').trim();
 
-                // FUNGSI PENCARIAN BERTINGKAT (PINTAR)
                 const getAreaId = async (searchQuery) => {
-                    const res = await fetch(`https://api.biteship.com/v1/maps/areas?countries=ID&input=${encodeURIComponent(searchQuery)}&type=single`, {
+                    const res = await fetch(`https://api.biteship.com/v1/maps/areas?countries=ID&input=${encodeURIComponent(searchQuery)}`, {
                         headers: { 'Authorization': `Bearer ${API_KEY}` }
                     });
                     const data = await res.json();
@@ -841,25 +840,18 @@
                     return null;
                 };
 
-                // Cari ID Asal
                 let originId = await getAreaId(cleanOrigin);
-
-                // Cari ID Tujuan (Coba dari Kecamatan dulu, kalau gagal cari kotanya aja)
                 let destId = await getAreaId(`${cleanDist} ${cleanCity}`);
                 if(!destId) destId = await getAreaId(cleanCity);
 
-                // CEK ERROR LOKASI
+                // JIKA BITESHIIP GAGAL NEMU KOTA, LEMPAR KE FALLBACK (CATCH)
                 if(!originId || !destId) {
-                    let errMsg = !originId ? `Gagal menemukan kota asal toko (${cleanOrigin}).` : `Gagal menemukan kota tujuan (${cleanCity}). Pastikan ejaan benar.`;
-                    document.getElementById('courierListContainer').innerHTML = `<div style="background:rgba(239,68,68,0.1); border:1px solid #ef4444; padding:15px; border-radius:8px; text-align:center;"><p style="color:#ef4444; font-weight:bold; margin-bottom:5px;">Rute Tidak Ditemukan</p><p style="color:#ccc; font-size:11px;">${errMsg}</p></div>`;
-                    return;
+                    throw new Error("Lokasi tidak ditemukan di API, gunakan fallback.");
                 }
 
-                // Kalkulasi Berat
                 let totalWeight = cart.reduce((sum, item) => sum + (500 * item.qty), 0);
                 if(totalWeight < 1000) totalWeight = 1000;
 
-                // TARIK DATA ONGKIR BITESHIIP
                 const rateRes = await fetch('https://api.biteship.com/v1/rates/couriers', {
                     method: 'POST',
                     headers: { 'Authorization': `Bearer ${API_KEY}`, 'Content-Type': 'application/json' },
@@ -873,7 +865,6 @@
 
                 const rateData = await rateRes.json();
 
-                // RENDER HASIL
                 if(rateData.success && rateData.pricing && rateData.pricing.length > 0) {
                     let courierHtml = rateData.pricing.map((p, idx) => {
                         let isChecked = idx === 0 ? 'checked' : '';
@@ -892,16 +883,46 @@
                     }).join('');
                     
                     document.getElementById('courierListContainer').innerHTML = courierHtml;
-                    
-                    // Trigger klik opsi pertama
                     setTimeout(() => { document.querySelector('input[name="courierOption"]:checked').parentElement.parentElement.click(); }, 100);
                 } else {
-                    document.getElementById('courierListContainer').innerHTML = '<div style="background:rgba(239,68,68,0.1); border:1px solid #ef4444; padding:15px; border-radius:8px; text-align:center;"><p style="color:#ef4444; font-weight:bold;">Kurir Tidak Tersedia</p><p style="color:#ccc; font-size:11px;">Tidak ada kurir yang menjangkau rute ini. Coba hubungi Admin.</p></div>';
+                    throw new Error("Kurir API tidak merespon, gunakan fallback.");
                 }
 
             } catch (e) {
-                console.error(e);
-                document.getElementById('courierListContainer').innerHTML = '<p style="color:#ef4444; text-align:center;">Sistem API Ongkir sedang sibuk. Coba refresh halaman atau ganti kota tujuan.</p>';
+                console.warn("API Biteship error/limit, falling back to simulated rates:", e);
+                
+                // 🔥 FALLBACK SYSTEM: MUNCULKAN HARGA SIMULASI JIKA API ERROR 🔥
+                let availableCouriers = (cart[0].couriers || 'JNE,J&T').split(',').map(s => s.trim());
+                let baseCost = 15000;
+                if(provName.includes("SUMATERA")) baseCost = 25000;
+                if(provName.includes("KALIMANTAN")) baseCost = 35000;
+                if(provName.includes("SULAWESI") || provName.includes("BALI")) baseCost = 45000;
+                if(provName.includes("PAPUA") || provName.includes("MALUKU") || provName.includes("NTT")) baseCost = 60000;
+                
+                let courierHtml = availableCouriers.map((c, idx) => {
+                    let fee = baseCost;
+                    if(c.toUpperCase() === 'JNE') fee += 2000;
+                    if(c.toUpperCase() === 'SICEPAT') fee -= 1000;
+                    if(c.toUpperCase() === 'ANTERAJA') fee += 500;
+                    
+                    let isChecked = idx === 0 ? 'checked' : ''; 
+                    
+                    return `
+                    <label class="courier-card" onclick="updateShippingTotal(${fee}, '${c.toUpperCase()} Reguler (Estimasi)')">
+                        <div style="display:flex; align-items:center; gap:10px;">
+                            <input type="radio" name="courierOption" value="${c}" ${isChecked} style="width:16px; height:16px; accent-color:#f59e0b;">
+                            <div>
+                                <b style="color:white; font-size:13px;">${c} Reguler</b><br>
+                                <span style="font-size:10px; color:#888;">Estimasi tiba 2-4 hari</span>
+                            </div>
+                        </div>
+                        <b style="color:var(--primary); font-size:13px;">Rp ${fee.toLocaleString('id-ID')}</b>
+                    </label>`;
+                }).join('');
+
+                document.getElementById('courierListContainer').innerHTML = courierHtml + `<p style="font-size:9px; color:#888; text-align:center; margin-top:10px;">*Menggunakan tarif estimasi sistem karena sedang sinkronisasi kurir.</p>`;
+                
+                setTimeout(() => { document.querySelector('input[name="courierOption"]:checked').parentElement.parentElement.click(); }, 100);
             }
         }
 
