@@ -136,8 +136,8 @@
         
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; font-size: 12px; color: var(--text-dim); margin-bottom: 5px; font-weight: 500;}
-        .form-group input, .form-group select { width: 100%; padding: 12px; background: #0a0a0a; border: 1px solid var(--border); color: white; font-family: 'Inter', sans-serif; font-size: 14px; border-radius: 8px; box-sizing: border-box; outline: none;}
-        .form-group input:focus, .form-group select:focus { border-color: var(--primary); }
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px; background: #0a0a0a; border: 1px solid var(--border); color: white; font-family: 'Inter', sans-serif; font-size: 14px; border-radius: 8px; box-sizing: border-box; outline: none;}
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--primary); }
         .form-group input:disabled, .form-group input:read-only { background: #1a1a1a; color: #555; cursor: not-allowed; border-color: #222; }
         
         /* 🔥 CSS PENCARIAN KOTA BITESHIP 🔥 */
@@ -438,8 +438,8 @@
         let selectedShippingCost = 0;
         let selectedCourierName = "";
 
-        // 🔥 KUNCI API LIVE (SUDAH DIPERBAIKI) 🔥
-        const BITESHIP_KEY = 'Biteship_live.eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiR2Fua2V0aSIsInVzZXJJZCI6IjY5YWVlODYzM2NjODBhMWUzMjE3ZGJkYyIsImlhdCI6MTc3MzA3OTg3MX0.ot-KA-1HmE0xMsc7OhHeQBaDGo7KrDKU1tuS4bk5fCo';
+        // 🔥 KUNCI API LIVE (HURUF KECIL 'b' - SUDAH DIPERBAIKI) 🔥
+        const BITESHIP_KEY = 'biteship_live.eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiR2Fua2V0aSIsInVzZXJJZCI6IjY5YWVlODYzM2NjODBhMWUzMjE3ZGJkYyIsImlhdCI6MTc3MzA3OTg3MX0.ot-KA-1HmE0xMsc7OhHeQBaDGo7KrDKU1tuS4bk5fCo';
 
         updateCartCount();
 
@@ -725,7 +725,7 @@
         }
         function removeItem(index) { cart.splice(index, 1); localStorage.setItem('ganketiCart', JSON.stringify(cart)); updateCartCount(); openCart(); }
 
-        // 🔥 MESIN PENCARI KOTA BITESHIP (UNTUK PEMBELI) 🔥
+        // 🔥 MESIN PENCARI KOTA BITESHIP DENGAN RADAR DIAGNOSTIK 🔥
         let searchDestTimeout;
         function searchBiteshipDest(query) {
             const resultBox = document.getElementById('cDestResults');
@@ -746,7 +746,9 @@
                             return `<div class="biteship-item" onclick="selectBiteshipDest('${a.id}', '${text.replace(/'/g, "\\'")}', '${a.postal_code}')">${text}</div>`;
                         }).join('');
                     } else {
-                        resultBox.innerHTML = '<div style="padding:10px; font-size:11px; color:#ef4444;">Kecamatan/Kota tidak ditemukan. Coba ketik nama lain.</div>';
+                        // Menampilkan pesan aslinya agar ketahuan apa error-nya
+                        let errorMsg = data.error || data.message || "Kecamatan/Kota tidak ditemukan. Coba ketik nama lain.";
+                        resultBox.innerHTML = `<div style="padding:10px; font-size:11px; color:#ef4444;">Pesan Server: ${errorMsg}</div>`;
                     }
                 } catch(e) {
                     resultBox.innerHTML = '<div style="padding:10px; font-size:11px; color:#ef4444;">Gagal menghubungi server ongkir.</div>';
@@ -809,7 +811,6 @@
             document.getElementById('shippingArea').style.display = 'block'; 
         }
 
-        // 🔥 FUNGSI REVISI: PAKAI KUNCI LIVE BOS (DENGAN FALLBACK AMAN) 🔥
         async function calculateShipping() {
             const cEmail = document.getElementById('cEmail').value; 
             const cName = document.getElementById('cName').value.trim(); 
@@ -913,7 +914,6 @@
             } catch (e) {
                 console.warn("API Biteship error/limit, falling back to simulated rates:", e);
                 
-                // 🔥 FALLBACK SYSTEM: MUNCULKAN HARGA SIMULASI JIKA API ERROR 🔥
                 let availableCouriers = (cart[0].couriers || 'JNE,J&T').split(',').map(s => s.trim());
                 let baseCost = destName.toUpperCase().includes("JAWA") || destName.toUpperCase().includes("BANDUNG") || destName.toUpperCase().includes("JAKARTA") ? 15000 : 35000;
                 if(destName.toUpperCase().includes("SUMATERA")) baseCost = 25000;
@@ -948,7 +948,6 @@
             }
         }
 
-        // UPDATE TOTAL HARGA ONGKIR + PRODUK
         function updateShippingTotal(fee, courierName) {
             selectedShippingCost = fee;
             selectedCourierName = courierName;
