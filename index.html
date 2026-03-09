@@ -25,15 +25,12 @@
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
         body { background: var(--bg); color: var(--text); -webkit-font-smoothing: antialiased; overflow-x: hidden;}
 
-        /* 🔥 HEADER MEWAH (LOGO TENGAH) 🔥 */
+        /* HEADER */
         header { background: var(--bg); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--border); padding-bottom: 10px; }
         .head-top { display: grid; grid-template-columns: auto 1fr auto; align-items: center; padding: 12px 20px; gap: 15px;} 
-        
         .hamburger-btn { background: none; border: none; color: var(--primary); font-size: 24px; cursor: pointer; display: flex; align-items: center; padding: 0; margin: 0;}
-        
         .logo { cursor: pointer; user-select: none; touch-action: manipulation; -webkit-tap-highlight-color: transparent; display: flex; justify-content: center; align-items: center;}
-        .logo img { max-height: 45px; width: auto; object-fit: contain; } 
-        
+        .logo img { max-height: 35px; width: auto; object-fit: contain; } 
         .nav-icons { display: flex; gap: 15px; align-items: center; justify-content: flex-end;}
         .icon-btn { background: none; border: none; color: var(--text); font-size: 18px; font-weight: 600; cursor: pointer; display: flex; align-items: center; position: relative;}
         .cart-badge { position: absolute; top: -5px; right: -10px; background: #ef4444; color: white; font-size: 9px; font-weight: 800; padding: 2px 6px; border-radius: 20px; }
@@ -42,31 +39,22 @@
         .search-box { width: 100%; padding: 10px 15px; background: #1a1a1a; border: 1px solid #333; border-radius: 4px; color: white; outline: none; font-family: 'Inter'; font-size: 13px; }
         .search-box:focus { border-color: var(--primary); }
 
-        /* 🔥 LACI SAMPING (SIDEBAR MENU) 🔥 */
+        /* LACI SAMPING (SIDEBAR MENU) */
         .sidebar-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 999; display: none; backdrop-filter: blur(2px); }
         .sidebar { position: fixed; top: 0; left: -100%; width: 85%; max-width: 320px; height: 100%; background: #ffffff; z-index: 1000; transition: 0.3s ease-in-out; display: flex; flex-direction: column; overflow-y: auto;}
         .sidebar.active { left: 0; }
-        .sidebar-header { padding: 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; position: relative; }
+        .sidebar-header { padding: 20px; border-bottom: 1px solid #eee; display: flex; justify-content: space-between; align-items: center; position: relative; background: #fff;}
         .sidebar-close { font-size: 26px; color: #000; cursor: pointer; line-height: 1; }
         
-        .sidebar-content { flex: 1; display: flex; flex-direction: column; }
+        .sidebar-content { flex: 1; display: flex; flex-direction: column; background: #fff; padding-bottom: 30px;}
         .sidebar-item { padding: 18px 20px; color: #000; font-size: 13px; font-weight: 600; text-transform: uppercase; border-bottom: 1px solid #f5f5f5; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: 0.2s;}
         .sidebar-item:hover { background: #f9f9f9; }
+        .sidebar-item-sub { padding: 18px 20px; color: #333; font-size: 13px; border-bottom: 1px solid #f5f5f5; display: flex; justify-content: space-between; align-items: center; cursor: pointer; transition: 0.2s;}
         
         .sub-menu { display: none; background: #fafafa; border-bottom: 1px solid #eee; }
-        .sub-item { padding: 15px 20px 15px 40px; color: #333; font-size: 12px; cursor: pointer; text-transform: uppercase; border-bottom: 1px solid #f5f5f5; transition: 0.2s;}
+        .sub-item { padding: 15px 20px 15px 40px; color: #555; font-size: 12px; cursor: pointer; transition: 0.2s;}
         .sub-item:hover { background: #f0f0f0; color: #000; font-weight: bold;}
-        
-        .sidebar-divider { height: 10px; background: #f0f0f0; }
-
-        /* 🔥 KOTAK KATEGORI UNGGULAN (3 KOTAK) 🔥 */
-        .featured-section { padding: 20px 20px 10px 20px; }
-        .featured-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
-        .f-card { position: relative; width: 100%; aspect-ratio: 3/4; border-radius: 4px; overflow: hidden; cursor: pointer; background: #222; }
-        .f-card img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
-        .f-card:hover img { transform: scale(1.05); }
-        .f-overlay { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); width: 85%; text-align: center;}
-        .f-title { display: block; background: #e5e0d8; color: #000; font-family: 'Oswald', sans-serif; font-size: 11px; font-weight: bold; padding: 5px 0; border-radius: 2px; letter-spacing: 1px; box-shadow: 0 4px 6px rgba(0,0,0,0.5);}
+        .sidebar-divider { height: 8px; background: #f0f0f0; border-top: 1px solid #e0e0e0; border-bottom: 1px solid #e0e0e0;}
 
         /* BUBBLE CATEGORY UI */
         .icon-nav-container { display: flex; gap: 15px; padding: 10px 20px 20px 20px; overflow-x: auto; scrollbar-width: none; align-items: flex-start;}
@@ -92,14 +80,23 @@
         .dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.3); transition: 0.3s; cursor: pointer; }
         .dot.active { background: white; width: 18px; border-radius: 4px; }
 
-        /* 🔥 FITUR URUTKAN (SORT BY) 🔥 */
+        /* KOTAK UNGGULAN (FEATURED CARDS) */
+        .featured-section { padding: 20px 20px 10px 20px; }
+        .featured-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+        .f-card { position: relative; width: 100%; aspect-ratio: 3/4; border-radius: 4px; overflow: hidden; cursor: pointer; background: #222; }
+        .f-card img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
+        .f-card:hover img { transform: scale(1.05); }
+        .f-overlay { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); width: 85%; text-align: center;}
+        .f-title { display: block; background: #e5e0d8; color: #000; font-family: 'Oswald', sans-serif; font-size: 11px; font-weight: bold; padding: 5px 0; border-radius: 2px; letter-spacing: 1px; box-shadow: 0 4px 6px rgba(0,0,0,0.5);}
+
+        /* SORT BY BAR */
         .sort-bar { display: flex; justify-content: space-between; align-items: center; padding: 0 20px 15px 20px; border-bottom: 1px solid var(--border); margin-bottom: 20px;}
         .sort-info { font-size: 12px; color: var(--text-dim); }
         .sort-select { background: transparent; color: white; border: 1px solid #333; padding: 5px 10px; border-radius: 4px; font-size: 12px; outline: none; font-family: 'Inter'; cursor: pointer;}
         .sort-select option { background: #111; color: white; }
 
         /* PRODUCT GRID */
-        .container { padding: 0 20px 30px 20px; max-width: 1200px; margin: 0 auto; min-height: 50vh; }
+        .container { padding: 0 20px 30px 20px; max-width: 1200px; margin: 0 auto; min-height: 40vh; }
         .section-title { font-family: 'Oswald', sans-serif; font-size: 20px; letter-spacing: 1px; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px; display:flex; justify-content: space-between; align-items:center;}
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; }
         .card { background: var(--surface); border-radius: 8px; overflow: hidden; border: 1px solid var(--border); cursor: pointer; transition: 0.3s; display: flex; flex-direction: column; }
@@ -145,11 +142,9 @@
         .status-UNPAID { background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid #ef4444; }
         .status-PAID { background: rgba(245, 158, 11, 0.2); color: #f59e0b; border: 1px solid #f59e0b; }
         .status-SHIPPED { background: rgba(74, 222, 128, 0.2); color: #4ade80; border: 1px solid #4ade80; }
-        
         .item-row { display: flex; gap: 12px; align-items: center; padding: 10px 0; border-bottom: 1px solid #222; }
         .item-row:last-child { border-bottom: none; }
         .item-img { width: 45px; height: 45px; object-fit: cover; border-radius: 6px; border: 1px solid #333; }
-
         .receipt { background: #fff; color: #000; padding: 20px; font-family: monospace; font-size: 13px; border-radius: 8px; margin-top: 15px; border-top: 5px solid #000; box-shadow: 0 4px 6px rgba(0,0,0,0.3);}
         
         .toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 99999; display: flex; flex-direction: column; gap: 10px; pointer-events: none; width: 90%; max-width: 400px; }
@@ -157,6 +152,18 @@
         .modern-toast.success { border-left: 4px solid #4ade80; } .modern-toast.error { border-left: 4px solid #ef4444; } .modern-toast.warning { border-left: 4px solid #f59e0b; }
         @keyframes toastSlideDown { from { transform: translateY(-50px) scale(0.9); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
         @keyframes toastFadeOut { from { transform: translateY(0) scale(1); opacity: 1; } to { transform: translateY(-20px) scale(0.9); opacity: 0; } }
+
+        /* 🔥 FOOTER INFO MODAL (TEXT PANJANG) 🔥 */
+        .info-content { font-size: 13px; line-height: 1.6; color: #ddd; }
+        .info-content h4 { color: #fff; font-family: 'Oswald'; font-size: 16px; margin: 15px 0 5px 0; letter-spacing: 1px;}
+        .info-content p { margin-bottom: 10px; }
+        .info-content ul { padding-left: 20px; margin-bottom: 10px; }
+        .info-content li { margin-bottom: 5px; }
+        
+        /* FOOTER SEDERHANA */
+        footer { border-top: 1px solid var(--border); padding: 30px 20px; text-align: center; margin-top: 30px;}
+        .newsletter input { width: 100%; max-width: 300px; padding: 12px; background: #111; border: 1px solid #333; color: white; border-radius: 4px; margin-bottom: 10px; outline: none;}
+        .newsletter button { background: var(--primary); color: var(--bg); padding: 12px 20px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;}
     </style>
 </head>
 <body>
@@ -166,7 +173,8 @@
     <div class="sidebar-overlay" id="sidebarOverlay" onclick="toggleMenu()"></div>
     <div class="sidebar" id="sidebarMenu">
         <div class="sidebar-header">
-            <div style="width:24px;"></div> <h2 style="margin:0; color:#000; font-family:'Oswald', sans-serif; font-size:22px; letter-spacing:1px;">GANKETI</h2>
+            <div style="width:24px;"></div>
+            <h2 style="margin:0; color:#000; font-family:'Oswald', sans-serif; font-size:22px; letter-spacing:1px;">GANKETI</h2>
             <div class="sidebar-close" onclick="toggleMenu()">×</div>
         </div>
         
@@ -175,15 +183,35 @@
                 SHOP BY CATEGORY <span id="arrow-catSubMenu" style="transition:0.3s; font-size:18px;">›</span>
             </div>
             <div class="sub-menu" id="catSubMenu">
-                <div class="sub-item" onclick="filterCategory('ALL'); toggleMenu();" style="font-weight:bold;">🔥 SEMUA KOLEKSI</div>
+                <div class="sub-item" onclick="filterCategory('ALL'); toggleMenu();" style="font-weight:bold; color: #ef4444;">SEMUA KOLEKSI</div>
                 <div id="sidebarCatList"></div>
             </div>
             
             <div class="sidebar-divider"></div>
             
-            <div class="sidebar-item" onclick="openMyOrders(); toggleMenu();" style="text-transform:none; font-weight:normal;">Track Order</div>
-            <div class="sidebar-item" onclick="toggleMenu(); showToast('Toko kami 100% Online Kak!', 'info')" style="text-transform:none; font-weight:normal;">Store Location</div>
-            <div class="sidebar-item" id="sideLoginBtn" onclick="handleAuth(); toggleMenu();" style="text-transform:none; font-weight:normal;">Sign In</div>
+            <div class="sidebar-item" onclick="toggleSubMenu('aboutSubMenu')">
+                ABOUT <span id="arrow-aboutSubMenu" style="transition:0.3s; font-size:18px;">›</span>
+            </div>
+            <div class="sub-menu" id="aboutSubMenu">
+                <div class="sub-item" onclick="openInfoModal('about'); toggleMenu();">About Us</div>
+                <div class="sub-item" onclick="openInfoModal('privacy'); toggleMenu();">Privacy Policy</div>
+                <div class="sub-item" onclick="openInfoModal('terms'); toggleMenu();">Terms & Conditions</div>
+            </div>
+
+            <div class="sidebar-item" onclick="toggleSubMenu('careSubMenu')">
+                CUSTOMER CARE <span id="arrow-careSubMenu" style="transition:0.3s; font-size:18px;">›</span>
+            </div>
+            <div class="sub-menu" id="careSubMenu">
+                <div class="sub-item" onclick="openInfoModal('faq'); toggleMenu();">FAQ</div>
+                <div class="sub-item" onclick="openInfoModal('return'); toggleMenu();">Return Policy</div>
+                <div class="sub-item" onclick="openInfoModal('contact'); toggleMenu();">Contact Us</div>
+                <div class="sub-item" onclick="openInfoModal('size'); toggleMenu();">Size Guide</div>
+            </div>
+
+            <div class="sidebar-divider"></div>
+
+            <div class="sidebar-item-sub" onclick="openMyOrders(); toggleMenu();" style="margin-top: 10px;">Track Order</div>
+            <div class="sidebar-item-sub" id="sideLoginBtn" onclick="handleAuth(); toggleMenu();" style="font-weight:bold; color:#000;">Sign In</div>
         </div>
     </div>
 
@@ -198,7 +226,7 @@
             </div>
         </div>
         <div class="search-container">
-            <input type="search" class="search-box" id="searchInput" placeholder="Cari hoodie, t-shirt, celana..." onkeyup="searchProducts()">
+            <input type="search" class="search-box" id="searchInput" placeholder="Search hoodie, t-shirt, pants..." onkeyup="searchProducts()">
         </div>
     </header>
 
@@ -213,8 +241,7 @@
     </div>
 
     <div class="featured-section" id="featuredSection" style="display:none;">
-        <div class="featured-grid" id="featuredCardsContainer">
-            </div>
+        <div class="featured-grid" id="featuredCardsContainer"></div>
     </div>
 
     <div class="icon-nav-container" id="categoryIconNav">
@@ -222,64 +249,79 @@
     </div>
 
     <div class="sort-bar">
-        <div class="sort-info"><span id="productCountUi" style="color:var(--primary); font-weight:bold;">0</span> Produk</div>
+        <div class="sort-info"><span id="productCountUi" style="color:var(--primary); font-weight:bold;">0</span> Products</div>
         <div>
-            <span style="font-size:12px; color:#888; margin-right:5px;">Urutkan:</span>
+            <span style="font-size:12px; color:#888; margin-right:5px;">Sort By:</span>
             <select class="sort-select" id="sortSelect" onchange="renderProducts()">
-                <option value="newest">Terbaru</option>
-                <option value="price_asc">Harga Terendah</option>
-                <option value="price_desc">Harga Tertinggi</option>
+                <option value="newest">Relevance (Newest)</option>
+                <option value="price_asc">Price: Low to High</option>
+                <option value="price_desc">Price: High to Low</option>
             </select>
         </div>
     </div>
 
     <div class="container" id="popularContainer" style="display:none; padding-top: 0; min-height: auto;">
-        <h2 class="section-title" style="color: #f59e0b; border-color: #333; margin-top:0;">🔥 SEDANG TREN</h2>
+        <h2 class="section-title" style="color: #f59e0b; border-color: #333; margin-top:0;">🔥 TRENDING NOW</h2>
         <div class="grid" id="popularGrid"></div>
     </div>
 
     <div class="container">
         <h2 class="section-title" id="secTitle" style="display: none;">LATEST DROP</h2>
-        <div class="grid" id="productGrid"><p style="text-align: center; width: 100%; color: var(--text-dim);">Memuat etalase...</p></div>
+        <div class="grid" id="productGrid"><p style="text-align: center; width: 100%; color: var(--text-dim);">Loading catalogue...</p></div>
     </div>
+
+    <footer>
+        <h3 style="font-family:'Oswald'; margin-bottom:10px; font-size:18px;">Newsletter</h3>
+        <p style="font-size:11px; color:#888; margin-bottom:15px;">Subscribe to be the first to hear about our exclusive offers and latest arrivals.</p>
+        <div class="newsletter">
+            <input type="email" placeholder="Your email address" id="nlEmail">
+            <button onclick="document.getElementById('nlEmail').value=''; showToast('Subscribed Successfully!', 'success')">›</button>
+        </div>
+        <div style="margin-top:30px; font-size:10px; color:#555;">
+            &copy; 2026 GANKETI Official. All Rights Reserved.
+        </div>
+    </footer>
 
     <div class="modal" id="mainModal">
         <div class="modal-box">
             <div class="modal-header"><div class="modal-title" id="modalTitle" style="font-size: 14px; background:#222; padding:5px 10px; border-radius:4px;">MODAL</div><div class="close-btn" onclick="closeModal()">×</div></div>
             
             <div id="previewArea" style="display:none;"></div>
+            
             <div id="cartArea" style="display:none;">
                 <div id="cartItemsList"></div>
-                <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 16px; margin: 20px 0; border-top: 1px solid var(--border); padding-top: 15px;"><span>SUBTOTAL</span><span id="cartTotalDisplay" style="color: var(--primary);">Rp 0</span></div>
-                <button class="btn-main" onclick="goToShipping()">PROCEED TO CHECKOUT ➔</button>
+                <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 18px; margin: 20px 0; border-top: 1px solid var(--border); padding-top: 15px;"><span>Total</span><span id="cartTotalDisplay" style="color: var(--primary);">Rp 0</span></div>
+                <button class="btn-main" style="background:#f59e0b; color:#000;" onclick="goToShipping()">CHECKOUT ➔</button>
             </div>
 
             <div id="shippingArea" style="display:none;">
-                <p style="font-size: 12px; color: #4ade80; margin-bottom: 15px;">✅ Akun tertaut. Mohon lengkapi alamat di bawah ini.</p>
-                <div class="form-group"><label>Email Akun</label><input type="email" id="cEmail" readonly></div>
-                <div class="form-group"><label>Nama Penerima</label><input type="text" id="cName" placeholder="Nama Lengkap"></div>
-                <div class="form-group"><label>No. WhatsApp Aktif</label><input type="number" id="cPhone" placeholder="08..."></div>
+                <p style="font-size: 12px; color: #4ade80; margin-bottom: 15px;">✅ Secure Checkout.</p>
+                <div class="form-group"><label>Email</label><input type="email" id="cEmail" readonly></div>
+                <div class="form-group"><label>Full Name</label><input type="text" id="cName" placeholder="Full Name"></div>
+                <div class="form-group"><label>WhatsApp Number</label><input type="number" id="cPhone" placeholder="08..."></div>
                 <div style="border-top: 1px solid var(--border); margin: 20px 0; padding-top: 15px;"></div>
-                <h3 style="font-size: 14px; margin-bottom: 15px; color: var(--primary);">Detail Alamat</h3>
-                <div class="form-group"><label>Jalan, Gedung, Nomor Rumah</label><input type="text" id="cStreet" placeholder="Contoh: Jl. Sudirman No. 10, Gedung A"></div>
+                <h3 style="font-size: 14px; margin-bottom: 15px; color: var(--primary);">Shipping Address</h3>
+                <div class="form-group"><label>Street, Building, House No.</label><input type="text" id="cStreet" placeholder="Jl. Sudirman No. 10"></div>
                 <div style="display: flex; gap: 10px;"><div class="form-group" style="flex:1;"><label>RT</label><input type="number" id="cRT" placeholder="001"></div><div class="form-group" style="flex:1;"><label>RW</label><input type="number" id="cRW" placeholder="002"></div></div>
-                <div class="form-group"><label>Provinsi</label><input type="text" id="cProv" list="provList" placeholder="Memuat data..." oninput="checkProv()" autocomplete="off"><datalist id="provList"></datalist></div>
-                <div class="form-group"><label>Kota / Kabupaten</label><input type="text" id="cCity" list="cityList" placeholder="Pilih Provinsi Dahulu" oninput="checkCity()" autocomplete="off" disabled><datalist id="cityList"></datalist></div>
-                <div class="form-group"><label>Kecamatan</label><input type="text" id="cDist" list="distList" placeholder="Pilih Kota Dahulu" oninput="checkDist()" autocomplete="off" disabled><datalist id="distList"></datalist></div>
-                <div class="form-group"><label>Kelurahan / Desa</label><input type="text" id="cVill" list="villList" placeholder="Pilih Kecamatan Dahulu" oninput="checkVill()" autocomplete="off" disabled><datalist id="villList"></datalist></div>
-                <div class="form-group"><label>Kode Pos</label><input type="number" id="cZip" placeholder="12345"></div>
-                <button class="btn-main" onclick="buatPesananSekarang()" style="margin-top: 10px;">PLACE SECURE ORDER 🔒</button>
+                <div class="form-group"><label>Province</label><input type="text" id="cProv" list="provList" placeholder="Select Province..." oninput="checkProv()" autocomplete="off"><datalist id="provList"></datalist></div>
+                <div class="form-group"><label>City / Regency</label><input type="text" id="cCity" list="cityList" placeholder="Select City..." oninput="checkCity()" autocomplete="off" disabled><datalist id="cityList"></datalist></div>
+                <div class="form-group"><label>District</label><input type="text" id="cDist" list="distList" placeholder="Select District..." oninput="checkDist()" autocomplete="off" disabled><datalist id="distList"></datalist></div>
+                <div class="form-group"><label>Village</label><input type="text" id="cVill" list="villList" placeholder="Select Village..." oninput="checkVill()" autocomplete="off" disabled><datalist id="villList"></datalist></div>
+                <div class="form-group"><label>Postal Code</label><input type="number" id="cZip" placeholder="12345"></div>
+                <button class="btn-main" onclick="buatPesananSekarang()" style="margin-top: 10px; background:#f59e0b; color:#000;">PLACE SECURE ORDER 🔒</button>
             </div>
 
+            <div id="textInfoArea" style="display:none;" class="info-content"></div>
+
             <div id="invoiceArea" style="display:none;">
-                <p style="text-align:center; color:#4ade80; font-weight:bold; margin-bottom:5px;">✅ PESANAN BERHASIL DIBUAT!</p>
-                <p style="text-align:center; font-size:12px; color:var(--text-dim);">Aman! Invoice tersimpan di akun Anda (Menu Pesanan).</p>
+                <p style="text-align:center; color:#4ade80; font-weight:bold; margin-bottom:5px;">✅ ORDER PLACED!</p>
+                <p style="text-align:center; font-size:12px; color:var(--text-dim);">Your invoice is saved in your account.</p>
                 <div class="receipt" id="invoicePaper"></div>
-                <button class="btn-main" style="margin-top: 15px; background: #25D366; color: white;" onclick="closeModal()">SELESAI</button>
+                <button class="btn-main" style="margin-top: 15px; background: #25D366; color: white;" onclick="closeModal()">DONE</button>
             </div>
             
             <div id="historyArea" style="display:none;"><div id="historyList"></div></div>
-            <div id="logoutConfirmArea" style="display:none; text-align:center;"><h3 style="font-size: 16px; margin-bottom: 10px;">Keluar dari Akun?</h3><div style="display:flex; gap:10px;"><button class="btn-main" style="background:#333; color:white;" onclick="closeModal()">BATAL</button><button class="btn-main" style="background:#ef4444;" onclick="executeLogout()">YA, KELUAR</button></div></div>
+            <div id="logoutConfirmArea" style="display:none; text-align:center;"><h3 style="font-size: 16px; margin-bottom: 10px;">Sign Out of Account?</h3><div style="display:flex; gap:10px;"><button class="btn-main" style="background:#333; color:white;" onclick="closeModal()">CANCEL</button><button class="btn-main" style="background:#ef4444;" onclick="executeLogout()">YES, SIGN OUT</button></div></div>
         </div>
     </div>
 
@@ -330,23 +372,23 @@
         auth.onAuthStateChanged(user => {
             if (user) { 
                 currentUser = user; 
-                document.getElementById('sideLoginBtn').innerHTML = `SIGN OUT (${user.displayName.split(' ')[0]})`;
+                document.getElementById('sideLoginBtn').innerHTML = `Sign Out (${user.displayName.split(' ')[0]})`;
             } else { 
                 currentUser = null; 
-                document.getElementById('sideLoginBtn').innerHTML = `SIGN IN / LOGIN`; 
+                document.getElementById('sideLoginBtn').innerHTML = `Sign In`; 
             }
         });
 
         function handleAuth() {
-            if(currentUser) { hideAllAreas(); document.getElementById('modalTitle').innerText = "AKUN SAYA"; document.getElementById('logoutConfirmArea').style.display = 'block'; document.getElementById('mainModal').style.display = 'flex'; } 
-            else { const provider = new firebase.auth.GoogleAuthProvider(); auth.signInWithPopup(provider).then((result) => { showToast(`Selamat datang, ${result.user.displayName}!`, 'success'); }).catch(err => { showToast("Gagal Login: " + err.message, 'error'); }); }
+            if(currentUser) { hideAllAreas(); document.getElementById('modalTitle').innerText = "MY ACCOUNT"; document.getElementById('logoutConfirmArea').style.display = 'block'; document.getElementById('mainModal').style.display = 'flex'; } 
+            else { const provider = new firebase.auth.GoogleAuthProvider(); auth.signInWithPopup(provider).then((result) => { showToast(`Welcome, ${result.user.displayName}!`, 'success'); }).catch(err => { showToast("Login Failed: " + err.message, 'error'); }); }
         }
-        function executeLogout() { auth.signOut().then(() => { closeModal(); showToast("Berhasil keluar.", 'info'); }); }
+        function executeLogout() { auth.signOut().then(() => { closeModal(); showToast("Signed out successfully.", 'info'); }); }
 
         let clickCount = 0; let lastClickTime = 0;
         function secretAdminLogin() {
             const now = Date.now(); if (now - lastClickTime > 3000) clickCount = 0; lastClickTime = now; clickCount++;
-            if (clickCount >= 5) { showToast("Sistem rahasia terbuka... 🚀", 'success'); setTimeout(() => { window.location.assign('https://shandoz-cafe.github.io/GANKETI/admin.html?v=' + Date.now()); }, 800); }
+            if (clickCount >= 5) { showToast("Admin Portal Opening... 🚀", 'success'); setTimeout(() => { window.location.assign('https://ganketi.store/admin.html?v=' + Date.now()); }, 800); }
         }
 
         // =========================================================
@@ -356,18 +398,12 @@
             const data = snap.val(); const sec = document.getElementById('featuredSection'); const container = document.getElementById('featuredCardsContainer');
             if(!data) { sec.style.display = 'none'; return; }
             sec.style.display = 'block';
-            
             let features = Object.keys(data).map(k => data[k]).sort((a,b) => a.timestamp - b.timestamp).slice(0, 3);
-            container.innerHTML = features.map(f => `
-                <div class="f-card" onclick="filterCategory('${f.target}')">
-                    <img src="${f.image}">
-                    <div class="f-overlay"><span class="f-title">${f.title}</span></div>
-                </div>
-            `).join('');
+            container.innerHTML = features.map(f => `<div class="f-card" onclick="filterCategory('${f.target}')"><img src="${f.image}"><div class="f-overlay"><span class="f-title">${f.title}</span></div></div>`).join('');
         });
 
         // =========================================================
-        // 🔥 ENGINE PROMO BANNER SLIDE 🔥
+        // 🔥 ENGINE PROMO BANNER 🔥
         // =========================================================
         let bannersArr = []; let currentSlide = 0; let slideInterval;
         const track = document.getElementById('carouselTrack'); const dots = document.getElementById('carouselDots'); const promoHero = document.getElementById('promoHeroSec');
@@ -394,9 +430,8 @@
         promoHero.addEventListener('touchstart', e => { touchstartX = e.changedTouches[0].screenX; }, {passive: true});
         promoHero.addEventListener('touchend', e => { touchendX = e.changedTouches[0].screenX; if(touchendX < touchstartX - 40) nextSlide(); if(touchendX > touchstartX + 40) prevSlide(); }, {passive: true});
 
-
         // =========================================================
-        // 🔥 ENGINE KATEGORI (SINKRON KE SIDEBAR & BUBBLE) 🔥
+        // 🔥 ENGINE KATEGORI BUBBLE & SINKRON SIDEBAR 🔥
         // =========================================================
         db.ref('ui_categories').on('value', snap => {
             const data = snap.val(); 
@@ -414,24 +449,12 @@
                     sidebarHtml += `<div class="sub-item" onclick="filterCategory('${c.name}'); toggleMenu();">${c.name}</div>`;
                 });
             }
-            nav.innerHTML = bubbleHtml;
-            sideNav.innerHTML = sidebarHtml;
-        });
-
-        db.ref('ui_settings').on('value', snap => {
-            const s = snap.val();
-            if(s) {
-                const logoEl = document.getElementById('mainLogo');
-                if(s.logoImg) { logoEl.innerHTML = `<img src="${s.logoImg}" alt="GANKETI">`; } 
-                else { logoEl.innerHTML = `<img src="ganketilogo.png" alt="GANKETI">`; }
-                if(s.heroTitle) document.getElementById('heroTitle').innerText = s.heroTitle;
-                if(s.heroSub) document.getElementById('heroSub').innerText = s.heroSub;
-            }
+            nav.innerHTML = bubbleHtml; sideNav.innerHTML = sidebarHtml;
         });
 
         db.ref('products').on('value', (snapshot) => {
             const data = snapshot.val(); const grid = document.getElementById('productGrid');
-            if(!data) { grid.innerHTML = '<p style="text-align:center; width:100%; color:var(--text-dim);">Belum ada koleksi yang dirilis.</p>'; document.getElementById('productCountUi').innerText = '0'; return; }
+            if(!data) { grid.innerHTML = '<p style="text-align:center; width:100%; color:var(--text-dim);">Catalogue is empty.</p>'; document.getElementById('productCountUi').innerText = '0'; return; }
             globalProducts = Object.keys(data).map(key => ({ id: key, ...data[key] }));
             renderProducts();
         });
@@ -439,9 +462,7 @@
         // 🔥 LOGIC FILTER & SORTING 🔥
         function filterCategory(cat) { 
             activeCategory = cat; 
-            document.getElementById('secTitle').innerText = cat === 'ALL' ? 'LATEST DROP' : cat; 
             document.getElementById('searchInput').value = ''; 
-            
             document.querySelectorAll('.icon-item').forEach(el => { 
                 el.classList.remove('active'); 
                 if(el.innerText.trim().toUpperCase() === cat.toUpperCase() || (cat === 'ALL' && el.innerText.trim().toUpperCase() === 'SEMUA')) { 
@@ -470,52 +491,129 @@
             const keyword = document.getElementById('searchInput').value.toLowerCase();
             const sortMode = document.getElementById('sortSelect').value;
 
-            // 1. FILTERING
+            // FILTERING SAKTI (BISA CEK MULTI-TAG)
             let filteredProducts = globalProducts.filter(p => {
                 let matchSearch = true; let matchCat = true;
-                
                 if(keyword) { matchSearch = p.name.toLowerCase().includes(keyword); }
-                
                 if(activeCategory !== 'ALL' && !keyword) {
                     if(!p.category) matchCat = false;
                     else {
-                        let catArr = p.category.split(',').map(s => s.trim().toUpperCase());
-                        matchCat = catArr.includes(activeCategory.toUpperCase());
+                        let productCats = p.category.split(',').map(s => s.trim().toUpperCase());
+                        let targetCats = activeCategory.split(',').map(s => s.trim().toUpperCase());
+                        matchCat = targetCats.some(tc => productCats.includes(tc));
                     }
                 }
                 return matchSearch && matchCat;
             });
 
-            // 2. SORTING
-            if(sortMode === 'price_asc') {
-                filteredProducts.sort((a,b) => a.price - b.price);
-            } else if (sortMode === 'price_desc') {
-                filteredProducts.sort((a,b) => b.price - a.price);
-            } else {
-                filteredProducts.sort((a,b) => b.timestamp - a.timestamp); // newest
-            }
+            // SORTING
+            if(sortMode === 'price_asc') { filteredProducts.sort((a,b) => a.price - b.price); } 
+            else if (sortMode === 'price_desc') { filteredProducts.sort((a,b) => b.price - a.price); } 
+            else { filteredProducts.sort((a,b) => b.timestamp - a.timestamp); }
 
             document.getElementById('productCountUi').innerText = filteredProducts.length;
 
-            if(filteredProducts.length === 0) return grid.innerHTML = '<p style="text-align:center; width:100%; color:var(--text-dim); margin-top:20px;">Produk tidak ditemukan.</p>';
-            grid.innerHTML = filteredProducts.map(p => createProductCard(p)).join('');
+            if(filteredProducts.length === 0) {
+                grid.innerHTML = '<p style="text-align:center; width:100%; color:var(--text-dim); margin-top:20px;">No products found.</p>';
+            } else {
+                grid.innerHTML = filteredProducts.map(p => createProductCard(p)).join('');
+            }
         }
 
         function closeModal() { document.getElementById('mainModal').style.display = 'none'; }
-        function hideAllAreas() { ['previewArea', 'cartArea', 'shippingArea', 'invoiceArea', 'historyArea', 'logoutConfirmArea'].forEach(id => document.getElementById(id).style.display = 'none'); }
+        function hideAllAreas() { ['previewArea', 'cartArea', 'shippingArea', 'invoiceArea', 'historyArea', 'logoutConfirmArea', 'textInfoArea'].forEach(id => document.getElementById(id).style.display = 'none'); }
+
+        // 🔥 HALAMAN INFO TEKS KHUSUS (ABOUT, PRIVACY, FAQ) 🔥
+        function openInfoModal(type) {
+            hideAllAreas();
+            const infoBox = document.getElementById('textInfoArea');
+            let title = ""; let content = "";
+
+            if(type === 'about') {
+                title = "ABOUT GANKETI";
+                content = `<h4>About GANKETI Official</h4>
+                <p>GANKETI is an exclusive streetwear and lifestyle brand built for the modern urban youth. Established with a passion for authentic fashion, we provide premium quality apparel designed to elevate your everyday style.</p>
+                <p>We believe that clothing is more than just fabric; it's a statement. Therefore, every piece in our collection is crafted with attention to detail and high-grade materials.</p>
+                <h4>Our Mission</h4>
+                <p>To empower individuals to express their true selves through high-quality, comfortable, and trend-setting streetwear.</p>`;
+            } 
+            else if(type === 'privacy') {
+                title = "PRIVACY POLICY";
+                content = `<h4>Privacy Policy</h4>
+                <p>Effective as of March 2026.</p>
+                <p>This Privacy Policy governs how GANKETI handles information and personal data from users of our site and webstore. We respect your concerns about privacy and commit to protect the security of your personal data.</p>
+                <h4>Information We Collect</h4>
+                <ul>
+                    <li>Contact information (e.g., name, address, phone number).</li>
+                    <li>Order details and secure payment records.</li>
+                    <li>Geographic location for shipping purposes.</li>
+                </ul>
+                <p>We do not sell or otherwise disclose personal information about you to unauthorized third parties.</p>`;
+            }
+            else if(type === 'terms') {
+                title = "TERMS & CONDITIONS";
+                content = `<h4>Terms and Conditions</h4>
+                <p>By accessing and using the GANKETI website, you agree to comply with our terms of service.</p>
+                <ul>
+                    <li>All products are subject to availability.</li>
+                    <li>Prices are subject to change without prior notice.</li>
+                    <li>We reserve the right to refuse or cancel orders if fraud is suspected.</li>
+                </ul>`;
+            }
+            else if(type === 'faq') {
+                title = "FAQ";
+                content = `<h4>Frequently Asked Questions</h4>
+                <p><b>Q: Do you ship internationally?</b><br>A: Currently, we only ship within Indonesia.</p>
+                <p><b>Q: How long does delivery take?</b><br>A: Standard delivery takes 2-5 business days depending on your location.</p>
+                <p><b>Q: Are the products original?</b><br>A: 100% Original and Authentic.</p>`;
+            }
+            else if(type === 'return') {
+                title = "RETURN POLICY";
+                content = `<h4>Return & Exchange Policy</h4>
+                <p>We accept returns within 3 days of receiving your order, provided that the item is unwashed, unworn, and has all original tags attached.</p>
+                <p>Please note that shipping costs for returns are the responsibility of the customer unless the return is due to a defect on our part.</p>
+                <p>Contact our customer care to initiate a return process.</p>`;
+            }
+            else if(type === 'contact') {
+                title = "CONTACT US";
+                content = `<h4>Get in Touch</h4>
+                <p>If you have any query about your order or our products, please reach out to us:</p>
+                <p><b>WhatsApp:</b> +62 812 3456 7890<br>
+                <b>Email:</b> support@ganketi.store<br>
+                <b>Operating Hours:</b> Monday - Sunday, 09:00 AM - 09:00 PM WIB</p>`;
+            }
+            else if(type === 'size') {
+                title = "SIZE GUIDE";
+                content = `<h4>General Size Guide</h4>
+                <p>Measurements are in Centimeters (cm):</p>
+                <ul>
+                    <li><b>S:</b> Chest 48 - Length 68</li>
+                    <li><b>M:</b> Chest 50 - Length 70</li>
+                    <li><b>L:</b> Chest 52 - Length 72</li>
+                    <li><b>XL:</b> Chest 54 - Length 74</li>
+                    <li><b>XXL:</b> Chest 56 - Length 76</li>
+                </ul>
+                <p><i>*Please allow 1-2 cm margin of error due to manual measurement.</i></p>`;
+            }
+
+            document.getElementById('modalTitle').innerText = title;
+            infoBox.innerHTML = content;
+            infoBox.style.display = 'block';
+            document.getElementById('mainModal').style.display = 'flex';
+        }
 
         function openPreview(id) {
             hideAllAreas(); const p = globalProducts.find(x => x.id === id); if(!p) return;
-            document.getElementById('modalTitle').innerText = p.category || 'PRODUK'; 
+            document.getElementById('modalTitle').innerText = 'PRODUCT DETAIL'; 
             const previewBox = document.getElementById('previewArea');
             let imgArray = p.images ? p.images : [p.image]; let isHabis = (!p.stock || p.stock <= 0);
             let sliderHtml = `<div class="preview-slider">`; imgArray.forEach(img => { sliderHtml += `<img src="${img}" style="${isHabis ? 'filter: grayscale(100%); opacity: 0.5;' : ''}">`; }); sliderHtml += `</div>`;
-            if(imgArray.length > 1) sliderHtml += `<div style="text-align:center; font-size:10px; color:var(--text-dim); margin-top:-10px; margin-bottom:15px;">⟵ Geser Gambar ⟶</div>`;
+            if(imgArray.length > 1) sliderHtml += `<div style="text-align:center; font-size:10px; color:var(--text-dim); margin-top:-10px; margin-bottom:15px;">⟵ Swipe Image ⟶</div>`;
             
             let isClothing = p.category ? (p.category.toLowerCase().includes('accessories') === false && p.category.toLowerCase().includes('topi') === false) : true;
-            let sizeHtml = isClothing ? `<div class="form-group"><label>Pilih Ukuran</label><select id="previewSize"><option value="S">Size: S</option><option value="M" selected>Size: M</option><option value="L">Size: L</option><option value="XL">Size: XL</option><option value="XXL">Size: XXL</option></select></div>` : `<input type="hidden" id="previewSize" value="All Size"><div style="font-size:12px; color:var(--text-dim); margin-bottom:15px;">Ukuran: All Size</div>`;
+            let sizeHtml = isClothing ? `<div class="form-group"><label>Select Size</label><select id="previewSize"><option value="S">Size: S</option><option value="M" selected>Size: M</option><option value="L">Size: L</option><option value="XL">Size: XL</option><option value="XXL">Size: XXL</option></select></div>` : `<input type="hidden" id="previewSize" value="All Size"><div style="font-size:12px; color:var(--text-dim); margin-bottom:15px;">Size: All Size</div>`;
             
-            let stockHtml = isHabis ? `<div class="stock-warn" style="color:#ef4444; border-color:rgba(239,68,68,0.2); background:rgba(239,68,68,0.1);">Stok Habis Terjual!</div>` : `<div class="stock-warn">🔥 Tersisa ${p.stock} pcs lagi di gudang.</div>`;
+            let stockHtml = isHabis ? `<div class="stock-warn" style="color:#ef4444; border-color:rgba(239,68,68,0.2); background:rgba(239,68,68,0.1);">Out of Stock!</div>` : `<div class="stock-warn">🔥 Only ${p.stock} items left in stock.</div>`;
             let btnHtml = isHabis ? `<button class="btn-main" disabled>SOLD OUT</button>` : `<button class="btn-main" onclick="addToCart('${p.id}')">ADD TO CART - Rp ${p.price.toLocaleString('id-ID')}</button>`;
             let priceHtml = p.originalPrice ? `<span style="font-size:12px; text-decoration:line-through; color:#ef4444; margin-right:8px; font-family:'Inter';">Rp ${p.originalPrice.toLocaleString('id-ID')}</span>Rp ${p.price.toLocaleString('id-ID')}` : `Rp ${p.price.toLocaleString('id-ID')}`;
             previewBox.innerHTML = `${sliderHtml}<h3 style="font-size: 18px; color: white; margin-bottom: 5px; line-height: 1.3;">${p.name}</h3><p style="font-size: 16px; font-weight: bold; color: var(--primary); margin-bottom: 15px; font-family: 'Oswald';">${priceHtml}</p>${stockHtml}${sizeHtml}${btnHtml}`;
@@ -525,23 +623,28 @@
         function addToCart(id) {
             const product = globalProducts.find(p => p.id === id); const selectedSize = document.getElementById('previewSize').value; const cartItemId = id + '-' + selectedSize;
             const totalQtyInCart = cart.filter(c => c.id === id).reduce((sum, item) => sum + item.qty, 0);
-            if (totalQtyInCart + 1 > product.stock) { showToast(`Batas stok tercapai.`, 'warning'); return; }
+            if (totalQtyInCart + 1 > product.stock) { showToast(`Stock limit reached.`, 'warning'); return; }
             const existing = cart.find(c => c.cartItemId === cartItemId);
             if(existing) { existing.qty += 1; } else { cart.push({ ...product, cartItemId: cartItemId, name: `${product.name} (${selectedSize})`, qty: 1 }); }
-            localStorage.setItem('ganketiCart', JSON.stringify(cart)); updateCartCount(); closeModal(); showToast('Barang dimasukkan ke keranjang! 🛒', 'success');
+            localStorage.setItem('ganketiCart', JSON.stringify(cart)); updateCartCount(); closeModal(); showToast('Added to Cart! 🛒', 'success');
         }
 
         function updateCartCount() { document.getElementById('cartCount').innerText = cart.reduce((sum, item) => sum + item.qty, 0); }
 
         function openCart() {
-            hideAllAreas(); document.getElementById('modalTitle').innerText = "YOUR CART";
+            hideAllAreas(); document.getElementById('modalTitle').innerText = "SHOPPING CART";
             document.getElementById('cartArea').style.display = 'block'; document.getElementById('mainModal').style.display = 'flex';
             const list = document.getElementById('cartItemsList'); let total = 0;
-            if (cart.length === 0) { list.innerHTML = '<p style="color:var(--text-dim); text-align:center; padding: 20px 0;">Keranjang kosong.</p>'; } 
+            if (cart.length === 0) { list.innerHTML = `<p style="color:var(--text-dim); text-align:center; padding: 40px 0; font-size:16px;">Your cart is empty.</p>`; } 
             else {
                 list.innerHTML = cart.map((item, index) => {
                     total += (item.price * item.qty);
-                    return `<div class="list-item"><div style="flex-grow:1; padding-right:15px;"><b style="color:white; font-size:14px;">${item.name}</b><br><span style="color:var(--text-dim); font-size:12px;">${item.qty} x Rp ${item.price.toLocaleString('id-ID')}</span></div><div style="text-align:right;"><b style="color:var(--primary); font-size:14px;">Rp ${(item.price * item.qty).toLocaleString('id-ID')}</b><br><span style="color:#ef4444; font-size:11px; cursor:pointer; font-weight:bold;" onclick="removeItem(${index})">REMOVE</span></div></div>`;
+                    let imgUrl = item.images ? item.images[0] : (item.image ? item.image : 'https://via.placeholder.com/60');
+                    return `<div class="list-item" style="align-items:flex-start;">
+                        <img src="${imgUrl}" style="width:60px; height:60px; object-fit:cover; border-radius:6px; margin-right:15px; border:1px solid #333;">
+                        <div style="flex-grow:1; padding-right:10px;"><b style="color:white; font-size:13px; line-height:1.3; display:block; margin-bottom:5px;">${item.name}</b><span style="color:var(--text-dim); font-size:12px;">Qty: ${item.qty} x Rp ${item.price.toLocaleString('id-ID')}</span></div>
+                        <div style="text-align:right;"><b style="color:var(--primary); font-size:14px; display:block; margin-bottom:5px;">Rp ${(item.price * item.qty).toLocaleString('id-ID')}</b><span style="color:#ef4444; font-size:11px; cursor:pointer; font-weight:bold; background:rgba(239,68,68,0.1); padding:4px 8px; border-radius:4px;" onclick="removeItem(${index})">REMOVE</span></div>
+                    </div>`;
                 }).join('');
             }
             document.getElementById('cartTotalDisplay').innerText = `Rp ${total.toLocaleString('id-ID')}`;
@@ -561,34 +664,30 @@
                 const datalist = document.getElementById(level + 'List');
                 datalist.innerHTML = data.map(item => `<option value="${item.name}">`).join('');
                 const inputEl = document.getElementById('c' + level.charAt(0).toUpperCase() + level.slice(1));
-                inputEl.placeholder = "Ketik atau pilih dari daftar...";
-                inputEl.disabled = false;
-            } catch(e) { showToast("Gagal memuat data dari server pusat.", "error"); }
+                inputEl.placeholder = "Select from list..."; inputEl.disabled = false;
+            } catch(e) { showToast("Failed loading region data.", "error"); }
         }
 
         function resetDownstream(fromLevel) {
-            if(fromLevel === 'prov') { resetField('cCity', 'Pilih Provinsi Dahulu'); resetField('cDist', 'Pilih Kota Dahulu'); resetField('cVill', 'Pilih Kecamatan Dahulu'); }
-            else if(fromLevel === 'city') { resetField('cDist', 'Pilih Kota Dahulu'); resetField('cVill', 'Pilih Kecamatan Dahulu'); }
-            else if(fromLevel === 'dist') { resetField('cVill', 'Pilih Kecamatan Dahulu'); }
+            if(fromLevel === 'prov') { resetField('cCity', 'Select Province First'); resetField('cDist', 'Select City First'); resetField('cVill', 'Select District First'); }
+            else if(fromLevel === 'city') { resetField('cDist', 'Select City First'); resetField('cVill', 'Select District First'); }
+            else if(fromLevel === 'dist') { resetField('cVill', 'Select District First'); }
         }
+        function resetField(id, placeholderText) { const el = document.getElementById(id); el.value = ''; el.disabled = true; el.placeholder = placeholderText; document.getElementById(id.replace('c', '').toLowerCase() + 'List').innerHTML = ''; }
 
-        function resetField(id, placeholderText) {
-            const el = document.getElementById(id); el.value = ''; el.disabled = true; el.placeholder = placeholderText; document.getElementById(id.replace('c', '').toLowerCase() + 'List').innerHTML = '';
-        }
-
-        function checkProv() { const val = document.getElementById('cProv').value.trim().toUpperCase(); const match = apiRegionData.prov.find(x => x.name.toUpperCase() === val); if(match) { document.getElementById('cProv').value = match.name; resetDownstream('prov'); document.getElementById('cCity').placeholder = "Memuat data kota..."; loadRegionAPI('city', match.id); } else { resetDownstream('prov'); } }
-        function checkCity() { const val = document.getElementById('cCity').value.trim().toUpperCase(); const match = apiRegionData.city.find(x => x.name.toUpperCase() === val); if(match) { document.getElementById('cCity').value = match.name; resetDownstream('city'); document.getElementById('cDist').placeholder = "Memuat data kecamatan..."; loadRegionAPI('dist', match.id); } else { resetDownstream('city'); } }
-        function checkDist() { const val = document.getElementById('cDist').value.trim().toUpperCase(); const match = apiRegionData.dist.find(x => x.name.toUpperCase() === val); if(match) { document.getElementById('cDist').value = match.name; resetDownstream('dist'); document.getElementById('cVill').placeholder = "Memuat data kelurahan..."; loadRegionAPI('vill', match.id); } else { resetDownstream('dist'); } }
+        function checkProv() { const val = document.getElementById('cProv').value.trim().toUpperCase(); const match = apiRegionData.prov.find(x => x.name.toUpperCase() === val); if(match) { document.getElementById('cProv').value = match.name; resetDownstream('prov'); document.getElementById('cCity').placeholder = "Loading cities..."; loadRegionAPI('city', match.id); } else { resetDownstream('prov'); } }
+        function checkCity() { const val = document.getElementById('cCity').value.trim().toUpperCase(); const match = apiRegionData.city.find(x => x.name.toUpperCase() === val); if(match) { document.getElementById('cCity').value = match.name; resetDownstream('city'); document.getElementById('cDist').placeholder = "Loading districts..."; loadRegionAPI('dist', match.id); } else { resetDownstream('city'); } }
+        function checkDist() { const val = document.getElementById('cDist').value.trim().toUpperCase(); const match = apiRegionData.dist.find(x => x.name.toUpperCase() === val); if(match) { document.getElementById('cDist').value = match.name; resetDownstream('dist'); document.getElementById('cVill').placeholder = "Loading villages..."; loadRegionAPI('vill', match.id); } else { resetDownstream('dist'); } }
         function checkVill() { const val = document.getElementById('cVill').value.trim().toUpperCase(); const match = apiRegionData.vill.find(x => x.name.toUpperCase() === val); if(match) { document.getElementById('cVill').value = match.name; } }
 
         function goToShipping() { 
-            if(cart.length === 0) { showToast("Keranjangmu masih kosong!", 'warning'); return; }
-            if(!currentUser) { closeModal(); showToast("Wajib Login pakai akun Google dulu ya Kak!", 'warning'); setTimeout(() => handleAuth(), 1500); return; }
+            if(cart.length === 0) { showToast("Your cart is empty!", 'warning'); return; }
+            if(!currentUser) { closeModal(); showToast("Please Sign In first!", 'warning'); setTimeout(() => handleAuth(), 1500); return; }
             hideAllAreas(); document.getElementById('modalTitle').innerText = "SHIPPING INFO"; 
             document.getElementById('cEmail').value = currentUser.email;
             if(document.getElementById('cName').value === "") document.getElementById('cName').value = currentUser.displayName;
             document.getElementById('shippingArea').style.display = 'block'; 
-            if(apiRegionData.prov.length === 0) { document.getElementById('cProv').placeholder = "Memuat data provinsi..."; loadRegionAPI('prov'); }
+            if(apiRegionData.prov.length === 0) { document.getElementById('cProv').placeholder = "Loading provinces..."; loadRegionAPI('prov'); }
         }
 
         function buatPesananSekarang() {
@@ -597,11 +696,11 @@
             const cZip = document.getElementById('cZip').value.trim();
             const provName = document.getElementById('cProv').value.trim().toUpperCase(); const cityName = document.getElementById('cCity').value.trim().toUpperCase(); const distName = document.getElementById('cDist').value.trim().toUpperCase(); const villName = document.getElementById('cVill').value.trim().toUpperCase();
 
-            if(!cName || !cPhone || !cStreet || !cRT || !cRW || !cZip || !provName || !cityName || !distName || !villName) { showToast("Harap isi seluruh detail alamat!", 'error'); return; }
-            if(!apiRegionData.prov.find(x => x.name.toUpperCase() === provName)) { showToast("Nama Provinsi tidak valid!", 'error'); return; }
-            if(!apiRegionData.city.find(x => x.name.toUpperCase() === cityName)) { showToast("Nama Kota/Kab tidak valid!", 'error'); return; }
-            if(!apiRegionData.dist.find(x => x.name.toUpperCase() === distName)) { showToast("Nama Kecamatan tidak valid!", 'error'); return; }
-            if(!apiRegionData.vill.find(x => x.name.toUpperCase() === villName)) { showToast("Nama Kelurahan tidak valid!", 'error'); return; }
+            if(!cName || !cPhone || !cStreet || !cRT || !cRW || !cZip || !provName || !cityName || !distName || !villName) { showToast("Please fill all shipping details!", 'error'); return; }
+            if(!apiRegionData.prov.find(x => x.name.toUpperCase() === provName)) { showToast("Invalid Province!", 'error'); return; }
+            if(!apiRegionData.city.find(x => x.name.toUpperCase() === cityName)) { showToast("Invalid City!", 'error'); return; }
+            if(!apiRegionData.dist.find(x => x.name.toUpperCase() === distName)) { showToast("Invalid District!", 'error'); return; }
+            if(!apiRegionData.vill.find(x => x.name.toUpperCase() === villName)) { showToast("Invalid Village!", 'error'); return; }
 
             const cAddress = `${cStreet}, RT ${cRT}/RW ${cRW}, Kel. ${villName}, Kec. ${distName}, ${cityName}, Prov. ${provName} - ${cZip}`;
             const invoiceNumber = "INV-GKT-" + Date.now(); const orderDate = new Date().toLocaleString('id-ID');
@@ -610,19 +709,19 @@
             db.ref('orders').push({ invoice_no: invoiceNumber, date: orderDate, customer: { email: cEmail, name: cName, phone: cPhone, address: cAddress }, items: cart, total: grandTotal, status: "UNPAID", timestamp: Date.now() }); 
             cart.forEach(item => { const prodRef = db.ref('products/' + item.id); prodRef.once('value').then(snap => { const currentData = snap.val(); if(currentData) { prodRef.update({ stock: Math.max(0, (currentData.stock || 0) - item.qty) }); }});});
             let itemsHtml = cart.map(i => `${i.qty}x ${i.name.substring(0,20)} <span style="float:right;">${(i.price * i.qty).toLocaleString('id-ID')}</span>`).join('<br>');
-            document.getElementById('invoicePaper').innerHTML = `<div style="text-align:center; font-weight:bold; font-size:16px; margin-bottom:10px; border-bottom:2px dashed #000; padding-bottom:10px;">GANKETI OFFICIAL</div>INV NO : <b style="color:blue;">${invoiceNumber}</b><br>DATE   : ${orderDate}<br>NAME   : ${cName}<br><hr style="border-top:1px dashed #000; margin:10px 0;">${itemsHtml}<hr style="border-top:1px dashed #000; margin:10px 0;"><b style="font-size: 14px;">GRAND TOTAL : <span style="float:right;">Rp ${grandTotal.toLocaleString('id-ID')}</span></b><div style="margin-top:20px; text-align:center; font-size:10px; color:#666;">Selesaikan pembayaran sesuai instruksi admin.</div>`;
-            cart = []; localStorage.setItem('ganketiCart', JSON.stringify(cart)); updateCartCount(); hideAllAreas(); document.getElementById('modalTitle').innerText = "ORDER PLACED"; document.getElementById('invoiceArea').style.display = 'block'; showToast("Pesanan sukses dibuat! 🎉", "success");
+            document.getElementById('invoicePaper').innerHTML = `<div style="text-align:center; font-weight:bold; font-size:16px; margin-bottom:10px; border-bottom:2px dashed #000; padding-bottom:10px;">GANKETI OFFICIAL</div>INV NO : <b style="color:blue;">${invoiceNumber}</b><br>DATE   : ${orderDate}<br>NAME   : ${cName}<br><hr style="border-top:1px dashed #000; margin:10px 0;">${itemsHtml}<hr style="border-top:1px dashed #000; margin:10px 0;"><b style="font-size: 14px;">GRAND TOTAL : <span style="float:right;">Rp ${grandTotal.toLocaleString('id-ID')}</span></b><div style="margin-top:20px; text-align:center; font-size:10px; color:#666;">Complete payment via Admin instructions.</div>`;
+            cart = []; localStorage.setItem('ganketiCart', JSON.stringify(cart)); updateCartCount(); hideAllAreas(); document.getElementById('modalTitle').innerText = "ORDER CONFIRMED"; document.getElementById('invoiceArea').style.display = 'block'; showToast("Order Placed Successfully! 🎉", "success");
         }
 
         function openMyOrders() {
-            if(!currentUser) { showToast("Silakan Login dulu untuk melihat pesanan!", 'warning'); setTimeout(() => handleAuth(), 1500); return; }
-            hideAllAreas(); document.getElementById('modalTitle').innerText = "PESANAN SAYA";
-            const list = document.getElementById('historyList'); list.innerHTML = `<p style="text-align:center; color:var(--text-dim); padding:20px;">Memuat data...</p>`;
+            if(!currentUser) { showToast("Please Sign In first!", 'warning'); setTimeout(() => handleAuth(), 1500); return; }
+            hideAllAreas(); document.getElementById('modalTitle').innerText = "TRACK ORDER";
+            const list = document.getElementById('historyList'); list.innerHTML = `<p style="text-align:center; color:var(--text-dim); padding:20px;">Loading data...</p>`;
             document.getElementById('historyArea').style.display = 'block'; document.getElementById('mainModal').style.display = 'flex';
             
             db.ref('orders').orderByChild('customer/email').equalTo(currentUser.email).once('value').then(snapshot => {
                 const data = snapshot.val();
-                if(!data) { list.innerHTML = `<p style="text-align:center; color:var(--text-dim); padding:20px;">Belum ada pesanan untuk akun ini.</p>`; return; }
+                if(!data) { list.innerHTML = `<p style="text-align:center; color:var(--text-dim); padding:40px 20px;">You have no orders yet.</p>`; return; }
                 
                 let historyHtml = ''; const orders = Object.keys(data).map(k => data[k]).sort((a,b) => b.timestamp - a.timestamp);
                 
@@ -646,12 +745,12 @@
                     if (order.status === 'SHIPPED' && order.resi) {
                         resiHtml = `
                         <div style="margin-top:12px; padding:10px; background:#111; border-radius:6px; border:1px solid #333;">
-                            <span style="font-size:10px; color:#888;">Nomor Resi Pengiriman:</span><br>
+                            <span style="font-size:10px; color:#888;">Tracking Number (Resi):</span><br>
                             <div style="display:flex; justify-content:space-between; align-items:center; margin-top:5px;">
                                 <b style="color:#4ade80; font-size:14px; letter-spacing:1px;">${order.resi}</b>
                                 <div style="display:flex; gap:5px;">
-                                    <button onclick="navigator.clipboard.writeText('${order.resi}'); showToast('Resi disalin!', 'success');" style="background:#3b82f6; color:white; border:none; padding:6px 10px; border-radius:4px; font-size:10px; font-weight:bold; cursor:pointer;">COPY</button>
-                                    <a href="https://cekresi.com/?noresi=${order.resi}" target="_blank" style="background:#f59e0b; color:black; border:none; padding:6px 10px; border-radius:4px; font-size:10px; text-decoration:none; font-weight:bold; text-align:center;">LACAK</a>
+                                    <button onclick="navigator.clipboard.writeText('${order.resi}'); showToast('Resi copied!', 'success');" style="background:#3b82f6; color:white; border:none; padding:6px 10px; border-radius:4px; font-size:10px; font-weight:bold; cursor:pointer;">COPY</button>
+                                    <a href="https://cekresi.com/?noresi=${order.resi}" target="_blank" style="background:#f59e0b; color:black; border:none; padding:6px 10px; border-radius:4px; font-size:10px; text-decoration:none; font-weight:bold; text-align:center;">TRACK</a>
                                 </div>
                             </div>
                         </div>`;
@@ -673,10 +772,10 @@
 
                         <div style="display:flex; justify-content:space-between; align-items:center; font-size:12px; color:var(--text-dim); line-height:1.5;">
                             <div>
-                                Dikirim ke: <b style="color:#ccc;">${order.customer.name}</b>
+                                Shipped to: <b style="color:#ccc;">${order.customer.name}</b>
                             </div>
                             <div style="text-align:right;">
-                                Total Belanja:<br>
+                                Total Amount:<br>
                                 <b style="color:#4ade80; font-size:15px;">Rp ${order.total.toLocaleString('id-ID')}</b>
                             </div>
                         </div>
