@@ -154,7 +154,7 @@
         .courier-card { display: flex; justify-content: space-between; align-items: center; background: #111; border: 1px solid #333; padding: 12px; border-radius: 6px; margin-bottom: 8px; cursor: pointer;}
         .courier-card:hover { border-color: #f59e0b; }
 
-        .btn-main { background: var(--primary); color: var(--bg); width: 100%; padding: 15px; border: none; font-weight: 700; font-family: 'Inter', sans-serif; font-size: 14px; border-radius: 8px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px;}
+        .btn-main { background: var(--primary); color: var(--bg); width: 100%; padding: 15px; border: none; font-weight: 700; font-family: 'Inter', sans-serif; font-size: 14px; border-radius: 8px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px; transition: 0.3s;}
         .btn-main:disabled { background: #333; color: #666; cursor: not-allowed; }
         
         .list-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px dashed var(--border); }
@@ -351,7 +351,7 @@
                     <div id="cDestResults" class="autocomplete-box"></div>
                 </div>
 
-                <div class="form-group"><label>Postal Code</label><input type="number" id="cZip" placeholder="12345"></div>
+                <div class="form-group"><label>Postal Code (Otomatis)</label><input type="number" id="cZip" readonly style="background:#1a1a1a; color:#888;"></div>
                 
                 <div style="margin-bottom: 20px;">
                     <label style="display:flex; align-items:center; gap:8px; font-size:12px; color:#ccc; cursor:pointer;">
@@ -408,14 +408,14 @@
 
                 <p style="font-size:10px; color:#666; text-align:center; margin-top:20px;">*Sistem pembayaran sedang dalam tahap integrasi.</p>
                 
-                <button class="btn-main" onclick="simulateXenditSuccess()" style="margin-top: 10px; background:#3b82f6; color:#fff;">[DEV] SIMULASIKAN PEMBAYARAN SUKSES</button>
+                <button id="btnCheckout" class="btn-main" onclick="simulateXenditSuccess()" style="margin-top: 10px; background:#3b82f6; color:#fff;">[DEV] BUAT PESANAN SEKARANG</button>
             </div>
 
             <div id="textInfoArea" style="display:none;" class="info-content"></div>
 
             <div id="invoiceArea" style="display:none;">
-                <p style="text-align:center; color:#4ade80; font-weight:bold; margin-bottom:5px;">✅ PAYMENT SUCCESSFUL!</p>
-                <p style="text-align:center; font-size:12px; color:var(--text-dim);">Your order is confirmed and invoice is saved.</p>
+                <p style="text-align:center; color:#4ade80; font-weight:bold; margin-bottom:5px;">✅ PESANAN TERSIMPAN!</p>
+                <p style="text-align:center; font-size:12px; color:var(--text-dim);">Silakan selesaikan pembayaran agar admin dapat memproses pengiriman.</p>
                 <div class="receipt" id="invoicePaper"></div>
                 <button class="btn-main" style="margin-top: 15px; background: #25D366; color: white;" onclick="closeModal()">DONE</button>
             </div>
@@ -443,7 +443,7 @@
         let selectedShippingCost = 0;
         let selectedCourierName = "";
 
-        // 🔥 KUNCI API LIVE (HURUF KECIL 'b' - SUDAH DIPERBAIKI) 🔥
+        // 🔥 KUNCI API BITESHIP LIVE 🔥
         const BITESHIP_KEY = 'biteship_live.eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiR2Fua2V0aSIsInVzZXJJZCI6IjY5YWVlODYzM2NjODBhMWUzMjE3ZGJkYyIsImlhdCI6MTc3MzA3OTg3MX0.ot-KA-1HmE0xMsc7OhHeQBaDGo7KrDKU1tuS4bk5fCo';
 
         updateCartCount();
@@ -640,7 +640,7 @@
 
             if(type === 'about') {
                 title = "ABOUT GANKETI";
-                content = `<h4>Our Story</h4><p>GANKETI adalah brand fashion modern yang lahir dari semangat untuk menghadirkan gaya yang elegan, kreatif, dan relevan dengan perkembangan tren global. Kami percaya bahwa fashion bukan hanya sekadar pakaian, tetapi juga cara seseorang mengekspresikan identitas, karakter, dan gaya hidupnya.</p><p>GANKETI menggabungkan inspirasi dari berbagai budaya dunia dengan sentuhan desain modern dan inovatif. Setiap produk dirancang dengan perhatian terhadap detail, kualitas, dan estetika agar mampu memberikan pengalaman fashion yang berbeda bagi para penggunanya.</p><p>Kami ingin menciptakan brand yang tidak hanya mengikuti tren, calculations juga membangun identitas dan karakter yang kuat dalam dunia fashion dan lifestyle.</p><h4>Filosofi Nama GANKETI</h4><p>Nama GANKETI memiliki makna yang merepresentasikan nilai dan filosofi brand:</p><ul><li><b>G – Gracia (Spanyol):</b> Melambangkan keanggunan dan keindahan alami.</li><li><b>A – Arte (Portugis/Spanyol):</b> Mewakili seni dan kreativitas dalam desain.</li><li><b>N – Novo (Portugis):</b> Menggambarkan sesuatu yang baru, modern, dan selalu berkembang.</li><li><b>K – Kultura (Polandia):</b> Merepresentasikan budaya dan identitas.</li><li><b>E – Elegancia (Spanyol):</b> Menunjukkan kesan elegan, premium, dan eksklusif.</li><li><b>T – Tendencia (Spanyol):</b> Melambangkan tren dan gaya modern.</li><li><b>I – Inovação (Portugis):</b> Menggambarkan inovasi dan pendekatan futuristik.</li></ul><h4>Vision</h4><p>Menjadi brand fashion dan lifestyle modern yang dikenal secara global dengan identitas yang kuat, desain yang inovatif, serta kualitas produk yang premium.</p><h4>Mission</h4><ul><li>Menghadirkan produk fashion berkualitas dengan desain modern dan stylish.</li><li>Menggabungkan kreativitas, budaya, dan tren global dalam setiap koleksi.</li><li>Memberikan pengalaman fashion yang elegan dan berkelas bagi pelanggan.</li><li>Membangun identitas brand yang kuat di dunia fashion dan lifestyle.</li></ul><h4>Brand Identity</h4><p>GANKETI memiliki identitas brand yang mencerminkan gaya hidup modern, elegan, dan inovatif.</p><ul><li><b>Modern:</b> Desain mengikuti perkembangan tren global dan gaya urban.</li><li><b>Elegant:</b> Produk memiliki kesan premium dan berkelas.</li><li><b>Creative:</b> Setiap koleksi menghadirkan ide desain yang unik dan stylish.</li><li><b>Innovative:</b> Brand terus berkembang dengan konsep yang futuristik.</li></ul>`;
+                content = `<h4>Our Story</h4><p>GANKETI adalah brand fashion modern yang lahir dari semangat untuk menghadirkan gaya yang elegan, kreatif, dan relevan dengan perkembangan tren global. Kami percaya bahwa fashion bukan hanya sekadar pakaian, tetapi juga cara seseorang mengekspresikan identitas, karakter, dan gaya hidupnya.</p><p>GANKETI menggabungkan inspirasi dari berbagai budaya dunia dengan sentuhan desain modern dan inovatif. Setiap produk dirancang dengan perhatian terhadap detail, kualitas, dan estetika agar mampu memberikan pengalaman fashion yang berbeda bagi para penggunanya.</p><p>Kami ingin menciptakan brand yang tidak hanya mengikuti tren, tetapi juga membangun identitas dan karakter yang kuat dalam dunia fashion dan lifestyle.</p><h4>Filosofi Nama GANKETI</h4><p>Nama GANKETI memiliki makna yang merepresentasikan nilai dan filosofi brand:</p><ul><li><b>G – Gracia (Spanyol):</b> Melambangkan keanggunan dan keindahan alami.</li><li><b>A – Arte (Portugis/Spanyol):</b> Mewakili seni dan kreativitas dalam desain.</li><li><b>N – Novo (Portugis):</b> Menggambarkan sesuatu yang baru, modern, dan selalu berkembang.</li><li><b>K – Kultura (Polandia):</b> Merepresentasikan budaya dan identitas.</li><li><b>E – Elegancia (Spanyol):</b> Menunjukkan kesan elegan, premium, dan eksklusif.</li><li><b>T – Tendencia (Spanyol):</b> Melambangkan tren dan gaya modern.</li><li><b>I – Inovação (Portugis):</b> Menggambarkan inovasi dan pendekatan futuristik.</li></ul><h4>Vision</h4><p>Menjadi brand fashion dan lifestyle modern yang dikenal secara global dengan identitas yang kuat, desain yang inovatif, serta kualitas produk yang premium.</p><h4>Mission</h4><ul><li>Menghadirkan produk fashion berkualitas dengan desain modern dan stylish.</li><li>Menggabungkan kreativitas, budaya, dan tren global dalam setiap koleksi.</li><li>Memberikan pengalaman fashion yang elegan dan berkelas bagi pelanggan.</li><li>Membangun identitas brand yang kuat di dunia fashion dan lifestyle.</li></ul><h4>Brand Identity</h4><p>GANKETI memiliki identitas brand yang mencerminkan gaya hidup modern, elegan, dan inovatif.</p><ul><li><b>Modern:</b> Desain mengikuti perkembangan tren global dan gaya urban.</li><li><b>Elegant:</b> Produk memiliki kesan premium dan berkelas.</li><li><b>Creative:</b> Setiap koleksi menghadirkan ide desain yang unik dan stylish.</li><li><b>Innovative:</b> Brand terus berkembang dengan konsep yang futuristik.</li></ul>`;
             } else if(type === 'privacy') {
                 title = "PRIVACY POLICY";
                 content = `<h4>Privacy Policy</h4><p>GANKETI menghargai dan melindungi privasi setiap pengguna website kami. Kebijakan privasi ini menjelaskan bagaimana kami mengumpulkan, menggunakan, dan melindungi informasi pribadi pengguna.</p><h4>Information We Collect</h4><p>Kami dapat mengumpulkan informasi seperti:</p><ul><li>Nama</li><li>Alamat email</li><li>Nomor telepon</li><li>Alamat pengiriman</li><li>Informasi transaksi</li></ul><p>Informasi ini dikumpulkan saat pengguna melakukan pendaftaran akun, melakukan pembelian, atau menghubungi kami.</p><h4>How We Use Your Information</h4><p>Informasi yang kami kumpulkan digunakan untuk:</p><ul><li>Memproses pesanan pelanggan</li><li>Mengirimkan informasi mengenai pesanan</li><li>Meningkatkan layanan dan pengalaman pengguna</li><li>Memberikan informasi mengenai produk atau promosi terbaru</li></ul><h4>Data Security</h4><p>Kami menjaga keamanan data pengguna dengan menggunakan sistem keamanan yang sesuai untuk melindungi informasi pribadi dari akses yang tidak sah.</p>`;
@@ -703,7 +703,7 @@
             let cartItemIndex = cart.findIndex(c => c.cartItemId === cartItemId);
             cart[cartItemIndex].origin = product.origin || 'JAKARTA SELATAN'; 
             cart[cartItemIndex].originId = product.originId || null; 
-            cart[cartItemIndex].couriers = product.couriers || 'jne,jnt,sicepat';
+            cart[cartItemIndex].couriers = product.couriers || 'jne,sicepat,jnt,ninja,anteraja';
 
             localStorage.setItem('ganketiCart', JSON.stringify(cart)); updateCartCount(); closeModal(); showToast('Added to Cart! 🛒', 'success');
         }
@@ -730,33 +730,31 @@
         }
         function removeItem(index) { cart.splice(index, 1); localStorage.setItem('ganketiCart', JSON.stringify(cart)); updateCartCount(); openCart(); }
 
-        // 🔥 MESIN PENCARI KOTA BITESHIP DENGAN RADAR DIAGNOSTIK 🔥
+        // 🔥 MESIN PENCARI KOTA BITESHIP OTOMATIS 🔥
         let searchDestTimeout;
         function searchBiteshipDest(query) {
             const resultBox = document.getElementById('cDestResults');
             if(query.length < 3) { resultBox.style.display = 'none'; return; }
             
-            // Gabungkan pencarian dengan Provinsi jika diisi, supaya lebih akurat
             let prov = document.getElementById('cProv').value.trim();
             let fullQuery = prov ? prov + ' ' + query : query;
             
             clearTimeout(searchDestTimeout);
             searchDestTimeout = setTimeout(async () => {
-                resultBox.innerHTML = '<div style="padding:10px; font-size:11px; color:#aaa;">Mencari di sistem Kurir...</div>';
+                resultBox.innerHTML = '<div style="padding:10px; font-size:11px; color:#aaa;">Mencari di sistem Satelit Biteship...</div>';
                 resultBox.style.display = 'block';
                 try {
                     const res = await fetch(`https://api.biteship.com/v1/maps/areas?countries=ID&input=${encodeURIComponent(fullQuery)}&type=single`, {
-                        headers: { 'Authorization': BITESHIP_KEY }
+                        headers: { 'Authorization': `Bearer ${BITESHIP_KEY}` }
                     });
                     const data = await res.json();
                     if(data.success && data.areas && data.areas.length > 0) {
                         resultBox.innerHTML = data.areas.map(a => {
-                            // TAMPILAN RAPI: a.name aslinya memang sudah lengkap format Biteship
                             return `<div class="biteship-item" onclick="selectBiteshipDest('${a.id}', '${a.name.replace(/'/g, "\\'")}', '${a.postal_code}')">${a.name}</div>`;
                         }).join('');
                     } else {
-                        let errorMsg = data.error || data.message || "Kecamatan/Kota tidak ditemukan. Coba ketik lebih spesifik.";
-                        resultBox.innerHTML = `<div style="padding:10px; font-size:11px; color:#ef4444;">Pesan Server: ${errorMsg}</div>`;
+                        let errorMsg = data.error || data.message || "Kecamatan/Kota tidak ditemukan. Coba lebih spesifik.";
+                        resultBox.innerHTML = `<div style="padding:10px; font-size:11px; color:#ef4444;">${errorMsg}</div>`;
                     }
                 } catch(e) {
                     resultBox.innerHTML = '<div style="padding:10px; font-size:11px; color:#ef4444;">Gagal menghubungi server ongkir.</div>';
@@ -765,13 +763,12 @@
         }
 
         function selectBiteshipDest(id, fullName, zip) {
-            // HANYA NAMA KOTA/KECAMATAN YANG DITAMPILKAN DI KOTAK INPUT (Biar Rapi Sesuai Request Bos)
             let shortName = fullName.split(',')[0].trim();
             document.getElementById('cDestSearch').value = shortName; 
             
             document.getElementById('cDestId').value = id;
             document.getElementById('cDestName').value = fullName;
-            if(zip) document.getElementById('cZip').value = zip; // KODE POS OTOMATIS TERISI
+            if(zip) document.getElementById('cZip').value = zip; // AUTO KODE POS
             document.getElementById('cDestResults').style.display = 'none';
         }
 
@@ -799,12 +796,10 @@
             document.getElementById('cRT').value = adr.rt || '';
             document.getElementById('cRW').value = adr.rw || '';
             document.getElementById('cProv').value = adr.prov || '';
-            // Tampilkan nama pendek di input box
             document.getElementById('cDestSearch').value = adr.destName ? adr.destName.split(',')[0].trim() : ''; 
             document.getElementById('cDestId').value = adr.destId || '';
             document.getElementById('cDestName').value = adr.destName || '';
             document.getElementById('cZip').value = adr.zip || '';
-            
             showToast("Alamat otomatis terisi!", "success");
         }
 
@@ -819,11 +814,11 @@
             document.getElementById('cEmail').value = currentUser.email;
             
             renderSavedAddresses();
-            
             if(document.getElementById('cName').value === "") document.getElementById('cName').value = currentUser.displayName;
             document.getElementById('shippingArea').style.display = 'block'; 
         }
 
+        // 🔥 RATES API + DATA DIMENSI PxLxT 🔥
         async function calculateShipping() {
             const cEmail = document.getElementById('cEmail').value; 
             const cName = document.getElementById('cName').value.trim(); 
@@ -862,18 +857,15 @@
             document.getElementById('courierListContainer').innerHTML = '<p style="color:#aaa; text-align:center; padding:20px;">Menghitung ongkos kirim resmi... ⏳</p>';
 
             try {
-                let availableCouriers = cart[0].couriers || 'jne,jnt,sicepat';
-                let formatCouriers = availableCouriers.toLowerCase().replace(/j\&t/g, 'jnt').replace(/ /g, '');
-                
+                let formatCouriers = "jne,sicepat,jnt,ninja,anteraja";
                 let originId = cart[0].originId;
                 
-                // Fallback pencarian ID asal jika ID hilang (untuk produk lama yg diupload sebelum ada update ini)
                 if(!originId) {
                     let baseOrigin = cart[0].origin || 'JAKARTA SELATAN';
                     let cleanOrigin = baseOrigin.replace(/KABUPATEN |KAB\. |KOTA /gi, '').trim();
                     const getAreaId = async (searchQuery) => {
                         const res = await fetch(`https://api.biteship.com/v1/maps/areas?countries=ID&input=${encodeURIComponent(searchQuery)}`, {
-                            headers: { 'Authorization': BITESHIP_KEY }
+                            headers: { 'Authorization': `Bearer ${BITESHIP_KEY}` }
                         });
                         const data = await res.json();
                         if(data && data.areas && data.areas.length > 0) return data.areas[0].id;
@@ -882,21 +874,26 @@
                     originId = await getAreaId(cleanOrigin);
                 }
 
-                if(!originId) {
-                    throw new Error("Lokasi toko asal tidak valid/tidak ditemukan.");
-                }
+                if(!originId) throw new Error("Lokasi toko asal tidak valid/tidak ditemukan.");
 
                 let totalWeight = cart.reduce((sum, item) => sum + (500 * item.qty), 0);
                 if(totalWeight < 1000) totalWeight = 1000;
 
                 const rateRes = await fetch('https://api.biteship.com/v1/rates/couriers', {
                     method: 'POST',
-                    headers: { 'Authorization': BITESHIP_KEY, 'Content-Type': 'application/json' },
+                    headers: { 'Authorization': `Bearer ${BITESHIP_KEY}`, 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         origin_area_id: originId,
-                        destination_area_id: destId, // Pakai ID yang sudah dipilih pembeli dari Dropdown
+                        destination_area_id: destId, 
                         couriers: formatCouriers,
-                        items: [{ name: "Apparel", value: subTotal, weight: totalWeight, quantity: 1 }]
+                        items: [{ 
+                            name: "GANKETI Apparel", 
+                            description: "Streetwear",
+                            value: subTotal, 
+                            weight: totalWeight, 
+                            length: 20, width: 15, height: 10, // DIMENSI ANTI RUGI BONG!
+                            quantity: 1 
+                        }]
                     })
                 });
 
@@ -906,8 +903,9 @@
                     let courierHtml = rateData.pricing.map((p, idx) => {
                         let isChecked = idx === 0 ? 'checked' : '';
                         let duration = p.duration ? p.duration : '2-4 hari';
+                        // Lempar data komplit untuk Draft Order nanti
                         return `
-                        <label class="courier-card" onclick="updateShippingTotal(${p.price}, '${p.courier_name.toUpperCase()} - ${p.courier_service_name}')">
+                        <label class="courier-card" onclick="updateShippingTotal(${p.price}, '${p.courier_name.toUpperCase()} - ${p.courier_service_name}', '${p.company}', '${p.type}')">
                             <div style="display:flex; align-items:center; gap:10px;">
                                 <input type="radio" name="courierOption" value="${p.courier_name}" ${isChecked} style="width:16px; height:16px; accent-color:#f59e0b;">
                                 <div>
@@ -922,35 +920,25 @@
                     document.getElementById('courierListContainer').innerHTML = courierHtml;
                     setTimeout(() => { document.querySelector('input[name="courierOption"]:checked').parentElement.parentElement.click(); }, 100);
                 } else {
-                    let errPricing = rateData.error || "Kurir API tidak merespon.";
+                    let errPricing = rateData.error || rateData.message || "Kurir API tidak merespon.";
                     throw new Error(errPricing);
                 }
 
             } catch (e) {
-                console.warn("API Biteship error/limit, falling back to simulated rates:", e);
-                
-                // 🔥 FALLBACK SYSTEM: MUNCULKAN HARGA SIMULASI JIKA SERVER BITESHIP GANGGUAN 🔥
-                let availableCouriers = (cart[0].couriers || 'JNE,J&T').split(',').map(s => s.trim());
-                let baseCost = destName.toUpperCase().includes("JAWA") || destName.toUpperCase().includes("BANDUNG") || destName.toUpperCase().includes("JAKARTA") ? 15000 : 35000;
-                if(destName.toUpperCase().includes("SUMATERA")) baseCost = 25000;
-                if(destName.toUpperCase().includes("KALIMANTAN")) baseCost = 35000;
-                if(destName.toUpperCase().includes("SULAWESI") || destName.toUpperCase().includes("BALI")) baseCost = 45000;
-                if(destName.toUpperCase().includes("PAPUA") || destName.toUpperCase().includes("MALUKU") || destName.toUpperCase().includes("NTT")) baseCost = 60000;
-                
-                let courierHtml = availableCouriers.map((c, idx) => {
+                console.warn("API Biteship error, falling back to simulated rates:", e);
+                // Fallback jika API habis limit/down
+                let baseCost = destName.toUpperCase().includes("JAWA") || destName.toUpperCase().includes("JAKARTA") ? 15000 : 35000;
+                let fallbackCouriers = ['jne', 'sicepat'];
+                let courierHtml = fallbackCouriers.map((c, idx) => {
                     let fee = baseCost;
-                    if(c.toUpperCase() === 'JNE') fee += 2000;
-                    if(c.toUpperCase() === 'SICEPAT') fee -= 1000;
-                    if(c.toUpperCase() === 'ANTERAJA') fee += 500;
-                    
+                    if(c === 'jne') fee += 2000;
                     let isChecked = idx === 0 ? 'checked' : ''; 
-                    
                     return `
-                    <label class="courier-card" onclick="updateShippingTotal(${fee}, '${c.toUpperCase()} Reguler (Estimasi)')">
+                    <label class="courier-card" onclick="updateShippingTotal(${fee}, '${c.toUpperCase()} Reguler', '${c}', 'reg')">
                         <div style="display:flex; align-items:center; gap:10px;">
                             <input type="radio" name="courierOption" value="${c}" ${isChecked} style="width:16px; height:16px; accent-color:#f59e0b;">
                             <div>
-                                <b style="color:white; font-size:13px;">${c} Reguler</b><br>
+                                <b style="color:white; font-size:13px;">${c.toUpperCase()} Reguler</b><br>
                                 <span style="font-size:10px; color:#888;">Estimasi tiba 2-4 hari</span>
                             </div>
                         </div>
@@ -958,15 +946,17 @@
                     </label>`;
                 }).join('');
 
-                document.getElementById('courierListContainer').innerHTML = courierHtml + `<p style="font-size:9px; color:#888; text-align:center; margin-top:10px;">*Menggunakan tarif estimasi sistem karena sedang sinkronisasi kurir.</p>`;
-                
+                document.getElementById('courierListContainer').innerHTML = courierHtml + `<p style="font-size:9px; color:#888; text-align:center; margin-top:10px;">*Menggunakan tarif estimasi sistem karena sinkronisasi kurir.</p>`;
                 setTimeout(() => { document.querySelector('input[name="courierOption"]:checked').parentElement.parentElement.click(); }, 100);
             }
         }
 
-        function updateShippingTotal(fee, courierName) {
+        function updateShippingTotal(fee, courierName, company, type) {
             selectedShippingCost = fee;
             selectedCourierName = courierName;
+            
+            pendingOrderData.courierCompany = company; // Simpan untuk draft
+            pendingOrderData.courierType = type;       // Simpan untuk draft
             
             let grandTotal = pendingOrderData.subTotal + fee;
             
@@ -992,14 +982,58 @@
             el.style.borderColor = '#4ade80';
         }
 
-        function simulateXenditSuccess() {
+        // 🔥 EKSEKUSI PEMBAYARAN + DRAFT ORDER API 🔥
+        async function simulateXenditSuccess() {
             if(!pendingOrderData) return;
             
+            const btn = document.getElementById('btnCheckout');
+            btn.innerText = "MEMPROSES PESANAN... ⏳";
+            btn.disabled = true;
+
             const invoiceNumber = "INV-GKT-" + Date.now(); 
             const orderDate = new Date().toLocaleString('id-ID');
+            const destZip = document.getElementById('cZip').value;
 
+            // 1. Tembak Draft Order Biteship
+            try {
+                const draftRes = await fetch('https://api.biteship.com/v1/draft_orders', {
+                    method: 'POST',
+                    headers: { 'Authorization': `Bearer ${BITESHIP_KEY}`, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        origin_contact_name: "Admin GANKETI",
+                        origin_contact_phone: "081234567890", 
+                        origin_address: "Gudang Utama GANKETI",
+                        origin_postal_code: 29424, // Sesuai Area ID Batam Bos
+                        destination_contact_name: pendingOrderData.customer.name,
+                        destination_contact_phone: pendingOrderData.customer.phone,
+                        destination_address: pendingOrderData.customer.address,
+                        destination_postal_code: parseInt(destZip) || 10110,
+                        courier_company: pendingOrderData.courierCompany,
+                        courier_type: pendingOrderData.courierType,
+                        delivery_type: "now",
+                        reference_id: invoiceNumber, // Biar gak dobel di Biteship
+                        items: [{
+                            name: "GANKETI Apparel",
+                            value: pendingOrderData.subTotal,
+                            quantity: 1,
+                            weight: pendingOrderData.items.reduce((s,i) => s + (500*i.qty), 0),
+                            length: 20, width: 15, height: 10
+                        }]
+                    })
+                });
+                
+                const draftData = await draftRes.json();
+                if(draftData.success) {
+                    pendingOrderData.draft_id = draftData.id; // Simpan ID dari Biteship!
+                } else {
+                    console.warn("Draft Order error (but will still save to Firebase):", draftData);
+                }
+            } catch(e) { console.error("Network Error Biteship Draft:", e); }
+
+            // 2. Simpan ke Firebase (Termasuk Draft ID nya)
             db.ref('orders').push({ 
                 invoice_no: invoiceNumber, 
+                draft_id: pendingOrderData.draft_id || "N/A", // ID Sakti Biteship
                 date: orderDate, 
                 customer: pendingOrderData.customer, 
                 items: pendingOrderData.items, 
@@ -1010,17 +1044,21 @@
                 timestamp: Date.now() 
             }); 
             
+            // 3. Update Stok Firebase
             pendingOrderData.items.forEach(item => { const prodRef = db.ref('products/' + item.id); prodRef.once('value').then(snap => { const currentData = snap.val(); if(currentData) { prodRef.update({ stock: Math.max(0, (currentData.stock || 0) - item.qty) }); }});});
             
+            // 4. Update UI Receipt
             let itemsHtml = pendingOrderData.items.map(i => `${i.qty}x ${i.name.substring(0,20)} <span style="float:right;">${(i.price * i.qty).toLocaleString('id-ID')}</span>`).join('<br>');
             let ongkirHtml = `<div style="font-size:12px; margin-top:5px; color:#555;">Ongkos Kirim (${pendingOrderData.courier}) <span style="float:right;">Rp ${pendingOrderData.shippingCost.toLocaleString('id-ID')}</span></div>`;
 
-            document.getElementById('invoicePaper').innerHTML = `<div style="text-align:center; font-weight:bold; font-size:16px; margin-bottom:10px; border-bottom:2px dashed #000; padding-bottom:10px;">GANKETI OFFICIAL</div>INV NO : <b style="color:blue;">${invoiceNumber}</b><br>DATE   : ${orderDate}<br>NAME   : ${pendingOrderData.customer.name}<br>STATUS : <b style="color:#4ade80;">PAID</b><hr style="border-top:1px dashed #000; margin:10px 0;">${itemsHtml}${ongkirHtml}<hr style="border-top:1px dashed #000; margin:10px 0;"><b style="font-size: 14px;">GRAND TOTAL : <span style="float:right;">Rp ${pendingOrderData.total.toLocaleString('id-ID')}</span></b><div style="margin-top:20px; text-align:center; font-size:10px; color:#666;">Payment Verified by System.</div>`;
+            document.getElementById('invoicePaper').innerHTML = `<div style="text-align:center; font-weight:bold; font-size:16px; margin-bottom:10px; border-bottom:2px dashed #000; padding-bottom:10px;">GANKETI OFFICIAL</div>INV NO : <b style="color:blue;">${invoiceNumber}</b><br>DATE   : ${orderDate}<br>NAME   : ${pendingOrderData.customer.name}<br>STATUS : <b style="color:#4ade80;">PAID</b><hr style="border-top:1px dashed #000; margin:10px 0;">${itemsHtml}${ongkirHtml}<hr style="border-top:1px dashed #000; margin:10px 0;"><b style="font-size: 14px;">GRAND TOTAL : <span style="float:right;">Rp ${pendingOrderData.total.toLocaleString('id-ID')}</span></b><div style="margin-top:20px; text-align:center; font-size:10px; color:#666;">Payment Verified & Draft Created.</div>`;
             
+            // 5. Bersihkan Keranjang & Selesai
             cart = []; localStorage.setItem('ganketiCart', JSON.stringify(cart)); updateCartCount(); 
             pendingOrderData = null; 
+            btn.disabled = false; btn.innerText = "[DEV] BUAT PESANAN SEKARANG";
             
-            hideAllAreas(); document.getElementById('modalTitle').innerText = "ORDER CONFIRMED"; document.getElementById('invoiceArea').style.display = 'block'; showToast("Payment Successful! 🎉", "success");
+            hideAllAreas(); document.getElementById('modalTitle').innerText = "ORDER CONFIRMED"; document.getElementById('invoiceArea').style.display = 'block'; showToast("Pesanan Sukses Dibuat! 🎉", "success");
         }
 
         function openMyOrders() {
