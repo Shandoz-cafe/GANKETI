@@ -151,15 +151,43 @@
             </div>
 
             <div id="tabUpload">
+                        <div id="tabUpload">
                 <div class="form-group"><label>Nama Produk</label><input type="text" id="pName"></div>
                 
-                <div class="form-group">
-                    <label>Deskripsi Produk (Bahan, Ukuran, Merek, dll)</label>
-                    <textarea id="pDesc" rows="4" placeholder="Cth: Bahan Katun Denim tebal. Ukuran fit M-XL..."></textarea>
+                <div style="display: flex; gap: 10px;">
+                    <div class="form-group" style="flex:1;">
+                        <label>Satuan</label>
+                        <select id="pUnit">
+                            <option value="pcs">Pcs</option>
+                            <option value="pasang">Pasang</option>
+                            <option value="gram">Gram</option>
+                            <option value="set">Set</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="flex:2;">
+                        <label>Ukuran (Pisahkan dgn koma)</label>
+                        <input type="text" id="pSizes" placeholder="Cth: 39, 40, 41 atau S, M, L, XL">
+                    </div>
+                </div>
+
+                <div style="display: flex; gap: 10px;">
+                    <div class="form-group" style="flex:1;">
+                        <label>Min. Order</label>
+                        <input type="number" id="pMinOrder" placeholder="1">
+                    </div>
+                    <div class="form-group" style="flex:1;">
+                        <label>Max. Order</label>
+                        <input type="number" id="pMaxOrder" placeholder="Stok Penuh">
+                    </div>
                 </div>
 
                 <div class="form-group">
-                    <label>Kategori (BISA DIKLIK LEBIH DARI SATU! Cth: Wanita + Sweater)</label>
+                    <label>Deskripsi Produk (Bahan, Merek, dll)</label>
+                    <textarea id="pDesc" rows="4" placeholder="Ketik deskripsi manual di sini..."></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label>Kategori (BISA DIKLIK LEBIH DARI SATU!)</label>
                     <div id="pCategoryContainer"><span style="color:#ef4444; font-size:11px;">Memuat data...</span></div>
                 </div>
 
@@ -167,14 +195,14 @@
                 <div style="display: flex; gap: 10px;"><div class="form-group" style="flex:1;"><label>Jumlah Stok</label><input type="number" id="pStock" placeholder="50"></div><div class="form-group" style="flex:1;"><label>Harga Coret</label><input type="number" id="pOriginalPrice" placeholder="Opsional"></div></div>
                 
                 <div class="form-group" style="position:relative;">
-                    <label>Dikirim Dari Kecamatan/Kota Asal (Wajib Pilih dari Dropdown!)</label>
+                    <label>Dikirim Dari Kota Asal (Wajib Pilih Dropdown!)</label>
                     <input type="text" id="pOrigin" placeholder="Ketik min 3 huruf (Cth: Sumedang)..." oninput="searchBiteshipOrigin(this.value, 'p')" autocomplete="off">
                     <input type="hidden" id="pOriginId">
                     <div id="pOriginResults" class="autocomplete-box"></div>
                 </div>
 
                 <div class="form-group">
-                    <label>Kurir Pengiriman (Bisa Pilih > 1)</label>
+                    <label>Kurir Pengiriman</label>
                     <div style="display:flex; gap:5px; flex-wrap:wrap;">
                         <label><input type="checkbox" class="cat-checkbox pCourierCb" value="JNE"><span class="cat-label">JNE</span></label>
                         <label><input type="checkbox" class="cat-checkbox pCourierCb" value="J&T"><span class="cat-label">J&T</span></label>
@@ -183,12 +211,12 @@
                     </div>
                 </div>
 
-                <div class="form-group"><label>Link URL Supplier (Dropship - Khusus Admin)</label><input type="url" id="pLink" placeholder="Masukkan Link Shopee/Tokopedia dll... (Opsional)"></div>
-
+                <div class="form-group"><label>Link URL Supplier (Khusus Admin)</label><input type="url" id="pLink" placeholder="Opsional..."></div>
                 <div class="form-group"><label>Foto Produk</label><input type="file" id="pImages" accept="image/*" multiple style="padding: 9px;"></div>
                 <button class="btn-action" onclick="uploadProduct()">UPLOAD KE ETALASE</button>
                 <div id="statusMessage" style="text-align:center; margin-top:15px; font-size:13px; font-weight: 600;"></div>
             </div>
+
 
             <div id="tabManage" style="display:none;"><div id="manageProductsList"></div></div>
 
@@ -517,40 +545,38 @@
         });
 
         // MESIN UPLOAD & MANAGE PRODUK 
-        function uploadProduct() { 
+                function uploadProduct() { 
             const name = document.getElementById('pName').value; 
             const desc = document.getElementById('pDesc').value.trim();
+            const unit = document.getElementById('pUnit').value;
+            const sizes = document.getElementById('pSizes').value.trim() || 'All Size';
+            const minOrder = document.getElementById('pMinOrder').value || 1;
+            const maxOrder = document.getElementById('pMaxOrder').value || 9999;
             const cost = document.getElementById('pCost').value; const price = document.getElementById('pPrice').value; const stock = document.getElementById('pStock').value; const orig = document.getElementById('pOriginalPrice').value; const files = document.getElementById('pImages').files;
             const link = document.getElementById('pLink').value.trim(); 
-            
             const origin = document.getElementById('pOrigin').value.trim();
             const originId = document.getElementById('pOriginId').value.trim();
-            
-            const checkedCouriers = Array.from(document.querySelectorAll('.pCourierCb:checked')).map(cb => cb.value);
-            const courierString = checkedCouriers.join(', ');
-
+            const checkedCouriers = Array.from(document.querySelectorAll('.pCourierCb:checked')).map(cb => cb.value).join(', ');
             const checkedCats = Array.from(document.querySelectorAll('.pCatCb:checked')).map(cb => cb.value);
+            
             if(checkedCats.length === 0) return alert("Pilih minimal 1 kategori!");
-            const categoryString = checkedCats.join(', ');
-
-            if(!name || !cost || !price || !stock || !origin || !originId || checkedCouriers.length === 0 || files.length===0) return alert("Lengkapi data, kurir, dan pastikan KLIK KOTA ASAL DARI HASIL PENCARIAN DROPDOWN!");
+            if(!name || !cost || !price || !stock || !origin || !originId || !checkedCouriers || files.length===0) return alert("Lengkapi data yang wajib!");
             
             document.getElementById('statusMessage').innerHTML = "<span style='color:white;'>Mengunggah...</span>";
             const readFiles = Array.from(files).map(file => new Promise(resolve => { const reader = new FileReader(); reader.onload = e => resolve(e.target.result); reader.readAsDataURL(file); }));
             Promise.all(readFiles).then(imgs => {
-                let data = { name, desc: desc, origin: origin, originId: originId, couriers: courierString, category: categoryString, cost: parseInt(cost), price: parseInt(price), stock: parseInt(stock), images: imgs, timestamp: Date.now(), isPopular: false };
-                if(orig) data.originalPrice = parseInt(orig);
-                if(link) data.link = link; 
+                let data = { name, desc, unit, sizes, minOrder: parseInt(minOrder), maxOrder: parseInt(maxOrder), origin, originId, couriers: checkedCouriers, category: checkedCats.join(', '), cost: parseInt(cost), price: parseInt(price), stock: parseInt(stock), images: imgs, timestamp: Date.now(), isPopular: false };
+                if(orig) data.originalPrice = parseInt(orig); if(link) data.link = link; 
                 
                 db.ref('products').push(data).then(() => { 
                     document.getElementById('statusMessage').innerHTML = "<span style='color:#4ade80;'>✅ Upload sukses!</span>"; 
-                    ['pName','pDesc','pOrigin','pOriginId','pCost','pPrice','pStock','pOriginalPrice','pLink','pImages'].forEach(id=>document.getElementById(id).value=''); 
-                    document.querySelectorAll('.pCatCb').forEach(cb => cb.checked = false); 
-                    document.querySelectorAll('.pCourierCb').forEach(cb => cb.checked = false); 
+                    ['pName','pDesc','pSizes','pMinOrder','pMaxOrder','pOrigin','pOriginId','pCost','pPrice','pStock','pOriginalPrice','pLink','pImages'].forEach(id=>document.getElementById(id).value=''); 
+                    document.querySelectorAll('.pCatCb, .pCourierCb').forEach(cb => cb.checked = false); 
                     setTimeout(() => { document.getElementById('statusMessage').innerHTML = ""; }, 3000);
                 });
             });
         }
+
 
         function loadManageProducts() {
             db.ref('products').on('value', snap => {
