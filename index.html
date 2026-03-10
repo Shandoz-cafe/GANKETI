@@ -138,12 +138,11 @@
         .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--primary); }
         .form-group input:disabled, .form-group input:read-only { background: #1a1a1a; color: #555; cursor: not-allowed; border-color: #222; }
         
-        /* 🔥 CSS PENCARIAN KOTA BITESHIP 🔥 */
         .autocomplete-box { position: absolute; width: 100%; max-height: 180px; overflow-y: auto; z-index: 1000; border: 1px solid #444; border-radius: 4px; box-shadow: 0 4px 10px rgba(0,0,0,0.8); display: none; background: #1a1a1a; margin-top: 2px; }
         .biteship-item { padding: 12px 10px; border-bottom: 1px solid #333; font-size: 12px; cursor: pointer; color: #ccc; line-height: 1.4; }
         .biteship-item:hover { background: #3b82f6; color: white; font-weight: bold; }
 
-        /* CSS BUKU ALAMAT / PAYMENT / SHIPPING */
+        /* CSS BUKU ALAMAT / PAYMENT / DLL */
         .saved-address-card { background: #1a1a1a; border: 1px solid #333; padding: 15px; border-radius: 8px; margin-bottom: 10px; cursor: pointer; transition: 0.2s; font-size: 12px; color: #ccc;}
         .saved-address-card:hover { border-color: #3b82f6; }
         .saved-address-card.active { border-color: #4ade80; background: rgba(74, 222, 128, 0.05); }
@@ -315,6 +314,32 @@
                 <button class="btn-main" style="background:#f59e0b; color:#000;" onclick="goToShipping()">CHECKOUT ➔</button>
             </div>
 
+            <div id="authArea" style="display:none;">
+                <div style="display:flex; margin-bottom:20px; border-bottom:1px solid #333;">
+                    <div id="tabLogin" onclick="switchAuthMode('login')" style="flex:1; padding:10px; text-align:center; cursor:pointer; color:var(--primary); border-bottom:2px solid var(--primary); font-weight:bold; font-size:14px;">LOGIN</div>
+                    <div id="tabRegister" onclick="switchAuthMode('register')" style="flex:1; padding:10px; text-align:center; cursor:pointer; color:#888; font-size:14px;">REGISTER</div>
+                </div>
+
+                <div id="formLogin">
+                    <div class="form-group"><label>Email</label><input type="email" id="authLogEmail" placeholder="Email Anda"></div>
+                    <div class="form-group"><label>Password</label><input type="password" id="authLogPass" placeholder="••••••••"></div>
+                    <button class="btn-main" onclick="loginWithEmail()" style="margin-top: 10px;">LOGIN</button>
+                </div>
+
+                <div id="formRegister" style="display:none;">
+                    <div class="form-group"><label>Nama Lengkap</label><input type="text" id="authRegName" placeholder="Nama Lengkap Anda"></div>
+                    <div class="form-group"><label>Email</label><input type="email" id="authRegEmail" placeholder="Email Aktif"></div>
+                    <div class="form-group"><label>Password</label><input type="password" id="authRegPass" placeholder="Minimal 6 karakter"></div>
+                    <button class="btn-main" style="background:#4ade80; color:black; margin-top: 10px;" onclick="registerWithEmail()">BUAT AKUN</button>
+                </div>
+
+                <div style="text-align:center; margin: 20px 0; color:#666; font-size:11px; text-transform:uppercase; letter-spacing:1px;">atau masuk dengan</div>
+                
+                <button class="btn-main" style="background:#fff; color:#000; display:flex; align-items:center; justify-content:center; gap:10px; text-transform:none; font-weight:600;" onclick="loginWithGoogle()">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" style="width:18px;"> Lanjutkan dengan Google
+                </button>
+            </div>
+
             <div id="shippingArea" style="display:none;">
                 <p style="font-size: 12px; color: #4ade80; margin-bottom: 15px;">✅ Secure Checkout.</p>
                 
@@ -326,7 +351,7 @@
                     </div>
                 </div>
 
-                <div class="form-group"><label>Email</label><input type="email" id="cEmail" readonly></div>
+                <div class="form-group"><label>Email Akun</label><input type="email" id="cEmail" readonly></div>
                 <div class="form-group"><label>Nama Lengkap / Penerima</label><input type="text" id="cName" placeholder="Full Name"></div>
                 <div class="form-group"><label>Nomor WhatsApp</label><input type="number" id="cPhone" placeholder="08..."></div>
                 
@@ -354,8 +379,8 @@
                 </div>
 
                 <div class="form-group" style="position:relative;">
-                    <label>Kecamatan (Ketik & Pilih dari Dropdown API Biteship!) *</label>
-                    <input type="text" id="cDestSearch" placeholder="Ketik min 3 huruf (Cth: Sukasari)..." oninput="searchBiteshipDest(this.value)" autocomplete="off">
+                    <label>Kode Pos / Kecamatan *</label>
+                    <input type="text" id="cDestSearch" placeholder="Ketik Kecamatan / Kode Pos..." oninput="searchBiteshipDest(this.value)" autocomplete="off">
                     <input type="hidden" id="cDestId">
                     <input type="hidden" id="cDestName">
                     <div id="cDestResults" class="autocomplete-box"></div>
@@ -427,6 +452,7 @@
                 <p style="font-size:10px; color:#666; text-align:center; margin-top:20px;">*Sistem pembayaran sedang dalam tahap integrasi.</p>
                 
                 <button class="btn-main" onclick="simulateXenditSuccess()" style="margin-top: 10px; background:#3b82f6; color:#fff;">BAYAR SEKARANG ➔</button>
+
             </div>
 
             <div id="textInfoArea" style="display:none;" class="info-content"></div>
@@ -460,6 +486,7 @@
         let pendingOrderData = null; 
         let selectedShippingCost = 0;
         let selectedCourierName = "";
+        let isCheckoutPending = false; // Menyimpan memori kalau pembeli mau checkout tapi ditodong login
 
         const BITESHIP_KEY = 'biteship_live.eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiR2Fua2V0aSIsInVzZXJJZCI6IjY5YWVlODYzM2NjODBhMWUzMjE3ZGJkYyIsImlhdCI6MTc3MzA3OTg3MX0.ot-KA-1HmE0xMsc7OhHeQBaDGo7KrDKU1tuS4bk5fCo';
 
@@ -497,17 +524,92 @@
         auth.onAuthStateChanged(user => {
             if (user) { 
                 currentUser = user; 
-                document.getElementById('sideLoginBtn').innerHTML = `Sign Out (${user.displayName.split(' ')[0]})`;
+                let displayName = user.displayName ? user.displayName.split(' ')[0] : 'User';
+                document.getElementById('sideLoginBtn').innerHTML = `Sign Out (${displayName})`;
             } else { 
                 currentUser = null; 
                 document.getElementById('sideLoginBtn').innerHTML = `Sign In`; 
             }
         });
 
+        // 🔥 FITUR LOGIN & REGISTER MODERN 🔥
         function handleAuth() {
-            if(currentUser) { hideAllAreas(); document.getElementById('modalTitle').innerText = "MY ACCOUNT"; document.getElementById('logoutConfirmArea').style.display = 'block'; document.getElementById('mainModal').style.display = 'flex'; } 
-            else { const provider = new firebase.auth.GoogleAuthProvider(); auth.signInWithPopup(provider).then((result) => { showToast(`Welcome, ${result.user.displayName}!`, 'success'); }).catch(err => { showToast("Login Failed: " + err.message, 'error'); }); }
+            if(currentUser) { 
+                hideAllAreas(); document.getElementById('modalTitle').innerText = "MY ACCOUNT"; document.getElementById('logoutConfirmArea').style.display = 'block'; document.getElementById('mainModal').style.display = 'flex'; 
+            } else { 
+                openAuthModal();
+            }
         }
+
+        function openAuthModal() {
+            hideAllAreas();
+            document.getElementById('modalTitle').innerText = "AUTHENTICATION";
+            document.getElementById('authArea').style.display = 'block';
+            document.getElementById('mainModal').style.display = 'flex';
+            switchAuthMode('login');
+        }
+
+        function switchAuthMode(mode) {
+            if(mode === 'login') {
+                document.getElementById('tabLogin').style.color = 'var(--primary)';
+                document.getElementById('tabLogin').style.borderBottom = '2px solid var(--primary)';
+                document.getElementById('tabRegister').style.color = '#888';
+                document.getElementById('tabRegister').style.borderBottom = 'none';
+                document.getElementById('formLogin').style.display = 'block';
+                document.getElementById('formRegister').style.display = 'none';
+            } else {
+                document.getElementById('tabRegister').style.color = 'var(--primary)';
+                document.getElementById('tabRegister').style.borderBottom = '2px solid var(--primary)';
+                document.getElementById('tabLogin').style.color = '#888';
+                document.getElementById('tabLogin').style.borderBottom = 'none';
+                document.getElementById('formRegister').style.display = 'block';
+                document.getElementById('formLogin').style.display = 'none';
+            }
+        }
+
+        function loginWithEmail() {
+            let email = document.getElementById('authLogEmail').value.trim();
+            let pass = document.getElementById('authLogPass').value;
+            if(!email || !pass) return showToast("Isi email dan password!", "error");
+            document.querySelector('#formLogin .btn-main').innerText = "LOADING...";
+            auth.signInWithEmailAndPassword(email, pass).then(res => {
+                document.querySelector('#formLogin .btn-main').innerText = "LOGIN";
+                closeModal(); showToast(`Welcome back!`, 'success');
+                if(isCheckoutPending) { isCheckoutPending = false; goToShipping(); }
+            }).catch(err => {
+                document.querySelector('#formLogin .btn-main').innerText = "LOGIN";
+                showToast("Login gagal: " + err.message, "error");
+            });
+        }
+
+        function registerWithEmail() {
+            let name = document.getElementById('authRegName').value.trim();
+            let email = document.getElementById('authRegEmail').value.trim();
+            let pass = document.getElementById('authRegPass').value;
+            if(!name || !email || !pass) return showToast("Lengkapi semua data!", "error");
+            if(pass.length < 6) return showToast("Password minimal 6 karakter!", "error");
+            
+            document.querySelector('#formRegister .btn-main').innerText = "LOADING...";
+            auth.createUserWithEmailAndPassword(email, pass).then(res => {
+                res.user.updateProfile({displayName: name}).then(() => {
+                    document.querySelector('#formRegister .btn-main').innerText = "BUAT AKUN";
+                    closeModal(); showToast(`Akun berhasil dibuat!`, 'success');
+                    if(isCheckoutPending) { isCheckoutPending = false; goToShipping(); }
+                });
+            }).catch(err => {
+                document.querySelector('#formRegister .btn-main').innerText = "BUAT AKUN";
+                showToast("Register gagal: " + err.message, "error");
+            });
+        }
+
+        function loginWithGoogle() {
+            const provider = new firebase.auth.GoogleAuthProvider(); 
+            auth.signInWithPopup(provider).then((result) => { 
+                closeModal(); showToast(`Welcome, ${result.user.displayName}!`, 'success'); 
+                if(isCheckoutPending) { isCheckoutPending = false; goToShipping(); }
+            }).catch(err => { showToast("Login Failed: " + err.message, 'error'); });
+        }
+
         function executeLogout() { auth.signOut().then(() => { closeModal(); showToast("Signed out successfully.", 'info'); }); }
 
         let clickCount = 0; let lastClickTime = 0;
@@ -648,7 +750,7 @@
         }
 
         function closeModal() { document.getElementById('mainModal').style.display = 'none'; }
-        function hideAllAreas() { ['previewArea', 'cartArea', 'shippingArea', 'shippingOptionsArea', 'paymentArea', 'invoiceArea', 'historyArea', 'logoutConfirmArea', 'textInfoArea'].forEach(id => document.getElementById(id).style.display = 'none'); }
+        function hideAllAreas() { ['previewArea', 'cartArea', 'shippingArea', 'shippingOptionsArea', 'paymentArea', 'invoiceArea', 'historyArea', 'logoutConfirmArea', 'textInfoArea', 'authArea'].forEach(id => document.getElementById(id).style.display = 'none'); }
 
         function openInfoModal(type) {
             hideAllAreas();
@@ -778,13 +880,12 @@
         }
         function removeItem(index) { cart.splice(index, 1); localStorage.setItem('ganketiCart', JSON.stringify(cart)); updateCartCount(); openCart(); }
 
-        // 🔥 MESIN PENCARI KOTA BITESHIP DENGAN RADAR DIAGNOSTIK 🔥
+        // 🔥 MESIN PENCARI KOTA BITESHIP 🔥
         let searchDestTimeout;
         function searchBiteshipDest(query) {
             const resultBox = document.getElementById('cDestResults');
             if(query.length < 3) { resultBox.style.display = 'none'; return; }
             
-            // Gabungkan pencarian dengan Provinsi & Kota jika diisi, supaya lebih akurat
             let prov = document.getElementById('cProv').value.trim();
             let city = document.getElementById('cCity').value.trim();
             let fullQuery = query;
@@ -802,7 +903,6 @@
                     const data = await res.json();
                     if(data.success && data.areas && data.areas.length > 0) {
                         resultBox.innerHTML = data.areas.map(a => {
-                            // TAMPILAN RAPI: a.name aslinya memang sudah lengkap format Biteship
                             return `<div class="biteship-item" onclick="selectBiteshipDest('${a.id}', '${a.name.replace(/'/g, "\\'")}', '${a.postal_code}')">${a.name}</div>`;
                         }).join('');
                     } else {
@@ -816,16 +916,16 @@
         }
 
         function selectBiteshipDest(id, fullName, zip) {
-            // HANYA NAMA KECAMATAN YANG DITAMPILKAN DI KOTAK INPUT (Biar Rapi Sesuai Request Bos)
             let shortName = fullName.split(',')[0].trim();
             document.getElementById('cDestSearch').value = shortName; 
             
             document.getElementById('cDestId').value = id;
             document.getElementById('cDestName').value = fullName;
-            if(zip) document.getElementById('cZip').value = zip; // KODE POS OTOMATIS TERISI
+            if(zip) document.getElementById('cZip').value = zip; 
             document.getElementById('cDestResults').style.display = 'none';
         }
 
+        // 🔥 FUNGSI RENDER ALAMAT DENGAN TOMBOL HAPUS 🔥
         function renderSavedAddresses() {
             const container = document.getElementById('savedAddressesContainer');
             const list = document.getElementById('savedAddressesList');
@@ -833,12 +933,25 @@
                 container.style.display = 'block';
                 list.innerHTML = savedAddresses.map((adr, index) => `
                     <div class="saved-address-card" onclick="useSavedAddress(${index})">
-                        <b style="color:var(--primary); font-size:14px;">${adr.name}</b> <span style="color:#888;">(${adr.phone})</span><br>
-                        ${adr.street}, RT ${adr.rt}/RW ${adr.rw}, Kel. ${adr.village || '-'}, Kec. ${adr.destSearch || '-'}, ${adr.city || '-'}, ${adr.prov || '-'} - ${adr.zip}
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:4px;">
+                            <div><b style="color:var(--primary); font-size:14px;">${adr.name}</b> <span style="color:#888;">(${adr.phone})</span></div>
+                            <span onclick="deleteSavedAddress(event, ${index})" style="color:#ef4444; font-size:18px; cursor:pointer; font-weight:bold; padding:0 5px;" title="Hapus Alamat">×</span>
+                        </div>
+                        ${adr.street}, RT ${adr.rt}/RW ${adr.rw}, Kel. ${adr.village || '-'}, Kec. ${adr.destSearch || '-'}, ${adr.city || '-'}, Prov. ${adr.prov || '-'} - ${adr.zip}
                     </div>
                 `).join('');
             } else {
                 container.style.display = 'none';
+            }
+        }
+
+        function deleteSavedAddress(event, index) {
+            event.stopPropagation(); 
+            if(confirm("Hapus alamat ini dari daftar tersimpan?")) {
+                savedAddresses.splice(index, 1);
+                localStorage.setItem('ganketiAddresses', JSON.stringify(savedAddresses));
+                renderSavedAddresses();
+                showToast("Alamat berhasil dihapus", "info");
             }
         }
 
@@ -853,7 +966,6 @@
             document.getElementById('cCity').value = adr.city || '';
             document.getElementById('cVillage').value = adr.village || '';
             
-            // Tampilkan nama pendek kecamatan di input box
             document.getElementById('cDestSearch').value = adr.destSearch || (adr.destName ? adr.destName.split(',')[0].trim() : ''); 
             document.getElementById('cDestId').value = adr.destId || '';
             document.getElementById('cDestName').value = adr.destName || '';
@@ -868,13 +980,18 @@
 
         function goToShipping() { 
             if(cart.length === 0) { showToast("Your cart is empty!", 'warning'); return; }
-            if(!currentUser) { closeModal(); showToast("Please Sign In first!", 'warning'); setTimeout(() => handleAuth(), 1500); return; }
+            if(!currentUser) { 
+                isCheckoutPending = true;
+                showToast("Silakan Login atau Daftar dulu untuk Checkout!", 'warning'); 
+                openAuthModal(); 
+                return; 
+            }
             hideAllAreas(); document.getElementById('modalTitle').innerText = "SHIPPING INFO"; 
             document.getElementById('cEmail').value = currentUser.email;
             
             renderSavedAddresses();
             
-            if(document.getElementById('cName').value === "") document.getElementById('cName').value = currentUser.displayName;
+            if(document.getElementById('cName').value === "") document.getElementById('cName').value = currentUser.displayName || '';
             document.getElementById('shippingArea').style.display = 'block'; 
         }
 
@@ -899,7 +1016,6 @@
                 return; 
             }
             
-            // Format alamat final yang rapi buat disimpen ke Firebase
             const cAddress = `${cStreet}, RT ${cRT}/RW ${cRW}, Kel. ${cVillage}, Kec. ${destSearch}, ${cCity}, Prov. ${cProv}, ${cZip}`;
             let subTotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
 
@@ -926,7 +1042,6 @@
                 
                 let originId = cart[0].originId;
                 
-                // Fallback pencarian ID asal jika ID hilang
                 if(!originId) {
                     let baseOrigin = cart[0].origin || 'JAKARTA SELATAN';
                     let cleanOrigin = baseOrigin.replace(/KABUPATEN |KAB\. |KOTA /gi, '').trim();
@@ -953,7 +1068,7 @@
                     headers: { 'Authorization': BITESHIP_KEY, 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         origin_area_id: originId,
-                        destination_area_id: destId, // Pakai ID yang sudah dipilih pembeli dari Dropdown
+                        destination_area_id: destId, 
                         couriers: formatCouriers,
                         items: [{ name: "Apparel", value: subTotal, weight: totalWeight, quantity: 1 }]
                     })
@@ -988,7 +1103,6 @@
             } catch (e) {
                 console.warn("API Biteship error/limit, falling back to simulated rates:", e);
                 
-                // 🔥 FALLBACK SYSTEM: MUNCULKAN HARGA SIMULASI JIKA SERVER BITESHIP GANGGUAN 🔥
                 let availableCouriers = (cart[0].couriers || 'JNE,J&T').split(',').map(s => s.trim());
                 let baseCost = destName.toUpperCase().includes("JAWA") || destName.toUpperCase().includes("BANDUNG") || destName.toUpperCase().includes("JAKARTA") ? 15000 : 35000;
                 if(destName.toUpperCase().includes("SUMATERA")) baseCost = 25000;
