@@ -643,42 +643,54 @@
         function renderOrdersTab() {
             const list = document.getElementById('ordersList');
             if(allOrdersData.length === 0) return list.innerHTML = '<p style="color:#aaa; text-align:center;">Belum ada pesanan.</p>';
-            
+
             list.innerHTML = allOrdersData.sort((a,b)=>b.timestamp-a.timestamp).map(o => {
-                let itemsHtml = o.items.map(i => {
+                // PENGAMAN 1: Kalau item produknya error/kosong, jangan sampai crash
+                let itemsArray = o.items || [];
+                let itemsHtml = itemsArray.map(i => {
                     let imgUrl = i.images ? i.images[0] : (i.image ? i.image : 'https://via.placeholder.com/45');
                     let supplierLinkHtml = i.link ? `<a href="${i.link}" target="_blank" style="display:inline-block; margin-top:3px; font-size:9px; background:#4ade80; color:black; padding:3px 6px; border-radius:4px; text-decoration:none; font-weight:bold;">🛒 Checkout di Supplier</a>` : '';
                     let kurirInfo = i.origin ? `<br><span style="color:#f59e0b; font-size:10px;">(Asal: ${i.origin})</span>` : '';
+                    let price = i.price || 0;
+                    let qty = i.qty || 1;
 
                     return `
                     <div class="item-row">
                         <img src="${imgUrl}" class="item-img">
                         <div style="flex:1;">
-                            <div style="font-size:12px; font-weight:bold; color:#fff;">${i.name} ${kurirInfo}</div>
-                            <div style="font-size:10px; color:#888;">${i.qty}x @ Rp ${i.price.toLocaleString('id-ID')} <br> ${supplierLinkHtml}</div>
+                            <div style="font-size:12px; font-weight:bold; color:#fff;">${i.name || 'Produk'} ${kurirInfo}</div>
+                            <div style="font-size:10px; color:#888;">${qty}x @ Rp ${price.toLocaleString('id-ID')} <br> ${supplierLinkHtml}</div>
                         </div>
                         <div style="font-size:12px; font-weight:bold; color:#4ade80;">
-                            Rp ${(i.price * i.qty).toLocaleString('id-ID')}
+                            Rp ${(price * qty).toLocaleString('id-ID')}
                         </div>
                     </div>`;
                 }).join('');
 
-                let ongkirHtml = o.shippingCost ? `<div style="display:flex; justify-content:space-between; padding:8px 12px; background:#111; border-top:1px dashed #333; align-items:center;"><span style="font-size:11px; color:#888;">Ongkos Kirim (${o.courier || '-'})</span><b style="color:#fff; font-size:13px;">Rp ${o.shippingCost.toLocaleString('id-ID')}</b></div>` : '';
+                let shipCost = o.shippingCost || 0;
+                let ongkirHtml = shipCost ? `<div style="display:flex; justify-content:space-between; padding:8px 12px; background:#111; border-top:1px dashed #333; align-items:center;"><span style="font-size:11px; color:#888;">Ongkos Kirim (${o.courier || '-'})</span><b style="color:#fff; font-size:13px;">Rp ${shipCost.toLocaleString('id-ID')}</b></div>` : '';
+
+                // PENGAMAN 2: Kalau data alamat pembelinya kosong (karena bekas testing error)
+                let custName = o.customer && o.customer.name ? o.customer.name : 'Data Kosong/Test';
+                let custPhone = o.customer && o.customer.phone ? o.customer.phone : '-';
+                let custEmail = o.customer && o.customer.email ? o.customer.email : '-';
+                let custAddress = o.customer && o.customer.address ? o.customer.address : '-';
+                let totalStr = (o.total || 0).toLocaleString('id-ID');
 
                 return `
                 <div class="order-card">
                     <div class="order-header">
                         <div>
-                            <span style="color:#3b82f6; font-size:14px;">${o.invoice_no}</span><br>
-                            <span style="font-size:10px; color:#888; font-weight:normal;">📅 ${o.date}</span>
+                            <span style="color:#3b82f6; font-size:14px;">${o.invoice_no || 'INV-XXX'}</span><br>
+                            <span style="font-size:10px; color:#888; font-weight:normal;">📅 ${o.date || '-'}</span>
                         </div>
-                        <div><span class="badge-status status-${o.status}">${o.status}</span></div>
+                        <div><span class="badge-status status-${o.status || 'UNPAID'}">${o.status || 'UNPAID'}</span></div>
                     </div>
                     
                     <div style="margin-bottom:15px; color:#ccc; font-size:12px; line-height:1.6;">
-                        <b style="color:white;">Penerima:</b> ${o.customer.name} (WA: ${o.customer.phone})<br>
-                        <b style="color:white;">Email:</b> ${o.customer.email}<br>
-                        <b style="color:white;">Alamat:</b> ${o.customer.address}
+                        <b style="color:white;">Penerima:</b> ${custName} (WA: ${custPhone})<br>
+                        <b style="color:white;">Email:</b> ${custEmail}<br>
+                        <b style="color:white;">Alamat:</b> ${custAddress}
                     </div>
                     
                     <div style="background:#0a0a0a; border-radius:8px; border: 1px solid #222; overflow:hidden; margin-bottom:15px;">
@@ -687,7 +699,7 @@
                         ${ongkirHtml}
                         <div style="display:flex; justify-content:space-between; padding:12px; background:#111; border-top:1px dashed #333; align-items:center;">
                             <span style="font-size:11px; color:#888;">Grand Total</span>
-                            <b style="color:#4ade80; font-size:15px;">Rp ${o.total.toLocaleString('id-ID')}</b>
+                            <b style="color:#4ade80; font-size:15px;">Rp ${totalStr}</b>
                         </div>
                     </div>
                     
@@ -704,6 +716,7 @@
                 </div>`;
             }).join('');
         }
+
         
         function updateStatus(orderId, newStatus) { db.ref('orders/' + orderId).update({ status: newStatus }); }
 
