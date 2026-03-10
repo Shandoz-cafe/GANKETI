@@ -992,13 +992,20 @@
             el.style.borderColor = '#4ade80';
         }
 
-        function simulateXenditSuccess() {
+        async function simulateXenditSuccess() {
             if(!pendingOrderData) return;
-            
+            const btn = document.getElementById('btnCheckout'); 
+            btn.innerText = "MEMBUAT TAGIHAN XENDIT... ⏳"; 
+            btn.disabled = true;
+
             const invoiceNumber = "INV-GKT-" + Date.now(); 
             const orderDate = new Date().toLocaleString('id-ID');
 
-            db.ref('orders').push({ 
+            // 1. Simpan ke Firebase dengan status "UNPAID" dulu
+            const newOrderRef = db.ref('orders').push(); 
+            const firebaseOrderId = newOrderRef.key; 
+
+            await newOrderRef.set({ 
                 invoice_no: invoiceNumber, 
                 date: orderDate, 
                 customer: pendingOrderData.customer, 
@@ -1006,22 +1013,43 @@
                 shippingCost: pendingOrderData.shippingCost, 
                 courier: pendingOrderData.courier,           
                 total: pendingOrderData.total, 
-                status: "PAID", 
+                status: "UNPAID", 
                 timestamp: Date.now() 
-            }); 
-            
-            pendingOrderData.items.forEach(item => { const prodRef = db.ref('products/' + item.id); prodRef.once('value').then(snap => { const currentData = snap.val(); if(currentData) { prodRef.update({ stock: Math.max(0, (currentData.stock || 0) - item.qty) }); }});});
-            
-            let itemsHtml = pendingOrderData.items.map(i => `${i.qty}x ${i.name.substring(0,20)} <span style="float:right;">${(i.price * i.qty).toLocaleString('id-ID')}</span>`).join('<br>');
-            let ongkirHtml = `<div style="font-size:12px; margin-top:5px; color:#555;">Ongkos Kirim (${pendingOrderData.courier}) <span style="float:right;">Rp ${pendingOrderData.shippingCost.toLocaleString('id-ID')}</span></div>`;
+            });
 
-            document.getElementById('invoicePaper').innerHTML = `<div style="text-align:center; font-weight:bold; font-size:16px; margin-bottom:10px; border-bottom:2px dashed #000; padding-bottom:10px;">GANKETI OFFICIAL</div>INV NO : <b style="color:blue;">${invoiceNumber}</b><br>DATE   : ${orderDate}<br>NAME   : ${pendingOrderData.customer.name}<br>STATUS : <b style="color:#4ade80;">PAID</b><hr style="border-top:1px dashed #000; margin:10px 0;">${itemsHtml}${ongkirHtml}<hr style="border-top:1px dashed #000; margin:10px 0;"><b style="font-size: 14px;">GRAND TOTAL : <span style="float:right;">Rp ${pendingOrderData.total.toLocaleString('id-ID')}</span></b><div style="margin-top:20px; text-align:center; font-size:10px; color:#666;">Payment Verified by System.</div>`;
-            
-            cart = []; localStorage.setItem('ganketiCart', JSON.stringify(cart)); updateCartCount(); 
-            pendingOrderData = null; 
-            
-            hideAllAreas(); document.getElementById('modalTitle').innerText = "ORDER CONFIRMED"; document.getElementById('invoiceArea').style.display = 'block'; showToast("Payment Successful! 🎉", "success");
+            // 2. Minta Link Pembayaran ke Vercel
+            try {
+                const res = await fetch('https://ganketi-kasir.vercel.app/api/checkout', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        order_id: firebaseOrderId, 
+                        amount: pendingOrderData.total,
+                        customer_name: pendingOrderData.customer.name,
+                        customer_email: pendingOrderData.customer.email || 'ganketi@gmail.com'
+                    })
+                });
+                
+                const xenditData = await res.json();
+                
+                if(xenditData.invoice_url) {
+                    // Kosongkan keranjang setelah invoice dibuat
+                    cart = []; 
+                    localStorage.setItem('ganketiCart', JSON.stringify(cart)); 
+                    updateCartCount();
+                    
+                    // LEMPAR KE XENDIT
+                    window.location.href = xenditData.invoice_url; 
+                } else {
+                    alert("Gagal membuat tagihan Xendit.");
+                    btn.disabled = false; btn.innerText = "BUAT PESANAN SEKARANG";
+                }
+            } catch(e) {
+                alert("Gagal terhubung ke server pembayaran.");
+                btn.disabled = false; btn.innerText = "BUAT PESANAN SEKARANG";
+            }
         }
+
 
         function openMyOrders() {
             if(!currentUser) { showToast("Please Sign In first!", 'warning'); setTimeout(() => handleAuth(), 1500); return; }
