@@ -30,8 +30,6 @@
         .head-top { display: grid; grid-template-columns: auto 1fr auto; align-items: center; padding: 12px 20px; gap: 15px;} 
         .hamburger-btn { background: none; border: none; color: var(--primary); font-size: 24px; cursor: pointer; display: flex; align-items: center; padding: 0; margin: 0;}
         .logo { cursor: pointer; user-select: none; touch-action: manipulation; -webkit-tap-highlight-color: transparent; display: flex; justify-content: center; align-items: center;}
-        
-        /* 🔥 LOGO TRANSPARANT CSS MAGIC 🔥 */
         .logo img { max-height: 35px; width: auto; object-fit: contain; mix-blend-mode: screen; } 
         
         .nav-icons { display: flex; gap: 15px; align-items: center; justify-content: flex-end;}
@@ -42,7 +40,7 @@
         .search-box { width: 100%; padding: 10px 15px; background: #1a1a1a; border: 1px solid #333; border-radius: 4px; color: white; outline: none; font-family: 'Inter'; font-size: 13px; }
         .search-box:focus { border-color: var(--primary); }
 
-        /* LACI SAMPING (SIDEBAR MENU) - DARK & TRANSPARENT */
+        /* LACI SAMPING (SIDEBAR MENU) */
         .sidebar-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 999; display: none; backdrop-filter: blur(2px); }
         .sidebar { position: fixed; top: 0; left: -100%; width: 85%; max-width: 320px; height: 100%; background: rgba(18, 18, 18, 0.95); backdrop-filter: blur(10px); z-index: 1000; transition: 0.3s ease-in-out; display: flex; flex-direction: column; overflow-y: auto; border-right: 1px solid #333;}
         .sidebar.active { left: 0; }
@@ -84,7 +82,7 @@
         .dot { width: 6px; height: 6px; border-radius: 50%; background: rgba(255,255,255,0.3); transition: 0.3s; cursor: pointer; }
         .dot.active { background: white; width: 18px; border-radius: 4px; }
 
-        /* KOTAK UNGGULAN (FEATURED CARDS) */
+        /* KOTAK UNGGULAN */
         .featured-section { padding: 20px 20px 10px 20px; }
         .featured-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
         .f-card { position: relative; width: 100%; aspect-ratio: 3/4; border-radius: 4px; overflow: hidden; cursor: pointer; background: #222; }
@@ -135,8 +133,8 @@
         .stock-warn { font-size: 12px; font-weight: 600; padding: 8px; background: rgba(245, 158, 11, 0.1); color: #f59e0b; border-radius: 6px; margin-bottom: 15px; border: 1px solid rgba(245, 158, 11, 0.2);}
         
         .form-group { margin-bottom: 15px; }
-        .form-group label { display: block; font-size: 12px; color: var(--text-dim); margin-bottom: 5px; font-weight: 500;}
-        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px; background: #0a0a0a; border: 1px solid var(--border); color: white; font-family: 'Inter', sans-serif; font-size: 14px; border-radius: 8px; box-sizing: border-box; outline: none;}
+        .form-group label { display: block; font-size: 11px; color: #aaa; margin-bottom: 5px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;}
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px; background: #0a0a0a; border: 1px solid var(--border); color: white; font-family: 'Inter', sans-serif; font-size: 13px; border-radius: 8px; box-sizing: border-box; outline: none;}
         .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--primary); }
         .form-group input:disabled, .form-group input:read-only { background: #1a1a1a; color: #555; cursor: not-allowed; border-color: #222; }
         
@@ -329,29 +327,49 @@
                 </div>
 
                 <div class="form-group"><label>Email</label><input type="email" id="cEmail" readonly></div>
-                <div class="form-group"><label>Full Name</label><input type="text" id="cName" placeholder="Full Name"></div>
-                <div class="form-group"><label>WhatsApp Number</label><input type="number" id="cPhone" placeholder="08..."></div>
+                <div class="form-group"><label>Nama Lengkap / Penerima</label><input type="text" id="cName" placeholder="Full Name"></div>
+                <div class="form-group"><label>Nomor WhatsApp</label><input type="number" id="cPhone" placeholder="08..."></div>
                 
                 <div style="border-top: 1px solid var(--border); margin: 20px 0; padding-top: 15px;"></div>
                 <h3 style="font-size: 14px; margin-bottom: 15px; color: var(--primary);">Shipping Address</h3>
                 
-                <div class="form-group"><label>Street, Building, House No.</label><input type="text" id="cStreet" placeholder="Jl. Sudirman No. 10"></div>
-                <div style="display: flex; gap: 10px;"><div class="form-group" style="flex:1;"><label>RT</label><input type="number" id="cRT" placeholder="001"></div><div class="form-group" style="flex:1;"><label>RW</label><input type="number" id="cRW" placeholder="002"></div></div>
+                <div class="form-group">
+                    <label>Alamat Lengkap (Nama Jalan, Gedung, No. Rumah) *</label>
+                    <input type="text" id="cStreet" placeholder="Cth: Jl. Sudirman No. 10">
+                </div>
+                
+                <div style="display: flex; gap: 10px;">
+                    <div class="form-group" style="flex:1;"><label>RT *</label><input type="number" id="cRT" placeholder="001"></div>
+                    <div class="form-group" style="flex:1;"><label>RW *</label><input type="number" id="cRW" placeholder="002"></div>
+                </div>
                 
                 <div class="form-group">
-                    <label>Provinsi</label>
-                    <input type="text" id="cProv" placeholder="Cth: Jawa Barat (Opsional untuk akurasi)">
+                    <label>Provinsi *</label>
+                    <input type="text" id="cProv" placeholder="Cth: Jawa Barat">
+                </div>
+
+                <div class="form-group">
+                    <label>Kota / Kabupaten *</label>
+                    <input type="text" id="cCity" placeholder="Cth: Kota Bandung">
                 </div>
 
                 <div class="form-group" style="position:relative;">
-                    <label>Kota/Kecamatan Tujuan (Ketik & Pilih dari Dropdown!)</label>
-                    <input type="text" id="cDestSearch" placeholder="Ketik min 3 huruf (Cth: Sarijadi)..." oninput="searchBiteshipDest(this.value)" autocomplete="off">
+                    <label>Kecamatan (Ketik & Pilih dari Dropdown API Biteship!) *</label>
+                    <input type="text" id="cDestSearch" placeholder="Ketik min 3 huruf (Cth: Sukasari)..." oninput="searchBiteshipDest(this.value)" autocomplete="off">
                     <input type="hidden" id="cDestId">
                     <input type="hidden" id="cDestName">
                     <div id="cDestResults" class="autocomplete-box"></div>
                 </div>
 
-                <div class="form-group"><label>Postal Code</label><input type="number" id="cZip" placeholder="12345"></div>
+                <div class="form-group">
+                    <label>Kelurahan / Desa *</label>
+                    <input type="text" id="cVillage" placeholder="Cth: Gegerkalong">
+                </div>
+
+                <div class="form-group">
+                    <label>Kode Pos *</label>
+                    <input type="number" id="cZip" placeholder="Terisi otomatis..." readonly style="background: #111; color: #888;">
+                </div>
                 
                 <div style="margin-bottom: 20px;">
                     <label style="display:flex; align-items:center; gap:8px; font-size:12px; color:#ccc; cursor:pointer;">
@@ -409,7 +427,6 @@
                 <p style="font-size:10px; color:#666; text-align:center; margin-top:20px;">*Sistem pembayaran sedang dalam tahap integrasi.</p>
                 
                 <button class="btn-main" onclick="simulateXenditSuccess()" style="margin-top: 10px; background:#3b82f6; color:#fff;">BAYAR SEKARANG ➔</button>
-
             </div>
 
             <div id="textInfoArea" style="display:none;" class="info-content"></div>
@@ -444,7 +461,6 @@
         let selectedShippingCost = 0;
         let selectedCourierName = "";
 
-        // 🔥 KUNCI API LIVE (HURUF KECIL 'b' - SUDAH DIPERBAIKI) 🔥
         const BITESHIP_KEY = 'biteship_live.eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiR2Fua2V0aSIsInVzZXJJZCI6IjY5YWVlODYzM2NjODBhMWUzMjE3ZGJkYyIsImlhdCI6MTc3MzA3OTg3MX0.ot-KA-1HmE0xMsc7OhHeQBaDGo7KrDKU1tuS4bk5fCo';
 
         updateCartCount();
@@ -668,7 +684,7 @@
             document.getElementById('mainModal').style.display = 'flex';
         }
 
-                function openPreview(id) {
+        function openPreview(id) {
             hideAllAreas(); const p = globalProducts.find(x => x.id === id); if(!p) return;
             document.getElementById('modalTitle').innerText = 'PRODUCT DETAIL'; 
             const previewBox = document.getElementById('previewArea');
@@ -712,7 +728,6 @@
             previewBox.style.display = 'block'; document.getElementById('mainModal').style.display = 'flex';
         }
 
-
         function addToCart(id) {
             const product = globalProducts.find(p => p.id === id); 
             const selectedSize = document.getElementById('previewSize').value; 
@@ -740,7 +755,6 @@
 
             localStorage.setItem('ganketiCart', JSON.stringify(cart)); updateCartCount(); closeModal(); showToast('Added to Cart! 🛒', 'success');
         }
-
 
         function updateCartCount() { document.getElementById('cartCount').innerText = cart.reduce((sum, item) => sum + item.qty, 0); }
 
@@ -770,9 +784,12 @@
             const resultBox = document.getElementById('cDestResults');
             if(query.length < 3) { resultBox.style.display = 'none'; return; }
             
-            // Gabungkan pencarian dengan Provinsi jika diisi, supaya lebih akurat
+            // Gabungkan pencarian dengan Provinsi & Kota jika diisi, supaya lebih akurat
             let prov = document.getElementById('cProv').value.trim();
-            let fullQuery = prov ? prov + ' ' + query : query;
+            let city = document.getElementById('cCity').value.trim();
+            let fullQuery = query;
+            if(city) fullQuery = city + ' ' + fullQuery;
+            if(prov) fullQuery = prov + ' ' + fullQuery;
             
             clearTimeout(searchDestTimeout);
             searchDestTimeout = setTimeout(async () => {
@@ -799,7 +816,7 @@
         }
 
         function selectBiteshipDest(id, fullName, zip) {
-            // HANYA NAMA KOTA/KECAMATAN YANG DITAMPILKAN DI KOTAK INPUT (Biar Rapi Sesuai Request Bos)
+            // HANYA NAMA KECAMATAN YANG DITAMPILKAN DI KOTAK INPUT (Biar Rapi Sesuai Request Bos)
             let shortName = fullName.split(',')[0].trim();
             document.getElementById('cDestSearch').value = shortName; 
             
@@ -817,7 +834,7 @@
                 list.innerHTML = savedAddresses.map((adr, index) => `
                     <div class="saved-address-card" onclick="useSavedAddress(${index})">
                         <b style="color:var(--primary); font-size:14px;">${adr.name}</b> <span style="color:#888;">(${adr.phone})</span><br>
-                        ${adr.street}, RT ${adr.rt}/RW ${adr.rw}, ${adr.destName} - ${adr.zip}
+                        ${adr.street}, RT ${adr.rt}/RW ${adr.rw}, Kel. ${adr.village || '-'}, Kec. ${adr.destSearch || '-'}, ${adr.city || '-'}, ${adr.prov || '-'} - ${adr.zip}
                     </div>
                 `).join('');
             } else {
@@ -833,8 +850,11 @@
             document.getElementById('cRT').value = adr.rt || '';
             document.getElementById('cRW').value = adr.rw || '';
             document.getElementById('cProv').value = adr.prov || '';
-            // Tampilkan nama pendek di input box
-            document.getElementById('cDestSearch').value = adr.destName ? adr.destName.split(',')[0].trim() : ''; 
+            document.getElementById('cCity').value = adr.city || '';
+            document.getElementById('cVillage').value = adr.village || '';
+            
+            // Tampilkan nama pendek kecamatan di input box
+            document.getElementById('cDestSearch').value = adr.destSearch || (adr.destName ? adr.destName.split(',')[0].trim() : ''); 
             document.getElementById('cDestId').value = adr.destId || '';
             document.getElementById('cDestName').value = adr.destName || '';
             document.getElementById('cZip').value = adr.zip || '';
@@ -843,7 +863,7 @@
         }
 
         function clearAddressForm() {
-            ['cName', 'cPhone', 'cStreet', 'cRT', 'cRW', 'cProv', 'cDestSearch', 'cDestId', 'cDestName', 'cZip'].forEach(id => document.getElementById(id).value = '');
+            ['cName', 'cPhone', 'cStreet', 'cRT', 'cRW', 'cProv', 'cCity', 'cVillage', 'cDestSearch', 'cDestId', 'cDestName', 'cZip'].forEach(id => document.getElementById(id).value = '');
         }
 
         function goToShipping() { 
@@ -866,23 +886,28 @@
             const cRT = document.getElementById('cRT').value.trim(); 
             const cRW = document.getElementById('cRW').value.trim();
             const cProv = document.getElementById('cProv').value.trim();
+            const cCity = document.getElementById('cCity').value.trim();
+            const cVillage = document.getElementById('cVillage').value.trim();
             const cZip = document.getElementById('cZip').value.trim();
+            
+            const destSearch = document.getElementById('cDestSearch').value.trim();
             const destId = document.getElementById('cDestId').value;
             const destName = document.getElementById('cDestName').value;
 
-            if(!cName || !cPhone || !cStreet || !cZip || !destId) { 
-                showToast("Pastikan semua data diisi dan KOTA DIPILIH dari hasil pencarian Dropdown!", 'error'); 
+            if(!cName || !cPhone || !cStreet || !cRT || !cRW || !cProv || !cCity || !cVillage || !cZip || !destId || !destSearch) { 
+                showToast("Pastikan semua data alamat wajib diisi dan KECAMATAN DIPILIH dari hasil pencarian Dropdown!", 'error'); 
                 return; 
             }
             
+            // Format alamat final yang rapi buat disimpen ke Firebase
+            const cAddress = `${cStreet}, RT ${cRT}/RW ${cRW}, Kel. ${cVillage}, Kec. ${destSearch}, ${cCity}, Prov. ${cProv}, ${cZip}`;
+            let subTotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+
             if(document.getElementById('saveAddressCheck').checked) {
-                let newAdr = { name: cName, phone: cPhone, street: cStreet, rt: cRT, rw: cRW, prov: cProv, destName: destName, destId: destId, zip: cZip };
+                let newAdr = { name: cName, phone: cPhone, street: cStreet, rt: cRT, rw: cRW, prov: cProv, city: cCity, village: cVillage, destSearch: destSearch, destName: destName, destId: destId, zip: cZip };
                 let isDuplicate = savedAddresses.some(a => a.street === newAdr.street && a.name === newAdr.name);
                 if(!isDuplicate) { savedAddresses.push(newAdr); localStorage.setItem('ganketiAddresses', JSON.stringify(savedAddresses)); }
             }
-
-            const cAddress = `${cStreet}, RT ${cRT}/RW ${cRW}, ${destName}`;
-            let subTotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
 
             pendingOrderData = {
                 customer: { email: cEmail, name: cName, phone: cPhone, address: cAddress },
@@ -901,7 +926,7 @@
                 
                 let originId = cart[0].originId;
                 
-                // Fallback pencarian ID asal jika ID hilang (untuk produk lama yg diupload sebelum ada update ini)
+                // Fallback pencarian ID asal jika ID hilang
                 if(!originId) {
                     let baseOrigin = cart[0].origin || 'JAKARTA SELATAN';
                     let cleanOrigin = baseOrigin.replace(/KABUPATEN |KAB\. |KOTA /gi, '').trim();
@@ -1032,7 +1057,6 @@
                 return;
             }
 
-            // Bikin tombol aman walau ID-nya beda
             const btn = document.querySelector('button[onclick="simulateXenditSuccess()"]') || document.getElementById('btnCheckout');
             if(btn) {
                 btn.innerText = "MEMBUAT TAGIHAN... ⏳"; 
@@ -1043,7 +1067,6 @@
                 const invoiceNumber = "INV-GKT-" + Date.now(); 
                 const orderDate = new Date().toLocaleString('id-ID');
 
-                // 1. Simpan ke Firebase status UNPAID
                 const newOrderRef = db.ref('orders').push(); 
                 const firebaseOrderId = newOrderRef.key; 
 
@@ -1059,7 +1082,6 @@
                     timestamp: Date.now() 
                 });
 
-                // 2. Tembak ke Vercel
                 const res = await fetch('https://ganketi-kasir.vercel.app/api/checkout', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -1073,7 +1095,6 @@
                 
                 const xenditData = await res.json();
                 
-                // 3. Pindah ke Xendit
                 if(xenditData.invoice_url) {
                     cart = []; localStorage.setItem('ganketiCart', JSON.stringify(cart)); updateCartCount();
                     window.location.href = xenditData.invoice_url; 
@@ -1086,8 +1107,6 @@
                 if(btn) { btn.disabled = false; btn.innerText = "COBA LAGI"; }
             }
         }
-
-
 
         function openMyOrders() {
             if(!currentUser) { showToast("Please Sign In first!", 'warning'); setTimeout(() => handleAuth(), 1500); return; }
