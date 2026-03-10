@@ -993,32 +993,39 @@
         }
 
         async function simulateXenditSuccess() {
-            if(!pendingOrderData) return;
-            const btn = document.getElementById('btnCheckout'); 
-            btn.innerText = "MEMBUAT TAGIHAN XENDIT... ⏳"; 
-            btn.disabled = true;
+            if(!pendingOrderData) {
+                alert("Data pesanan kosong, silakan ulangi!");
+                return;
+            }
 
-            const invoiceNumber = "INV-GKT-" + Date.now(); 
-            const orderDate = new Date().toLocaleString('id-ID');
+            // Bikin tombol aman walau ID-nya beda
+            const btn = document.querySelector('button[onclick="simulateXenditSuccess()"]') || document.getElementById('btnCheckout');
+            if(btn) {
+                btn.innerText = "MEMBUAT TAGIHAN... ⏳"; 
+                btn.disabled = true;
+            }
 
-            // 1. Simpan ke Firebase dengan status "UNPAID" dulu
-            const newOrderRef = db.ref('orders').push(); 
-            const firebaseOrderId = newOrderRef.key; 
-
-            await newOrderRef.set({ 
-                invoice_no: invoiceNumber, 
-                date: orderDate, 
-                customer: pendingOrderData.customer, 
-                items: pendingOrderData.items, 
-                shippingCost: pendingOrderData.shippingCost, 
-                courier: pendingOrderData.courier,           
-                total: pendingOrderData.total, 
-                status: "UNPAID", 
-                timestamp: Date.now() 
-            });
-
-            // 2. Minta Link Pembayaran ke Vercel
             try {
+                const invoiceNumber = "INV-GKT-" + Date.now(); 
+                const orderDate = new Date().toLocaleString('id-ID');
+
+                // 1. Simpan ke Firebase status UNPAID
+                const newOrderRef = db.ref('orders').push(); 
+                const firebaseOrderId = newOrderRef.key; 
+
+                await newOrderRef.set({ 
+                    invoice_no: invoiceNumber, 
+                    date: orderDate, 
+                    customer: pendingOrderData.customer, 
+                    items: pendingOrderData.items, 
+                    shippingCost: pendingOrderData.shippingCost, 
+                    courier: pendingOrderData.courier,           
+                    total: pendingOrderData.total, 
+                    status: "UNPAID", 
+                    timestamp: Date.now() 
+                });
+
+                // 2. Tembak ke Vercel
                 const res = await fetch('https://ganketi-kasir.vercel.app/api/checkout', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -1032,23 +1039,20 @@
                 
                 const xenditData = await res.json();
                 
+                // 3. Pindah ke Xendit
                 if(xenditData.invoice_url) {
-                    // Kosongkan keranjang setelah invoice dibuat
-                    cart = []; 
-                    localStorage.setItem('ganketiCart', JSON.stringify(cart)); 
-                    updateCartCount();
-                    
-                    // LEMPAR KE XENDIT
+                    cart = []; localStorage.setItem('ganketiCart', JSON.stringify(cart)); updateCartCount();
                     window.location.href = xenditData.invoice_url; 
                 } else {
-                    alert("Gagal membuat tagihan Xendit.");
-                    btn.disabled = false; btn.innerText = "BUAT PESANAN SEKARANG";
+                    alert("Gagal dari Xendit: " + JSON.stringify(xenditData));
+                    if(btn) { btn.disabled = false; btn.innerText = "COBA LAGI"; }
                 }
             } catch(e) {
-                alert("Gagal terhubung ke server pembayaran.");
-                btn.disabled = false; btn.innerText = "BUAT PESANAN SEKARANG";
+                alert("Gagal konek ke Vercel: " + e.message);
+                if(btn) { btn.disabled = false; btn.innerText = "COBA LAGI"; }
             }
         }
+
 
 
         function openMyOrders() {
