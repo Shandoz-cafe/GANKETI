@@ -132,12 +132,9 @@
             </div>
 
             <div class="form-group">
-                <label>Kurir Pengiriman</label>
-                <div style="display:flex; gap:5px; flex-wrap:wrap;">
-                    <label><input type="checkbox" class="cat-checkbox eCourierCb" value="JNE"><span class="cat-label">JNE</span></label>
-                    <label><input type="checkbox" class="cat-checkbox eCourierCb" value="J&T"><span class="cat-label">J&T</span></label>
-                    <label><input type="checkbox" class="cat-checkbox eCourierCb" value="Sicepat"><span class="cat-label">Sicepat</span></label>
-                    <label><input type="checkbox" class="cat-checkbox eCourierCb" value="AnterAja"><span class="cat-label">AnterAja</span></label>
+                <label>Kurir Pengiriman (Tarik Data Live Biteship)</label>
+                <div id="eCourierContainer" style="display:flex; gap:5px; flex-wrap:wrap; max-height: 150px; overflow-y: auto; padding: 10px; border: 1px solid #333; border-radius: 8px; background: #0a0a0a;">
+                    <span style="color:#888; font-size:11px;">Memuat data kurir...</span>
                 </div>
             </div>
 
@@ -227,12 +224,9 @@
                 </div>
 
                 <div class="form-group">
-                    <label>Kurir Pengiriman</label>
-                    <div style="display:flex; gap:5px; flex-wrap:wrap;">
-                        <label><input type="checkbox" class="cat-checkbox pCourierCb" value="JNE"><span class="cat-label">JNE</span></label>
-                        <label><input type="checkbox" class="cat-checkbox pCourierCb" value="J&T"><span class="cat-label">J&T</span></label>
-                        <label><input type="checkbox" class="cat-checkbox pCourierCb" value="Sicepat"><span class="cat-label">Sicepat</span></label>
-                        <label><input type="checkbox" class="cat-checkbox pCourierCb" value="AnterAja"><span class="cat-label">AnterAja</span></label>
+                    <label>Kurir Pengiriman (Tarik Data Live Biteship)</label>
+                    <div id="pCourierContainer" style="display:flex; gap:5px; flex-wrap:wrap; max-height: 150px; overflow-y: auto; padding: 10px; border: 1px solid #333; border-radius: 8px; background: #0a0a0a;">
+                        <span style="color:#888; font-size:11px;">Memuat data kurir...</span>
                     </div>
                 </div>
 
@@ -412,6 +406,7 @@
             if (user && user.email === "ganketistore@gmail.com") {
                 document.getElementById('loginWorkspace').style.display = 'none'; document.getElementById('adminWorkspace').style.display = 'block'; 
                 fetchDataSuper(); 
+                loadBiteshipCouriers(); // 🔥 Eksekusi otomatis tarik kurir live!
             } else if (user) { auth.signOut(); } 
             else { document.getElementById('loginWorkspace').style.display = 'block'; document.getElementById('adminWorkspace').style.display = 'none'; }
         });
@@ -420,6 +415,32 @@
 
         const BITESHIP_KEY = 'biteship_live.eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiR2Fua2V0aSIsInVzZXJJZCI6IjY5YWVlODYzM2NjODBhMWUzMjE3ZGJkYyIsImlhdCI6MTc3MzA3OTg3MX0.ot-KA-1HmE0xMsc7OhHeQBaDGo7KrDKU1tuS4bk5fCo';
         let searchTimeout;
+
+        // 🔥 FUNGSI TARIK KURIR LIVE DARI BITESHIP 🔥
+        async function loadBiteshipCouriers() {
+            const pContainer = document.getElementById('pCourierContainer');
+            const eContainer = document.getElementById('eCourierContainer');
+            
+            try {
+                const res = await fetch('https://api.biteship.com/v1/couriers', {
+                    headers: { 'Authorization': BITESHIP_KEY }
+                });
+                const data = await res.json();
+                if(data.success && data.couriers) {
+                    // Ambil nama kurir secara unik (hilangkan duplikat reguler/yes/dll)
+                    let uniqueCouriers = [...new Set(data.couriers.map(c => c.courier_name))];
+                    uniqueCouriers.sort(); // Urutkan sesuai abjad
+                    
+                    let cbUpload = uniqueCouriers.map(c => `<label><input type="checkbox" class="cat-checkbox pCourierCb" value="${c}"><span class="cat-label" style="text-transform:uppercase;">${c}</span></label>`).join('');
+                    let cbEdit = uniqueCouriers.map(c => `<label><input type="checkbox" class="cat-checkbox eCourierCb" value="${c}"><span class="cat-label" style="text-transform:uppercase;">${c}</span></label>`).join('');
+                    
+                    if(pContainer) pContainer.innerHTML = cbUpload;
+                    if(eContainer) eContainer.innerHTML = cbEdit;
+                }
+            } catch(e) {
+                if(pContainer) pContainer.innerHTML = '<span style="color:#ef4444; font-size:11px;">Gagal memuat API kurir. Cek koneksi Anda.</span>';
+            }
+        }
 
         function searchBiteshipOrigin(query, type) {
             const resultBox = document.getElementById(type + 'OriginResults');
@@ -609,7 +630,7 @@
             });
         }
 
-        // FUNGSI RENDER MANAGE PRODUK YANG BARU (ADA SEARCH & FILTER KATEGORI)
+        // MESIN KELOLA PRODUK DENGAN PENCARIAN & FILTER KATEGORI
         function renderManageProducts() {
             const list = document.getElementById('manageProductsList');
             if(!adminProductsData || Object.keys(adminProductsData).length === 0) {
@@ -665,7 +686,7 @@
         });
 
 
-        // FUNGSI BUKA MODAL EDIT YANG UDAH DI-UPGRADE
+        // FUNGSI BUKA MODAL EDIT YANG UDAH DI-UPGRADE (TERMASUK KURIR)
         function openEditModal(id) { 
             currentEditId = id; let p = adminProductsData[id]; 
             
@@ -684,14 +705,19 @@
             document.getElementById('eLink').value = p.link || '';
             
             document.querySelectorAll('.eCatCb').forEach(cb => { cb.checked = p.category ? p.category.includes(cb.value) : false; });
-            document.querySelectorAll('.eCourierCb').forEach(cb => { cb.checked = p.couriers ? p.couriers.includes(cb.value) : false; });
+            
+            // Ceklist otomatis kurir lama yang udah kepilih (huruf besar/kecil aman)
+            document.querySelectorAll('.eCourierCb').forEach(cb => { 
+                let courArr = p.couriers ? p.couriers.toLowerCase().split(',').map(s=>s.trim()) : [];
+                cb.checked = courArr.includes(cb.value.toLowerCase()); 
+            });
             
             document.getElementById('editModal').style.display='flex'; 
         }
 
         function closeEditModal() { document.getElementById('editModal').style.display='none'; currentEditId=null; }
         
-        // FUNGSI SIMPAN EDIT PRODUK YANG UDAH DI-UPGRADE
+        // FUNGSI SIMPAN EDIT PRODUK 
         function saveEditedProduct() {
             const checkedCats = Array.from(document.querySelectorAll('.eCatCb:checked')).map(cb => cb.value);
             const checkedCouriers = Array.from(document.querySelectorAll('.eCourierCb:checked')).map(cb => cb.value);
@@ -844,7 +870,7 @@
                 </div>`;
             }).join('');
         }
-        
+
         function updateStatus(orderId, newStatus) { db.ref('orders/' + orderId).update({ status: newStatus }); }
 
         function kirimPesanan(orderId) {
