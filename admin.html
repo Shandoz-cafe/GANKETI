@@ -219,7 +219,19 @@
                 <div id="featuredCatList" style="margin-top: 15px;"></div>
             </div>
 
-            <div id="tabOrders" style="display:none;"><div id="ordersList"></div></div>
+                        <div id="tabOrders" style="display:none;">
+                <div style="display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;">
+                    <input type="text" id="searchOrder" placeholder="🔍 Cari Invoice / Nama Pembeli..." style="flex: 1; min-width: 200px; padding: 10px; border-radius: 6px; border: 1px solid #333; background: #1a1a1a; color: white;" oninput="renderOrdersTab()">
+                    <select id="filterOrderStatus" style="padding: 10px; border-radius: 6px; border: 1px solid #333; background: #1a1a1a; color: white;" onchange="renderOrdersTab()">
+                        <option value="ALL">Semua Status</option>
+                        <option value="UNPAID">Belum Bayar (UNPAID)</option>
+                        <option value="PAID">Lunas & Dikemas (PAID)</option>
+                        <option value="SHIPPED">Selesai Dikirim (SHIPPED)</option>
+                    </select>
+                </div>
+                <div id="ordersList"></div>
+            </div>
+
 
             <div id="tabFinance" style="display:none;">
                 <div class="fin-filters">
