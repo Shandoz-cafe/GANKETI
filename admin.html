@@ -652,19 +652,39 @@
             });
         }
 
-        function renderOrdersTab() {
+                function renderOrdersTab() {
             const list = document.getElementById('ordersList');
             if(allOrdersData.length === 0) return list.innerHTML = '<p style="color:#aaa; text-align:center;">Belum ada pesanan.</p>';
 
-            list.innerHTML = allOrdersData.sort((a,b)=>b.timestamp-a.timestamp).map(o => {
-                // PENGAMAN 1: Kalau item produknya error/kosong, jangan sampai crash
+            // 1. Ambil nilai dari kotak pencarian & filter
+            const searchQuery = (document.getElementById('searchOrder') ? document.getElementById('searchOrder').value.toLowerCase() : '');
+            const statusFilter = (document.getElementById('filterOrderStatus') ? document.getElementById('filterOrderStatus').value : 'ALL');
+
+            // 2. Saring (Filter) datanya dulu
+            let filteredOrders = allOrdersData.filter(o => {
+                let matchStatus = (statusFilter === 'ALL') || (o.status === statusFilter);
+                let matchSearch = true;
+                if(searchQuery) {
+                    let inv = (o.invoice_no || '').toLowerCase();
+                    let custName = (o.customer && o.customer.name ? o.customer.name : '').toLowerCase();
+                    matchSearch = inv.includes(searchQuery) || custName.includes(searchQuery);
+                }
+                return matchStatus && matchSearch;
+            });
+
+            // Kalau dicari nggak ketemu
+            if(filteredOrders.length === 0) {
+                return list.innerHTML = '<p style="color:#aaa; text-align:center; padding-top:20px;">Pesanan tidak ditemukan.</p>';
+            }
+
+            // 3. Render data yang udah disaring
+            list.innerHTML = filteredOrders.sort((a,b)=>b.timestamp-a.timestamp).map(o => {
                 let itemsArray = o.items || [];
                 let itemsHtml = itemsArray.map(i => {
                     let imgUrl = i.images ? i.images[0] : (i.image ? i.image : 'https://via.placeholder.com/45');
                     let supplierLinkHtml = i.link ? `<a href="${i.link}" target="_blank" style="display:inline-block; margin-top:3px; font-size:9px; background:#4ade80; color:black; padding:3px 6px; border-radius:4px; text-decoration:none; font-weight:bold;">🛒 Checkout di Supplier</a>` : '';
                     let kurirInfo = i.origin ? `<br><span style="color:#f59e0b; font-size:10px;">(Asal: ${i.origin})</span>` : '';
-                    let price = i.price || 0;
-                    let qty = i.qty || 1;
+                    let price = i.price || 0; let qty = i.qty || 1;
 
                     return `
                     <div class="item-row">
@@ -673,16 +693,13 @@
                             <div style="font-size:12px; font-weight:bold; color:#fff;">${i.name || 'Produk'} ${kurirInfo}</div>
                             <div style="font-size:10px; color:#888;">${qty}x @ Rp ${price.toLocaleString('id-ID')} <br> ${supplierLinkHtml}</div>
                         </div>
-                        <div style="font-size:12px; font-weight:bold; color:#4ade80;">
-                            Rp ${(price * qty).toLocaleString('id-ID')}
-                        </div>
+                        <div style="font-size:12px; font-weight:bold; color:#4ade80;">Rp ${(price * qty).toLocaleString('id-ID')}</div>
                     </div>`;
                 }).join('');
 
                 let shipCost = o.shippingCost || 0;
                 let ongkirHtml = shipCost ? `<div style="display:flex; justify-content:space-between; padding:8px 12px; background:#111; border-top:1px dashed #333; align-items:center;"><span style="font-size:11px; color:#888;">Ongkos Kirim (${o.courier || '-'})</span><b style="color:#fff; font-size:13px;">Rp ${shipCost.toLocaleString('id-ID')}</b></div>` : '';
 
-                // PENGAMAN 2: Kalau data alamat pembelinya kosong (karena bekas testing error)
                 let custName = o.customer && o.customer.name ? o.customer.name : 'Data Kosong/Test';
                 let custPhone = o.customer && o.customer.phone ? o.customer.phone : '-';
                 let custEmail = o.customer && o.customer.email ? o.customer.email : '-';
@@ -728,6 +745,7 @@
                 </div>`;
             }).join('');
         }
+
 
         
         function updateStatus(orderId, newStatus) { db.ref('orders/' + orderId).update({ status: newStatus }); }
