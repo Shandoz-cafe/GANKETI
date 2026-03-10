@@ -668,7 +668,7 @@
             document.getElementById('mainModal').style.display = 'flex';
         }
 
-        function openPreview(id) {
+                function openPreview(id) {
             hideAllAreas(); const p = globalProducts.find(x => x.id === id); if(!p) return;
             document.getElementById('modalTitle').innerText = 'PRODUCT DETAIL'; 
             const previewBox = document.getElementById('previewArea');
@@ -677,29 +677,61 @@
             let sliderHtml = `<div class="preview-slider">`; imgArray.forEach(img => { sliderHtml += `<img src="${img}" style="${isHabis ? 'filter: grayscale(100%); opacity: 0.5;' : ''}">`; }); sliderHtml += `</div>`;
             if(imgArray.length > 1) sliderHtml += `<div style="text-align:center; font-size:10px; color:var(--text-dim); margin-top:-10px; margin-bottom:15px;">⟵ Swipe Image ⟶</div>`;
             
-            let isClothing = p.category ? (p.category.toLowerCase().includes('accessories') === false && p.category.toLowerCase().includes('topi') === false) : true;
-            let sizeHtml = isClothing ? `<div class="form-group"><label>Select Size</label><select id="previewSize"><option value="S">Size: S</option><option value="M" selected>Size: M</option><option value="L">Size: L</option><option value="XL">Size: XL</option><option value="XXL">Size: XXL</option></select></div>` : `<input type="hidden" id="previewSize" value="All Size"><div style="font-size:12px; color:var(--text-dim); margin-bottom:15px;">Size: All Size</div>`;
+            // Generate Dropdown Ukuran Dinamis
+            let sizesArr = p.sizes ? p.sizes.split(',').map(s => s.trim()) : ['All Size'];
+            let sizeOptions = sizesArr.map(s => `<option value="${s}">${s}</option>`).join('');
+            let sizeHtml = `<div class="form-group"><label>Pilih Ukuran / Varian</label><select id="previewSize">${sizeOptions}</select></div>`;
             
+            // Generate Input Min/Max Qty
+            let unit = p.unit || 'pcs';
+            let minQty = p.minOrder ? parseInt(p.minOrder) : 1;
+            let maxQty = p.maxOrder && p.maxOrder < 9999 ? parseInt(p.maxOrder) : p.stock;
+            if(maxQty > p.stock) maxQty = p.stock; // Mentok di stok gudang
+
+            let qtyHtml = `<div style="display:flex; gap:10px; margin-bottom:15px;">
+                <div class="form-group" style="flex:1;">
+                    <label>Jumlah (${unit})</label>
+                    <input type="number" id="previewQty" value="${minQty}" min="${minQty}" max="${maxQty}" style="width:100%; font-weight:bold; font-size:16px;">
+                </div>
+                <div style="flex:1; align-self:center; font-size:10px; color:#888;">
+                    Min Order: ${minQty} ${unit} <br> Max Order: ${maxQty} ${unit}
+                </div>
+            </div>`;
+
             let descHtml = '';
             if(p.desc && p.desc.trim() !== '') {
                 let formattedDesc = p.desc.replace(/\n/g, '<br>');
-                descHtml = `<div class="product-desc-box"><div class="product-desc-title">Description Details</div>${formattedDesc}</div>`;
+                descHtml = `<div class="product-desc-box"><div class="product-desc-title">Deskripsi Detail</div>${formattedDesc}</div>`;
             }
 
-            let stockHtml = isHabis ? `<div class="stock-warn" style="color:#ef4444; border-color:rgba(239,68,68,0.2); background:rgba(239,68,68,0.1);">Out of Stock!</div>` : `<div class="stock-warn">🔥 Only ${p.stock} items left in stock.</div>`;
-            let btnHtml = isHabis ? `<button class="btn-main" disabled>SOLD OUT</button>` : `<button class="btn-main" style="background:#f59e0b; color:#000;" onclick="addToCart('${p.id}')">ADD TO CART - Rp ${p.price.toLocaleString('id-ID')}</button>`;
+            let stockHtml = isHabis ? `<div class="stock-warn" style="color:#ef4444; border-color:rgba(239,68,68,0.2); background:rgba(239,68,68,0.1);">Out of Stock!</div>` : `<div class="stock-warn">🔥 Sisa ${p.stock} ${unit} lagi di gudang!</div>`;
+            let btnHtml = isHabis ? `<button class="btn-main" disabled>SOLD OUT</button>` : `<button class="btn-main" style="background:#f59e0b; color:#000;" onclick="addToCart('${p.id}')">ADD TO CART</button>`;
             let priceHtml = p.originalPrice ? `<span style="font-size:12px; text-decoration:line-through; color:#ef4444; margin-right:8px; font-family:'Inter';">Rp ${p.originalPrice.toLocaleString('id-ID')}</span>Rp ${p.price.toLocaleString('id-ID')}` : `Rp ${p.price.toLocaleString('id-ID')}`;
             
-            previewBox.innerHTML = `${sliderHtml}<h3 style="font-size: 18px; color: white; margin-bottom: 5px; line-height: 1.3;">${p.name}</h3><p style="font-size: 16px; font-weight: bold; color: var(--primary); margin-bottom: 15px; font-family: 'Oswald';">${priceHtml}</p>${descHtml}${stockHtml}${sizeHtml}${btnHtml}`;
+            previewBox.innerHTML = `${sliderHtml}<h3 style="font-size: 18px; color: white; margin-bottom: 5px; line-height: 1.3;">${p.name}</h3><p style="font-size: 16px; font-weight: bold; color: var(--primary); margin-bottom: 15px; font-family: 'Oswald';">${priceHtml} <span style="font-size:12px; font-weight:normal; color:#888; font-family:'Inter';">/ ${unit}</span></p>${descHtml}${stockHtml}${sizeHtml}${qtyHtml}${btnHtml}`;
             previewBox.style.display = 'block'; document.getElementById('mainModal').style.display = 'flex';
         }
 
+
         function addToCart(id) {
-            const product = globalProducts.find(p => p.id === id); const selectedSize = document.getElementById('previewSize').value; const cartItemId = id + '-' + selectedSize;
-            const totalQtyInCart = cart.filter(c => c.id === id).reduce((sum, item) => sum + item.qty, 0);
-            if (totalQtyInCart + 1 > product.stock) { showToast(`Stock limit reached.`, 'warning'); return; }
+            const product = globalProducts.find(p => p.id === id); 
+            const selectedSize = document.getElementById('previewSize').value; 
+            const inputQty = parseInt(document.getElementById('previewQty').value);
+
+            let minQty = product.minOrder ? parseInt(product.minOrder) : 1;
+            let maxQty = product.maxOrder && product.maxOrder < 9999 ? parseInt(product.maxOrder) : product.stock;
+            if(maxQty > product.stock) maxQty = product.stock;
+
+            if (isNaN(inputQty) || inputQty < minQty) { showToast(`Minimal order adalah ${minQty} ${product.unit || 'pcs'}`, 'warning'); return; }
+            if (inputQty > maxQty) { showToast(`Maksimal order adalah ${maxQty} ${product.unit || 'pcs'}`, 'warning'); return; }
+
+            const cartItemId = id + '-' + selectedSize;
             const existing = cart.find(c => c.cartItemId === cartItemId);
-            if(existing) { existing.qty += 1; } else { cart.push({ ...product, cartItemId: cartItemId, name: `${product.name} (${selectedSize})`, qty: 1 }); }
+            
+            let totalRequested = existing ? existing.qty + inputQty : inputQty;
+            if (totalRequested > maxQty) { showToast(`Total di keranjang melebihi batas maksimal / stok!`, 'warning'); return; }
+
+            if(existing) { existing.qty += inputQty; } else { cart.push({ ...product, cartItemId: cartItemId, name: `${product.name} (${selectedSize})`, qty: inputQty }); }
             
             let cartItemIndex = cart.findIndex(c => c.cartItemId === cartItemId);
             cart[cartItemIndex].origin = product.origin || 'JAKARTA SELATAN'; 
@@ -708,6 +740,7 @@
 
             localStorage.setItem('ganketiCart', JSON.stringify(cart)); updateCartCount(); closeModal(); showToast('Added to Cart! 🛒', 'success');
         }
+
 
         function updateCartCount() { document.getElementById('cartCount').innerText = cart.reduce((sum, item) => sum + item.qty, 0); }
 
