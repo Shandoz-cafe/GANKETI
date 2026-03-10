@@ -100,6 +100,11 @@
                 </div>
             </div>
 
+            <div class="form-group">
+                <label>Pilihan Warna (Pisahkan dgn koma)</label>
+                <input type="text" id="eColors" placeholder="Cth: Hitam, Putih, Navy">
+            </div>
+
             <div style="display: flex; gap: 10px;">
                 <div class="form-group" style="flex:1;">
                     <label>Min. Order</label>
@@ -190,6 +195,11 @@
                         <label>Ukuran (Pisahkan dgn koma)</label>
                         <input type="text" id="pSizes" placeholder="Cth: 39, 40, 41 atau S, M, L, XL">
                     </div>
+                </div>
+
+                <div class="form-group">
+                    <label>Pilihan Warna (Pisahkan dgn koma)</label>
+                    <input type="text" id="pColors" placeholder="Cth: Hitam, Putih, Navy (Kosongkan jika hanya 1 warna)">
                 </div>
 
                 <div style="display: flex; gap: 10px;">
@@ -406,7 +416,7 @@
             if (user && user.email === "ganketistore@gmail.com") {
                 document.getElementById('loginWorkspace').style.display = 'none'; document.getElementById('adminWorkspace').style.display = 'block'; 
                 fetchDataSuper(); 
-                loadBiteshipCouriers(); // 🔥 Eksekusi otomatis tarik kurir live!
+                loadBiteshipCouriers(); 
             } else if (user) { auth.signOut(); } 
             else { document.getElementById('loginWorkspace').style.display = 'block'; document.getElementById('adminWorkspace').style.display = 'none'; }
         });
@@ -416,7 +426,6 @@
         const BITESHIP_KEY = 'biteship_live.eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiR2Fua2V0aSIsInVzZXJJZCI6IjY5YWVlODYzM2NjODBhMWUzMjE3ZGJkYyIsImlhdCI6MTc3MzA3OTg3MX0.ot-KA-1HmE0xMsc7OhHeQBaDGo7KrDKU1tuS4bk5fCo';
         let searchTimeout;
 
-        // 🔥 FUNGSI TARIK KURIR LIVE DARI BITESHIP 🔥
         async function loadBiteshipCouriers() {
             const pContainer = document.getElementById('pCourierContainer');
             const eContainer = document.getElementById('eCourierContainer');
@@ -427,9 +436,8 @@
                 });
                 const data = await res.json();
                 if(data.success && data.couriers) {
-                    // Ambil nama kurir secara unik (hilangkan duplikat reguler/yes/dll)
                     let uniqueCouriers = [...new Set(data.couriers.map(c => c.courier_name))];
-                    uniqueCouriers.sort(); // Urutkan sesuai abjad
+                    uniqueCouriers.sort(); 
                     
                     let cbUpload = uniqueCouriers.map(c => `<label><input type="checkbox" class="cat-checkbox pCourierCb" value="${c}"><span class="cat-label" style="text-transform:uppercase;">${c}</span></label>`).join('');
                     let cbEdit = uniqueCouriers.map(c => `<label><input type="checkbox" class="cat-checkbox eCourierCb" value="${c}"><span class="cat-label" style="text-transform:uppercase;">${c}</span></label>`).join('');
@@ -598,11 +606,13 @@
             }).join('');
         });
 
+        // 🔥 FUNGSI UPLOAD YANG UDAH ADA WARNA 🔥
         function uploadProduct() { 
             const name = document.getElementById('pName').value; 
             const desc = document.getElementById('pDesc').value.trim();
             const unit = document.getElementById('pUnit').value;
             const sizes = document.getElementById('pSizes').value.trim() || 'All Size';
+            const colors = document.getElementById('pColors').value.trim() || 'Default';
             const minOrder = document.getElementById('pMinOrder').value || 1;
             const maxOrder = document.getElementById('pMaxOrder').value || 9999;
             const cost = document.getElementById('pCost').value; const price = document.getElementById('pPrice').value; const stock = document.getElementById('pStock').value; const orig = document.getElementById('pOriginalPrice').value; const files = document.getElementById('pImages').files;
@@ -618,19 +628,18 @@
             document.getElementById('statusMessage').innerHTML = "<span style='color:white;'>Mengunggah...</span>";
             const readFiles = Array.from(files).map(file => new Promise(resolve => { const reader = new FileReader(); reader.onload = e => resolve(e.target.result); reader.readAsDataURL(file); }));
             Promise.all(readFiles).then(imgs => {
-                let data = { name, desc, unit, sizes, minOrder: parseInt(minOrder), maxOrder: parseInt(maxOrder), origin, originId, couriers: checkedCouriers, category: checkedCats.join(', '), cost: parseInt(cost), price: parseInt(price), stock: parseInt(stock), images: imgs, timestamp: Date.now(), isPopular: false };
+                let data = { name, desc, unit, sizes, colors, minOrder: parseInt(minOrder), maxOrder: parseInt(maxOrder), origin, originId, couriers: checkedCouriers, category: checkedCats.join(', '), cost: parseInt(cost), price: parseInt(price), stock: parseInt(stock), images: imgs, timestamp: Date.now(), isPopular: false };
                 if(orig) data.originalPrice = parseInt(orig); if(link) data.link = link; 
                 
                 db.ref('products').push(data).then(() => { 
                     document.getElementById('statusMessage').innerHTML = "<span style='color:#4ade80;'>✅ Upload sukses!</span>"; 
-                    ['pName','pDesc','pSizes','pMinOrder','pMaxOrder','pOrigin','pOriginId','pCost','pPrice','pStock','pOriginalPrice','pLink','pImages'].forEach(id=>document.getElementById(id).value=''); 
+                    ['pName','pDesc','pSizes','pColors','pMinOrder','pMaxOrder','pOrigin','pOriginId','pCost','pPrice','pStock','pOriginalPrice','pLink','pImages'].forEach(id=>document.getElementById(id).value=''); 
                     document.querySelectorAll('.pCatCb, .pCourierCb').forEach(cb => cb.checked = false); 
                     setTimeout(() => { document.getElementById('statusMessage').innerHTML = ""; }, 3000);
                 });
             });
         }
 
-        // MESIN KELOLA PRODUK DENGAN PENCARIAN & FILTER KATEGORI
         function renderManageProducts() {
             const list = document.getElementById('manageProductsList');
             if(!adminProductsData || Object.keys(adminProductsData).length === 0) {
@@ -686,7 +695,6 @@
         });
 
 
-        // FUNGSI BUKA MODAL EDIT YANG UDAH DI-UPGRADE (TERMASUK KURIR)
         function openEditModal(id) { 
             currentEditId = id; let p = adminProductsData[id]; 
             
@@ -694,6 +702,7 @@
             document.getElementById('eDesc').value = p.desc || '';
             document.getElementById('eUnit').value = p.unit || 'pcs';
             document.getElementById('eSizes').value = p.sizes || 'All Size';
+            document.getElementById('eColors').value = p.colors || ''; // Edit warna
             document.getElementById('eMinOrder').value = p.minOrder || '';
             document.getElementById('eMaxOrder').value = p.maxOrder || '';
             document.getElementById('eCost').value = p.cost || '';
@@ -706,7 +715,6 @@
             
             document.querySelectorAll('.eCatCb').forEach(cb => { cb.checked = p.category ? p.category.includes(cb.value) : false; });
             
-            // Ceklist otomatis kurir lama yang udah kepilih (huruf besar/kecil aman)
             document.querySelectorAll('.eCourierCb').forEach(cb => { 
                 let courArr = p.couriers ? p.couriers.toLowerCase().split(',').map(s=>s.trim()) : [];
                 cb.checked = courArr.includes(cb.value.toLowerCase()); 
@@ -717,7 +725,6 @@
 
         function closeEditModal() { document.getElementById('editModal').style.display='none'; currentEditId=null; }
         
-        // FUNGSI SIMPAN EDIT PRODUK 
         function saveEditedProduct() {
             const checkedCats = Array.from(document.querySelectorAll('.eCatCb:checked')).map(cb => cb.value);
             const checkedCouriers = Array.from(document.querySelectorAll('.eCourierCb:checked')).map(cb => cb.value);
@@ -736,6 +743,7 @@
                 desc: document.getElementById('eDesc').value.trim(), 
                 unit: document.getElementById('eUnit').value,
                 sizes: document.getElementById('eSizes').value.trim() || 'All Size',
+                colors: document.getElementById('eColors').value.trim() || 'Default',
                 minOrder: parseInt(document.getElementById('eMinOrder').value) || 1,
                 maxOrder: parseInt(document.getElementById('eMaxOrder').value) || 9999,
                 origin: originStr, 
