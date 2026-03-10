@@ -84,6 +84,33 @@
             <div class="modal-header"><h3 style="margin:0; font-size: 16px;">✏️ Edit Produk</h3><span style="font-size:20px; cursor:pointer; color:#ef4444;" onclick="closeEditModal()">×</span></div>
             <div class="form-group"><label>Nama Produk</label><input type="text" id="eName"></div>
             
+            <div style="display: flex; gap: 10px;">
+                <div class="form-group" style="flex:1;">
+                    <label>Satuan</label>
+                    <select id="eUnit">
+                        <option value="pcs">Pcs</option>
+                        <option value="pasang">Pasang</option>
+                        <option value="gram">Gram</option>
+                        <option value="set">Set</option>
+                    </select>
+                </div>
+                <div class="form-group" style="flex:2;">
+                    <label>Ukuran (Pisahkan dgn koma)</label>
+                    <input type="text" id="eSizes" placeholder="Cth: 39, 40, 41 atau S, M, L, XL">
+                </div>
+            </div>
+
+            <div style="display: flex; gap: 10px;">
+                <div class="form-group" style="flex:1;">
+                    <label>Min. Order</label>
+                    <input type="number" id="eMinOrder" placeholder="1">
+                </div>
+                <div class="form-group" style="flex:1;">
+                    <label>Max. Order</label>
+                    <input type="number" id="eMaxOrder" placeholder="Kosong = Max Stok">
+                </div>
+            </div>
+
             <div class="form-group">
                 <label>Deskripsi Produk</label>
                 <textarea id="eDesc" rows="4" placeholder="Cth: Bahan Katun Denim tebal..."></textarea>
@@ -215,7 +242,15 @@
                 <div id="statusMessage" style="text-align:center; margin-top:15px; font-size:13px; font-weight: 600;"></div>
             </div>
 
-            <div id="tabManage" style="display:none;"><div id="manageProductsList"></div></div>
+            <div id="tabManage" style="display:none;">
+                <div style="display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;">
+                    <input type="text" id="searchManage" placeholder="🔍 Cari Nama Produk..." style="flex: 1; min-width: 200px; padding: 10px; border-radius: 6px; border: 1px solid #333; background: #1a1a1a; color: white;" oninput="renderManageProducts()">
+                    <select id="filterManageCat" style="padding: 10px; border-radius: 6px; border: 1px solid #333; background: #1a1a1a; color: white;" onchange="renderManageProducts()">
+                        <option value="ALL">Semua Kategori</option>
+                    </select>
+                </div>
+                <div id="manageProductsList"></div>
+            </div>
 
             <div id="tabDesign" style="display:none;">
                 <h3 style="font-size: 14px; margin-bottom: 15px; border-bottom: 1px solid #333; padding-bottom: 5px;">1. Promo Banner (Slide Otomatis)</h3>
@@ -370,7 +405,7 @@
                 document.getElementById('tab' + t.charAt(0).toUpperCase() + t.slice(1) + 'Btn').className = tabName === t ? 'tab-btn active' : 'tab-btn';
             });
             if(tabName === 'finance') { setFinanceFilter('hari'); }
-            if(tabName === 'manage') loadManageProducts();
+            if(tabName === 'manage') renderManageProducts();
         }
 
         auth.onAuthStateChanged(user => {
@@ -427,12 +462,14 @@
             const eCat = document.getElementById('eCategoryContainer'); 
             const bList = document.getElementById('categoryBubbleList');
             const fcCat = document.getElementById('fcCategoryContainer'); 
+            const filterManageCat = document.getElementById('filterManageCat');
             
             if(!data) {
                 currentCategoriesData = [];
                 if(bList) bList.innerHTML = '<p style="color:#888; font-size:11px;">Belum ada kategori.</p>';
                 let emptyMsg = '<span style="color:#ef4444;">Bikin Kategori di tab TAMPILAN dulu!</span>';
                 if(pCat) pCat.innerHTML = emptyMsg; if(eCat) eCat.innerHTML = emptyMsg; if(fcCat) fcCat.innerHTML = emptyMsg;
+                if(filterManageCat) filterManageCat.innerHTML = '<option value="ALL">Semua Kategori</option>';
                 return;
             }
 
@@ -462,6 +499,10 @@
             if(pCat) pCat.innerHTML = cbHtmlUpload; 
             if(eCat) eCat.innerHTML = cbHtmlEdit;
             if(fcCat) fcCat.innerHTML = cbHtmlFc;
+
+            if(filterManageCat) {
+                filterManageCat.innerHTML = '<option value="ALL">Semua Kategori</option>' + currentCategoriesData.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
+            }
         });
 
         function moveCategory(index, direction) {
@@ -568,46 +609,79 @@
             });
         }
 
-        function loadManageProducts() {
-            db.ref('products').on('value', snap => {
-                const data = snap.val(); adminProductsData = data || {}; const list = document.getElementById('manageProductsList');
-                if(!data) return list.innerHTML = '<p style="color:#aaa; text-align:center;">Belum ada produk.</p>';
-                list.innerHTML = Object.keys(data).sort((a,b)=>data[b].timestamp - data[a].timestamp).map(k => {
-                    let p = data[k]; 
-                    let linkSupplierHtml = p.link ? `<a href="${p.link}" target="_blank" style="display:inline-block; margin-top:5px; font-size:10px; background:#4285F4; color:white; padding:3px 8px; border-radius:4px; text-decoration:none;">🔗 Cek Supplier</a>` : '';
-                    let originHtml = p.origin ? `<span style="font-size:9px; color:#f59e0b;">📍 ${p.origin} | 🚚 ${p.couriers || '-'}</span><br>` : '';
+        // FUNGSI RENDER MANAGE PRODUK YANG BARU (ADA SEARCH & FILTER KATEGORI)
+        function renderManageProducts() {
+            const list = document.getElementById('manageProductsList');
+            if(!adminProductsData || Object.keys(adminProductsData).length === 0) {
+                return list.innerHTML = '<p style="color:#aaa; text-align:center;">Belum ada produk.</p>';
+            }
 
-                    return `<div style="background:#1a1a1a; padding:15px; border:1px solid #333; margin-bottom:10px; border-radius:6px; display:flex; justify-content:space-between;">
-                        <div style="display:flex; gap:15px;">
-                            <img src="${p.images?p.images[0]:p.image}" style="width:50px; height:50px; object-fit:cover; border-radius:4px;">
-                            <div>
-                                <b>${p.name}</b><br>
-                                <span style="color:#888; font-size:10px;">[${p.category}]</span><br>
-                                ${originHtml}
-                                <span style="color:#4ade80; font-size:12px; font-weight:bold;">Rp ${p.price.toLocaleString('id-ID')}</span><br>
-                                ${linkSupplierHtml}
-                            </div>
-                        </div>
-                        <div>
-                            <button onclick="db.ref('products/${k}').update({isPopular: ${!p.isPopular}})" style="background:${p.isPopular?'#f59e0b':'#333'}; color:white; border:none; padding:5px; border-radius:4px; font-size:10px; width:100%; margin-bottom:5px;">${p.isPopular?'⭐ HAPUS POPULER':'⭐ SET POPULER'}</button>
-                            <div style="display:flex; gap:5px;">
-                                <button onclick="openEditModal('${k}')" style="background:#3b82f6; color:white; border:none; padding:5px; border-radius:4px; font-size:10px; flex:1;">✏️ EDIT</button>
-                                <button onclick="if(confirm('Hapus?')) db.ref('products/${k}').remove()" style="background:transparent; color:#ef4444; border:1px solid #ef4444; padding:5px; border-radius:4px; font-size:10px; flex:1;">🗑️</button>
-                            </div>
-                        </div>
-                    </div>`;
-                }).join('');
+            const searchQ = (document.getElementById('searchManage') ? document.getElementById('searchManage').value.toLowerCase() : '');
+            const filterCat = (document.getElementById('filterManageCat') ? document.getElementById('filterManageCat').value : 'ALL');
+
+            let productsArr = Object.keys(adminProductsData).map(k => ({id: k, ...adminProductsData[k]}));
+
+            let filtered = productsArr.filter(p => {
+                let matchSearch = p.name ? p.name.toLowerCase().includes(searchQ) : false;
+                let matchCat = true;
+                if(filterCat !== 'ALL') {
+                    matchCat = p.category && p.category.includes(filterCat);
+                }
+                return matchSearch && matchCat;
             });
+
+            if(filtered.length === 0) return list.innerHTML = '<p style="color:#aaa; text-align:center; margin-top:15px;">Produk tidak ditemukan.</p>';
+
+            list.innerHTML = filtered.sort((a,b)=>b.timestamp - a.timestamp).map(p => {
+                let linkSupplierHtml = p.link ? `<a href="${p.link}" target="_blank" style="display:inline-block; margin-top:5px; font-size:10px; background:#4285F4; color:white; padding:3px 8px; border-radius:4px; text-decoration:none;">🔗 Cek Supplier</a>` : '';
+                let originHtml = p.origin ? `<span style="font-size:9px; color:#f59e0b;">📍 ${p.origin} | 🚚 ${p.couriers || '-'}</span><br>` : '';
+                let stockInfo = `<span style="font-size:10px; color:#aaa;">Stok: ${p.stock} ${p.unit || 'pcs'}</span>`;
+
+                return `<div style="background:#1a1a1a; padding:15px; border:1px solid #333; margin-bottom:10px; border-radius:6px; display:flex; justify-content:space-between;">
+                    <div style="display:flex; gap:15px;">
+                        <img src="${p.images?p.images[0]:p.image}" style="width:50px; height:50px; object-fit:cover; border-radius:4px;">
+                        <div>
+                            <b>${p.name}</b><br>
+                            <span style="color:#888; font-size:10px;">[${p.category}]</span><br>
+                            ${originHtml}
+                            <span style="color:#4ade80; font-size:12px; font-weight:bold;">Rp ${p.price.toLocaleString('id-ID')}</span> <br>${stockInfo}<br>
+                            ${linkSupplierHtml}
+                        </div>
+                    </div>
+                    <div style="display:flex; flex-direction:column; gap:5px; min-width:80px;">
+                        <button onclick="db.ref('products/${p.id}').update({isPopular: ${!p.isPopular}})" style="background:${p.isPopular?'#f59e0b':'#333'}; color:white; border:none; padding:5px; border-radius:4px; font-size:10px; width:100%;">${p.isPopular?'⭐ HAPUS POPULER':'⭐ SET POPULER'}</button>
+                        <div style="display:flex; gap:5px; width:100%;">
+                            <button onclick="openEditModal('${p.id}')" style="background:#3b82f6; color:white; border:none; padding:5px; border-radius:4px; font-size:10px; flex:1;">✏️ EDIT</button>
+                            <button onclick="if(confirm('Hapus produk ini?')) db.ref('products/${p.id}').remove()" style="background:transparent; color:#ef4444; border:1px solid #ef4444; padding:5px; border-radius:4px; font-size:10px; flex:1;">🗑️</button>
+                        </div>
+                    </div>
+                </div>`;
+            }).join('');
         }
 
+        db.ref('products').on('value', snap => {
+            adminProductsData = snap.val() || {}; 
+            renderManageProducts();
+        });
+
+
+        // FUNGSI BUKA MODAL EDIT YANG UDAH DI-UPGRADE
         function openEditModal(id) { 
             currentEditId = id; let p = adminProductsData[id]; 
             
-            ['eName','eDesc','eOrigin','eOriginId','eCost','ePrice','eStock','eOriginalPrice', 'eLink'].forEach(k=>{
-                let val = p[k.replace('e','').toLowerCase()] || '';
-                if(k==='eDesc' && p.desc) val = p.desc;
-                if(document.getElementById(k)) document.getElementById(k).value = val;
-            }); 
+            document.getElementById('eName').value = p.name || '';
+            document.getElementById('eDesc').value = p.desc || '';
+            document.getElementById('eUnit').value = p.unit || 'pcs';
+            document.getElementById('eSizes').value = p.sizes || 'All Size';
+            document.getElementById('eMinOrder').value = p.minOrder || '';
+            document.getElementById('eMaxOrder').value = p.maxOrder || '';
+            document.getElementById('eCost').value = p.cost || '';
+            document.getElementById('ePrice').value = p.price || '';
+            document.getElementById('eStock').value = p.stock || '';
+            document.getElementById('eOriginalPrice').value = p.originalPrice || '';
+            document.getElementById('eOrigin').value = p.origin || '';
+            document.getElementById('eOriginId').value = p.originId || '';
+            document.getElementById('eLink').value = p.link || '';
             
             document.querySelectorAll('.eCatCb').forEach(cb => { cb.checked = p.category ? p.category.includes(cb.value) : false; });
             document.querySelectorAll('.eCourierCb').forEach(cb => { cb.checked = p.couriers ? p.couriers.includes(cb.value) : false; });
@@ -617,6 +691,7 @@
 
         function closeEditModal() { document.getElementById('editModal').style.display='none'; currentEditId=null; }
         
+        // FUNGSI SIMPAN EDIT PRODUK YANG UDAH DI-UPGRADE
         function saveEditedProduct() {
             const checkedCats = Array.from(document.querySelectorAll('.eCatCb:checked')).map(cb => cb.value);
             const checkedCouriers = Array.from(document.querySelectorAll('.eCourierCb:checked')).map(cb => cb.value);
@@ -630,7 +705,21 @@
             const originIdStr = document.getElementById('eOriginId').value.trim();
             if(!originStr || !originIdStr) return alert("Pastikan Anda memilih Kota Asal dari dropdown pencarian Biteship!");
 
-            let u = { name: document.getElementById('eName').value, desc: document.getElementById('eDesc').value.trim(), origin: originStr, originId: originIdStr, couriers: courierString, category: categoryString, cost: parseInt(document.getElementById('eCost').value), price: parseInt(document.getElementById('ePrice').value), stock: parseInt(document.getElementById('eStock').value) };
+            let u = { 
+                name: document.getElementById('eName').value, 
+                desc: document.getElementById('eDesc').value.trim(), 
+                unit: document.getElementById('eUnit').value,
+                sizes: document.getElementById('eSizes').value.trim() || 'All Size',
+                minOrder: parseInt(document.getElementById('eMinOrder').value) || 1,
+                maxOrder: parseInt(document.getElementById('eMaxOrder').value) || 9999,
+                origin: originStr, 
+                originId: originIdStr, 
+                couriers: courierString, 
+                category: categoryString, 
+                cost: parseInt(document.getElementById('eCost').value), 
+                price: parseInt(document.getElementById('ePrice').value), 
+                stock: parseInt(document.getElementById('eStock').value) 
+            };
             let o = document.getElementById('eOriginalPrice').value; if(o) u.originalPrice = parseInt(o); else u.originalPrice = null;
             let l = document.getElementById('eLink').value.trim(); if(l) u.link = l; else u.link = null; 
             let files = document.getElementById('eImages').files;
