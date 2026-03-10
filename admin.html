@@ -26,7 +26,6 @@
         .cat-label { display: inline-block; background: #222; color: #888; padding: 8px 15px; border-radius: 20px; font-size: 11px; cursor: pointer; border: 1px solid #444; margin: 0 5px 8px 0; transition: 0.3s; font-weight: bold;}
         .cat-checkbox:checked + .cat-label { background: #3b82f6; color: white; border-color: #3b82f6; }
 
-        /* 🔥 CSS AUTOCOMPLETE BITESHIP 🔥 */
         .autocomplete-box { position: absolute; width: 100%; max-height: 180px; overflow-y: auto; z-index: 1000; border: 1px solid #444; border-radius: 4px; box-shadow: 0 4px 10px rgba(0,0,0,0.8); display: none; background: #1a1a1a; margin-top: 2px; }
         .biteship-item { padding: 12px 10px; border-bottom: 1px solid #333; font-size: 12px; cursor: pointer; color: #ccc; line-height: 1.4; }
         .biteship-item:hover { background: #3b82f6; color: white; font-weight: bold; }
@@ -86,12 +85,12 @@
             <div class="form-group"><label>Nama Produk</label><input type="text" id="eName"></div>
             
             <div class="form-group">
-                <label>Deskripsi Produk (Bahan, Ukuran, Merek, dll)</label>
-                <textarea id="eDesc" rows="4" placeholder="Cth: Bahan Katun Denim tebal. Ukuran fit M-XL..."></textarea>
+                <label>Deskripsi Produk</label>
+                <textarea id="eDesc" rows="4" placeholder="Cth: Bahan Katun Denim tebal..."></textarea>
             </div>
             
             <div class="form-group">
-                <label>Kategori (Bisa Pilih > 1)</label>
+                <label>Kategori</label>
                 <div id="eCategoryContainer"><span style="color:#888; font-size:11px;">Memuat...</span></div>
             </div>
 
@@ -99,14 +98,14 @@
             <div style="display: flex; gap: 10px;"><div class="form-group" style="flex:1;"><label>Jumlah Stok</label><input type="number" id="eStock"></div><div class="form-group" style="flex:1;"><label>Harga Coret</label><input type="number" id="eOriginalPrice"></div></div>
             
             <div class="form-group" style="position:relative;">
-                <label>Dikirim Dari Kecamatan/Kota Asal (Wajib Pilih dari Dropdown!)</label>
-                <input type="text" id="eOrigin" placeholder="Ketik min 3 huruf (Cth: Sumedang)..." oninput="searchBiteshipOrigin(this.value, 'e')" autocomplete="off">
+                <label>Kota Asal (Pilih dari Dropdown!)</label>
+                <input type="text" id="eOrigin" placeholder="Ketik min 3 huruf..." oninput="searchBiteshipOrigin(this.value, 'e')" autocomplete="off">
                 <input type="hidden" id="eOriginId">
                 <div id="eOriginResults" class="autocomplete-box"></div>
             </div>
 
             <div class="form-group">
-                <label>Kurir Pengiriman (Bisa Pilih > 1)</label>
+                <label>Kurir Pengiriman</label>
                 <div style="display:flex; gap:5px; flex-wrap:wrap;">
                     <label><input type="checkbox" class="cat-checkbox eCourierCb" value="JNE"><span class="cat-label">JNE</span></label>
                     <label><input type="checkbox" class="cat-checkbox eCourierCb" value="J&T"><span class="cat-label">J&T</span></label>
@@ -115,7 +114,7 @@
                 </div>
             </div>
 
-            <div class="form-group"><label>Link URL Supplier (Dropship)</label><input type="url" id="eLink" placeholder="https://shopee.co.id/..."></div>
+            <div class="form-group"><label>Link URL Supplier</label><input type="url" id="eLink" placeholder="https://shopee.co.id/..."></div>
 
             <div class="form-group"><label>Ganti Foto</label><input type="file" id="eImages" accept="image/*" multiple style="padding: 9px;"><p style="font-size: 10px; color: #888;">*Akan menimpa foto lama.</p></div>
             <button class="btn-action" style="background:#3b82f6; color:white;" onclick="saveEditedProduct()">💾 SIMPAN PERUBAHAN</button>
@@ -151,7 +150,6 @@
             </div>
 
             <div id="tabUpload">
-                        <div id="tabUpload">
                 <div class="form-group"><label>Nama Produk</label><input type="text" id="pName"></div>
                 
                 <div style="display: flex; gap: 10px;">
@@ -177,7 +175,7 @@
                     </div>
                     <div class="form-group" style="flex:1;">
                         <label>Max. Order</label>
-                        <input type="number" id="pMaxOrder" placeholder="Stok Penuh">
+                        <input type="number" id="pMaxOrder" placeholder="Kosong = Max Stok">
                     </div>
                 </div>
 
@@ -217,7 +215,6 @@
                 <div id="statusMessage" style="text-align:center; margin-top:15px; font-size:13px; font-weight: 600;"></div>
             </div>
 
-
             <div id="tabManage" style="display:none;"><div id="manageProductsList"></div></div>
 
             <div id="tabDesign" style="display:none;">
@@ -247,7 +244,7 @@
                 <div id="featuredCatList" style="margin-top: 15px;"></div>
             </div>
 
-                        <div id="tabOrders" style="display:none;">
+            <div id="tabOrders" style="display:none;">
                 <div style="display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;">
                     <input type="text" id="searchOrder" placeholder="🔍 Cari Invoice / Nama Pembeli..." style="flex: 1; min-width: 200px; padding: 10px; border-radius: 6px; border: 1px solid #333; background: #1a1a1a; color: white;" oninput="renderOrdersTab()">
                     <select id="filterOrderStatus" style="padding: 10px; border-radius: 6px; border: 1px solid #333; background: #1a1a1a; color: white;" onchange="renderOrdersTab()">
@@ -259,7 +256,6 @@
                 </div>
                 <div id="ordersList"></div>
             </div>
-
 
             <div id="tabFinance" style="display:none;">
                 <div class="fin-filters">
@@ -387,7 +383,6 @@
         function loginGoogle() { auth.signInWithPopup(new firebase.auth.GoogleAuthProvider()); }
         function logout() { auth.signOut(); }
 
-        // 🔥 ENGINE API PENCARIAN AREA BITESHIP (HURUF KECIL 'b' & DIAGNOSTIK ERROR) 🔥
         const BITESHIP_KEY = 'biteship_live.eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiR2Fua2V0aSIsInVzZXJJZCI6IjY5YWVlODYzM2NjODBhMWUzMjE3ZGJkYyIsImlhdCI6MTc3MzA3OTg3MX0.ot-KA-1HmE0xMsc7OhHeQBaDGo7KrDKU1tuS4bk5fCo';
         let searchTimeout;
 
@@ -408,7 +403,6 @@
                     if(data.success && data.areas && data.areas.length > 0) {
                         resultBox.innerHTML = data.areas.map(a => {
                             let fullText = `${a.name}, ${a.administrative_division_level_2_name}, ${a.administrative_division_level_1_name}`;
-                            // Meneruskan shortName (a.name) ke fungsi select
                             return `<div class="biteship-item" onclick="selectBiteshipOrigin('${a.id}', '${a.name.replace(/'/g, "\\'")}', '${type}')">${fullText}</div>`;
                         }).join('');
                     } else {
@@ -422,12 +416,11 @@
         }
 
         function selectBiteshipOrigin(id, shortName, type) {
-            document.getElementById(type + 'Origin').value = shortName; // Cuma nama pendeknya aja biar rapi
+            document.getElementById(type + 'Origin').value = shortName; 
             document.getElementById(type + 'OriginId').value = id;
             document.getElementById(type + 'OriginResults').style.display = 'none';
         }
 
-        // ENGINE KATEGORI 
         db.ref('ui_categories').on('value', snap => {
             const data = snap.val(); 
             const pCat = document.getElementById('pCategoryContainer'); 
@@ -509,7 +502,6 @@
             } else { db.ref('ui_categories').push(baseData); document.getElementById('catName').value = ''; document.getElementById('catIcon').value = ''; }
         }
 
-        // ENGINE KOTAK UNGGULAN
         function uploadFeaturedCat() {
             const title = document.getElementById('fcTitle').value.trim();
             const checkedTargets = Array.from(document.querySelectorAll('.fcCatCb:checked')).map(cb => cb.value);
@@ -544,8 +536,7 @@
             }).join('');
         });
 
-        // MESIN UPLOAD & MANAGE PRODUK 
-                function uploadProduct() { 
+        function uploadProduct() { 
             const name = document.getElementById('pName').value; 
             const desc = document.getElementById('pDesc').value.trim();
             const unit = document.getElementById('pUnit').value;
@@ -576,7 +567,6 @@
                 });
             });
         }
-
 
         function loadManageProducts() {
             db.ref('products').on('value', snap => {
@@ -649,7 +639,6 @@
             else { db.ref('products/'+currentEditId).update(u).then(()=>{closeEditModal(); alert('Tersimpan!');}); }
         }
 
-        // ENGINE BANNER
         function uploadBanners() { 
             const files = document.getElementById('promoBanners').files;
             if(files.length === 0) return alert("Pilih gambar banner dulu!");
@@ -666,7 +655,6 @@
             list.innerHTML = Object.keys(data).map(key => `<div class="list-item-admin"><img src="${data[key].image}" style="height:40px; border-radius:4px;"> <button onclick="if(confirm('Hapus banner ini?')) db.ref('ui_banners/${key}').remove()" style="background:none; border:1px solid #ef4444; color:#ef4444; cursor:pointer; padding:5px; border-radius:4px;">Hapus</button></div>`).join('');
         });
 
-        // ENGINE PESANAN
         function fetchDataSuper() {
             db.ref('orders').on('value', snap => {
                 allOrdersData = snap.val() ? Object.keys(snap.val()).map(k => ({id:k, ...snap.val()[k]})) : [];
@@ -678,15 +666,13 @@
             });
         }
 
-                function renderOrdersTab() {
+        function renderOrdersTab() {
             const list = document.getElementById('ordersList');
             if(allOrdersData.length === 0) return list.innerHTML = '<p style="color:#aaa; text-align:center;">Belum ada pesanan.</p>';
 
-            // 1. Ambil nilai dari kotak pencarian & filter
             const searchQuery = (document.getElementById('searchOrder') ? document.getElementById('searchOrder').value.toLowerCase() : '');
             const statusFilter = (document.getElementById('filterOrderStatus') ? document.getElementById('filterOrderStatus').value : 'ALL');
 
-            // 2. Saring (Filter) datanya dulu
             let filteredOrders = allOrdersData.filter(o => {
                 let matchStatus = (statusFilter === 'ALL') || (o.status === statusFilter);
                 let matchSearch = true;
@@ -698,12 +684,10 @@
                 return matchStatus && matchSearch;
             });
 
-            // Kalau dicari nggak ketemu
             if(filteredOrders.length === 0) {
                 return list.innerHTML = '<p style="color:#aaa; text-align:center; padding-top:20px;">Pesanan tidak ditemukan.</p>';
             }
 
-            // 3. Render data yang udah disaring
             list.innerHTML = filteredOrders.sort((a,b)=>b.timestamp-a.timestamp).map(o => {
                 let itemsArray = o.items || [];
                 let itemsHtml = itemsArray.map(i => {
@@ -771,8 +755,6 @@
                 </div>`;
             }).join('');
         }
-
-
         
         function updateStatus(orderId, newStatus) { db.ref('orders/' + orderId).update({ status: newStatus }); }
 
@@ -782,7 +764,6 @@
             db.ref('orders/' + orderId).update({ status: 'SHIPPED', resi: resiVal }).then(() => alert('Pesanan Berhasil Dikirim dengan Resi: ' + resiVal));
         }
 
-        // ENGINE FINANCE
         function setFinanceFilter(type) {
             currentFinFilter = type;
             ['hari','bulan','tahun','semua'].forEach(t => document.getElementById('f-'+t).className = (t === type) ? 'btn-filter active' : 'btn-filter');
