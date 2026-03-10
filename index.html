@@ -486,7 +486,7 @@
         let pendingOrderData = null; 
         let selectedShippingCost = 0;
         let selectedCourierName = "";
-        let isCheckoutPending = false; // Menyimpan memori kalau pembeli mau checkout tapi ditodong login
+        let isCheckoutPending = false; 
 
         const BITESHIP_KEY = 'biteship_live.eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiR2Fua2V0aSIsInVzZXJJZCI6IjY5YWVlODYzM2NjODBhMWUzMjE3ZGJkYyIsImlhdCI6MTc3MzA3OTg3MX0.ot-KA-1HmE0xMsc7OhHeQBaDGo7KrDKU1tuS4bk5fCo';
 
@@ -532,7 +532,6 @@
             }
         });
 
-        // 🔥 FITUR LOGIN & REGISTER MODERN 🔥
         function handleAuth() {
             if(currentUser) { 
                 hideAllAreas(); document.getElementById('modalTitle').innerText = "MY ACCOUNT"; document.getElementById('logoutConfirmArea').style.display = 'block'; document.getElementById('mainModal').style.display = 'flex'; 
@@ -786,6 +785,7 @@
             document.getElementById('mainModal').style.display = 'flex';
         }
 
+        // 🔥 FUNGSI BUKA DETAIL PRODUK (SUDAH ADA FITUR WARNA) 🔥
         function openPreview(id) {
             hideAllAreas(); const p = globalProducts.find(x => x.id === id); if(!p) return;
             document.getElementById('modalTitle').innerText = 'PRODUCT DETAIL'; 
@@ -795,16 +795,25 @@
             let sliderHtml = `<div class="preview-slider">`; imgArray.forEach(img => { sliderHtml += `<img src="${img}" style="${isHabis ? 'filter: grayscale(100%); opacity: 0.5;' : ''}">`; }); sliderHtml += `</div>`;
             if(imgArray.length > 1) sliderHtml += `<div style="text-align:center; font-size:10px; color:var(--text-dim); margin-top:-10px; margin-bottom:15px;">⟵ Swipe Image ⟶</div>`;
             
-            // Generate Dropdown Ukuran Dinamis
+            // Dropdown Ukuran
             let sizesArr = p.sizes ? p.sizes.split(',').map(s => s.trim()) : ['All Size'];
             let sizeOptions = sizesArr.map(s => `<option value="${s}">${s}</option>`).join('');
             let sizeHtml = `<div class="form-group"><label>Pilih Ukuran / Varian</label><select id="previewSize">${sizeOptions}</select></div>`;
             
-            // Generate Input Min/Max Qty
+            // 🔥 Dropdown Warna Dinamis 🔥
+            let colorsArr = p.colors && p.colors !== 'Default' ? p.colors.split(',').map(c => c.trim()) : [];
+            let colorHtml = '';
+            if (colorsArr.length > 0) {
+                let colorOptions = colorsArr.map(c => `<option value="${c}">${c}</option>`).join('');
+                colorHtml = `<div class="form-group"><label>Pilih Warna</label><select id="previewColor">${colorOptions}</select></div>`;
+            } else {
+                colorHtml = `<input type="hidden" id="previewColor" value="Default">`;
+            }
+
             let unit = p.unit || 'pcs';
             let minQty = p.minOrder ? parseInt(p.minOrder) : 1;
             let maxQty = p.maxOrder && p.maxOrder < 9999 ? parseInt(p.maxOrder) : p.stock;
-            if(maxQty > p.stock) maxQty = p.stock; // Mentok di stok gudang
+            if(maxQty > p.stock) maxQty = p.stock; 
 
             let qtyHtml = `<div style="display:flex; gap:10px; margin-bottom:15px;">
                 <div class="form-group" style="flex:1;">
@@ -826,13 +835,16 @@
             let btnHtml = isHabis ? `<button class="btn-main" disabled>SOLD OUT</button>` : `<button class="btn-main" style="background:#f59e0b; color:#000;" onclick="addToCart('${p.id}')">ADD TO CART</button>`;
             let priceHtml = p.originalPrice ? `<span style="font-size:12px; text-decoration:line-through; color:#ef4444; margin-right:8px; font-family:'Inter';">Rp ${p.originalPrice.toLocaleString('id-ID')}</span>Rp ${p.price.toLocaleString('id-ID')}` : `Rp ${p.price.toLocaleString('id-ID')}`;
             
-            previewBox.innerHTML = `${sliderHtml}<h3 style="font-size: 18px; color: white; margin-bottom: 5px; line-height: 1.3;">${p.name}</h3><p style="font-size: 16px; font-weight: bold; color: var(--primary); margin-bottom: 15px; font-family: 'Oswald';">${priceHtml} <span style="font-size:12px; font-weight:normal; color:#888; font-family:'Inter';">/ ${unit}</span></p>${descHtml}${stockHtml}${sizeHtml}${qtyHtml}${btnHtml}`;
+            // Masukin colorHtml ke tampilan
+            previewBox.innerHTML = `${sliderHtml}<h3 style="font-size: 18px; color: white; margin-bottom: 5px; line-height: 1.3;">${p.name}</h3><p style="font-size: 16px; font-weight: bold; color: var(--primary); margin-bottom: 15px; font-family: 'Oswald';">${priceHtml} <span style="font-size:12px; font-weight:normal; color:#888; font-family:'Inter';">/ ${unit}</span></p>${descHtml}${stockHtml}${colorHtml}${sizeHtml}${qtyHtml}${btnHtml}`;
             previewBox.style.display = 'block'; document.getElementById('mainModal').style.display = 'flex';
         }
 
+        // 🔥 FUNGSI ADD TO CART (ANTI BENTROK WARNA & UKURAN) 🔥
         function addToCart(id) {
             const product = globalProducts.find(p => p.id === id); 
             const selectedSize = document.getElementById('previewSize').value; 
+            const selectedColor = document.getElementById('previewColor') ? document.getElementById('previewColor').value : 'Default';
             const inputQty = parseInt(document.getElementById('previewQty').value);
 
             let minQty = product.minOrder ? parseInt(product.minOrder) : 1;
@@ -842,13 +854,19 @@
             if (isNaN(inputQty) || inputQty < minQty) { showToast(`Minimal order adalah ${minQty} ${product.unit || 'pcs'}`, 'warning'); return; }
             if (inputQty > maxQty) { showToast(`Maksimal order adalah ${maxQty} ${product.unit || 'pcs'}`, 'warning'); return; }
 
-            const cartItemId = id + '-' + selectedSize;
+            // Bikin ID unik gabungan Nama, Warna, Ukuran biar gak numpuk
+            const cartItemId = id + '-' + selectedColor + '-' + selectedSize;
             const existing = cart.find(c => c.cartItemId === cartItemId);
             
             let totalRequested = existing ? existing.qty + inputQty : inputQty;
             if (totalRequested > maxQty) { showToast(`Total di keranjang melebihi batas maksimal / stok!`, 'warning'); return; }
 
-            if(existing) { existing.qty += inputQty; } else { cart.push({ ...product, cartItemId: cartItemId, name: `${product.name} (${selectedSize})`, qty: inputQty }); }
+            if(existing) { 
+                existing.qty += inputQty; 
+            } else { 
+                let displayName = selectedColor === 'Default' ? `${product.name} (${selectedSize})` : `${product.name} (${selectedColor} - ${selectedSize})`;
+                cart.push({ ...product, cartItemId: cartItemId, name: displayName, qty: inputQty, color: selectedColor }); 
+            }
             
             let cartItemIndex = cart.findIndex(c => c.cartItemId === cartItemId);
             cart[cartItemIndex].origin = product.origin || 'JAKARTA SELATAN'; 
@@ -880,7 +898,6 @@
         }
         function removeItem(index) { cart.splice(index, 1); localStorage.setItem('ganketiCart', JSON.stringify(cart)); updateCartCount(); openCart(); }
 
-        // 🔥 MESIN PENCARI KOTA BITESHIP 🔥
         let searchDestTimeout;
         function searchBiteshipDest(query) {
             const resultBox = document.getElementById('cDestResults');
@@ -925,7 +942,6 @@
             document.getElementById('cDestResults').style.display = 'none';
         }
 
-        // 🔥 FUNGSI RENDER ALAMAT DENGAN TOMBOL HAPUS 🔥
         function renderSavedAddresses() {
             const container = document.getElementById('savedAddressesContainer');
             const list = document.getElementById('savedAddressesList');
