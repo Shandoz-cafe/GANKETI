@@ -22,6 +22,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <script src="https://app.midtrans.com/snap/snap.js" data-client-key="Mid-client-ci-M4QXxtek0TsyV"></script>
+    
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
     <style>
         :root { --bg: #050505; --surface: #121212; --primary: #ffffff; --text: #e5e5e5; --text-dim: #888888; --border: #262626; }
@@ -145,7 +147,6 @@
         .biteship-item { padding: 12px 10px; border-bottom: 1px solid #333; font-size: 12px; cursor: pointer; color: #ccc; line-height: 1.4; }
         .biteship-item:hover { background: #3b82f6; color: white; font-weight: bold; }
 
-        /* CSS BUKU ALAMAT / PAYMENT / DLL */
         .saved-address-card { background: #1a1a1a; border: 1px solid #333; padding: 15px; border-radius: 8px; margin-bottom: 10px; cursor: pointer; transition: 0.2s; font-size: 12px; color: #ccc;}
         .saved-address-card:hover { border-color: #3b82f6; }
         .saved-address-card.active { border-color: #4ade80; background: rgba(74, 222, 128, 0.05); }
@@ -169,8 +170,6 @@
         .item-row { display: flex; gap: 12px; align-items: center; padding: 10px 0; border-bottom: 1px solid #222; }
         .item-row:last-child { border-bottom: none; }
         .item-img { width: 45px; height: 45px; object-fit: cover; border-radius: 6px; border: 1px solid #333; }
-
-        .receipt { background: #fff; color: #000; padding: 20px; font-family: monospace; font-size: 13px; border-radius: 8px; margin-top: 15px; border-top: 5px solid #000; box-shadow: 0 4px 6px rgba(0,0,0,0.3);}
         
         .toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 99999; display: flex; flex-direction: column; gap: 10px; pointer-events: none; width: 90%; max-width: 400px; }
         .modern-toast { background: var(--surface); border: 1px solid var(--border); color: white; padding: 16px 20px; border-radius: 12px; font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 12px; box-shadow: 0 10px 40px rgba(0,0,0,0.8); animation: toastSlideDown 0.4s forwards; }
@@ -184,7 +183,6 @@
         .info-content ul { padding-left: 20px; margin-bottom: 10px; }
         .info-content li { margin-bottom: 5px; }
         
-        /* 🔥 UPGRADE FOOTER: TAMBAH ALAMAT & LINK KEBIJAKAN BIAR LOLOS IPAYMU 🔥 */
         footer { border-top: 1px solid var(--border); padding: 40px 20px; margin-top: 30px; background: #0a0a0a;}
         .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 30px; margin-bottom: 30px; text-align: left; border-bottom: 1px solid #222; padding-bottom: 30px;}
         .footer-title { font-family: 'Oswald', sans-serif; font-size: 16px; margin-bottom: 15px; color: #fff; letter-spacing: 1px;}
@@ -193,6 +191,21 @@
         .footer-link:hover { color: var(--primary); }
         .newsletter input { width: 100%; max-width: 300px; padding: 12px; background: #111; border: 1px solid #333; color: white; border-radius: 4px; margin-bottom: 10px; outline: none;}
         .newsletter button { background: var(--primary); color: var(--bg); padding: 12px 20px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;}
+
+        /* 🔥 CSS KHUSUS CETAK INVOICE ALA BRAND STREETWEAR 🔥 */
+        .ganketi-invoice-wrapper { background: #fff; color: #000; padding: 40px; width: 800px; max-width: 100%; font-family: 'Inter', sans-serif; position: absolute; left: -9999px; top: -9999px; }
+        .inv-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #000; padding-bottom: 20px; margin-bottom: 20px; }
+        .inv-logo { font-family: 'Oswald', sans-serif; font-size: 32px; font-weight: bold; letter-spacing: 2px; }
+        .inv-title { font-size: 24px; font-weight: bold; color: #888; letter-spacing: 4px; }
+        .inv-details { display: flex; justify-content: space-between; margin-bottom: 30px; font-size: 13px; line-height: 1.6; }
+        .inv-table { width: 100%; border-collapse: collapse; margin-bottom: 30px; font-size: 13px; }
+        .inv-table th { border-bottom: 2px solid #000; padding: 10px 0; text-align: left; font-weight: bold; text-transform: uppercase; }
+        .inv-table td { border-bottom: 1px solid #eee; padding: 15px 0; }
+        .inv-totals { width: 300px; float: right; font-size: 14px; }
+        .inv-totals-row { display: flex; justify-content: space-between; padding: 8px 0; }
+        .inv-totals-row.grand { font-size: 18px; font-weight: bold; border-top: 2px solid #000; padding-top: 15px; margin-top: 5px; }
+        .inv-footer { clear: both; text-align: center; margin-top: 50px; font-size: 12px; color: #888; border-top: 1px solid #eee; padding-top: 20px; }
+        .inv-badge { display: inline-block; padding: 5px 15px; background: #000; color: #fff; font-weight: bold; letter-spacing: 2px; font-size: 12px; border-radius: 4px; }
     </style>
 </head>
 <body>
@@ -335,6 +348,8 @@
             &copy; 2026 GANKETI Official. All Rights Reserved.
         </div>
     </footer>
+
+    <div id="invoicePrintArea" class="ganketi-invoice-wrapper"></div>
 
     <div class="modal" id="mainModal">
         <div class="modal-box">
@@ -489,12 +504,7 @@
 
             <div id="textInfoArea" style="display:none;" class="info-content"></div>
 
-            <div id="invoiceArea" style="display:none;">
-                <p style="text-align:center; color:#4ade80; font-weight:bold; margin-bottom:5px;">✅ PAYMENT SUCCESSFUL!</p>
-                <p style="text-align:center; font-size:12px; color:var(--text-dim);">Your order is confirmed and invoice is saved.</p>
-                <div class="receipt" id="invoicePaper"></div>
-                <button class="btn-main" style="margin-top: 15px; background: #25D366; color: white;" onclick="closeModal()">DONE</button>
-            </div>
+            <div id="invoiceArea" style="display:none;"></div>
             
             <div id="historyArea" style="display:none;"><div id="historyList"></div></div>
             <div id="logoutConfirmArea" style="display:none; text-align:center;"><h3 style="font-size: 16px; margin-bottom: 10px;">Sign Out of Account?</h3><div style="display:flex; gap:10px;"><button class="btn-main" style="background:#333; color:white;" onclick="closeModal()">CANCEL</button><button class="btn-main" style="background:#ef4444;" onclick="executeLogout()">YES, SIGN OUT</button></div></div>
@@ -519,6 +529,9 @@
         let selectedShippingCost = 0;
         let selectedCourierName = "";
         let isCheckoutPending = false; 
+
+        // 🔥 VARIABEL BARU BUAT NYIMPEN DATA ORDERAN USER 🔥
+        let globalUserOrders = []; 
 
         const BITESHIP_KEY = 'biteship_live.eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiR2Fua2V0aSIsInVzZXJJZCI6IjY5YWVlODYzM2NjODBhMWUzMjE3ZGJkYyIsImlhdCI6MTc3MzA3OTg3MX0.ot-KA-1HmE0xMsc7OhHeQBaDGo7KrDKU1tuS4bk5fCo';
 
@@ -1207,7 +1220,6 @@
             el.style.borderColor = '#4ade80';
         }
 
-        /* 🔥 FUNGSI BAYAR MIDTRANS BARU 🔥 */
         async function processPaymentMidtrans() {
             if(!pendingOrderData) {
                 alert("Data pesanan kosong, silakan ulangi!");
@@ -1255,13 +1267,11 @@
                 const midtransData = await res.json();
                 
                 if(midtransData.token) {
-                    // Kosongkan keranjang
                     cart = []; localStorage.setItem('ganketiCart', JSON.stringify(cart)); updateCartCount();
                     
                     // BUKA POP-UP SNAP MIDTRANS ✨
                     window.snap.pay(midtransData.token, {
                         onSuccess: function(result){
-                            // Bisa langsung lunas tanpa nunggu webhook
                             db.ref('orders/' + firebaseOrderId).update({ status: 'PAID' });
                             showToast("Pembayaran Berhasil! ✅", "success");
                             closeModal();
@@ -1290,6 +1300,7 @@
             }
         }
 
+        // 🔥 FITUR UPDATE MENU HISTORY BIAR BISA UNDUH INVOICE 🔥
         function openMyOrders() {
             if(!currentUser) { showToast("Please Sign In first!", 'warning'); setTimeout(() => handleAuth(), 1500); return; }
             hideAllAreas(); document.getElementById('modalTitle').innerText = "TRACK ORDER";
@@ -1300,9 +1311,11 @@
                 const data = snapshot.val();
                 if(!data) { list.innerHTML = `<p style="text-align:center; color:var(--text-dim); padding:40px 20px;">You have no orders yet.</p>`; return; }
                 
-                let historyHtml = ''; const orders = Object.keys(data).map(k => data[k]).sort((a,b) => b.timestamp - a.timestamp);
+                // Simpan ke variabel global biar gampang diakses pas mau dicetak
+                globalUserOrders = Object.keys(data).map(k => data[k]).sort((a,b) => b.timestamp - a.timestamp);
+                let historyHtml = ''; 
                 
-                orders.forEach(order => { 
+                globalUserOrders.forEach(order => { 
                     let itemsHtml = order.items.map(i => {
                         let imgUrl = i.images ? i.images[0] : (i.image ? i.image : 'https://via.placeholder.com/50');
                         return `
@@ -1333,6 +1346,15 @@
                         </div>`;
                     }
 
+                    // Tampilkan tombol unduh invoice HANYA KALAU statusnya udah PAID atau SHIPPED
+                    let btnUnduhHtml = '';
+                    if(order.status === 'PAID' || order.status === 'SHIPPED') {
+                        btnUnduhHtml = `
+                        <div style="margin-top:15px; text-align:right; border-top:1px dashed #333; padding-top:15px;">
+                            <button onclick="downloadInvoice('${order.invoice_no}')" style="background:transparent; border:1px solid #fff; color:#fff; padding:8px 15px; border-radius:4px; font-size:10px; font-weight:bold; letter-spacing:1px; cursor:pointer; font-family:'Inter'; text-transform:uppercase; transition:0.3s;">📄 UNDUH INVOICE</button>
+                        </div>`;
+                    }
+
                     historyHtml += `
                     <div class="invoice-card">
                         <div style="display:flex; justify-content:space-between; margin-bottom:10px; border-bottom:1px dashed var(--border); padding-bottom:10px;">
@@ -1357,9 +1379,98 @@
                             </div>
                         </div>
                         ${resiHtml}
+                        ${btnUnduhHtml}
                     </div>`; 
                 });
                 list.innerHTML = historyHtml;
+            });
+        }
+
+        // 🔥 FUNGSI UTAMA MESIN PENCETAK INVOICE PDF 🔥
+        function downloadInvoice(invNo) {
+            const order = globalUserOrders.find(o => o.invoice_no === invNo);
+            if(!order) return showToast("Data pesanan tidak ditemukan", "error");
+
+            showToast("Menyiapkan file Invoice... ⏳", "info");
+
+            const printArea = document.getElementById('invoicePrintArea');
+            
+            // Rakit daftar belanjaan
+            let itemsHtml = order.items.map(i => `
+                <tr>
+                    <td><b>${i.name}</b><br><span style="color:#888; font-size:11px;">Size: ${i.sizes || 'All Size'} | Color: ${i.color || 'Default'}</span></td>
+                    <td style="text-align:center;">${i.qty}</td>
+                    <td style="text-align:right;">Rp ${i.price.toLocaleString('id-ID')}</td>
+                    <td style="text-align:right; font-weight:bold;">Rp ${(i.price * i.qty).toLocaleString('id-ID')}</td>
+                </tr>
+            `).join('');
+
+            let subtotal = order.total - order.shippingCost;
+
+            // Masukin ke layout kotak tersembunyi
+            printArea.innerHTML = `
+                <div class="inv-header">
+                    <div class="inv-logo">GANKETI</div>
+                    <div class="inv-title">INVOICE</div>
+                </div>
+                <div class="inv-details">
+                    <div>
+                        <b style="color:#000;">DITERBITKAN UNTUK:</b><br><br>
+                        <b>${order.customer.name}</b><br>
+                        ${order.customer.phone}<br>
+                        ${order.customer.address}
+                    </div>
+                    <div style="text-align:right;">
+                        <b style="color:#000;">DETAIL PESANAN:</b><br><br>
+                        <b>No. Invoice:</b> ${order.invoice_no}<br>
+                        <b>Tanggal:</b> ${order.date}<br>
+                        <b>Status:</b> <span class="inv-badge">${order.status}</span>
+                    </div>
+                </div>
+                <table class="inv-table">
+                    <thead>
+                        <tr>
+                            <th>Deskripsi Produk</th>
+                            <th style="text-align:center;">Qty</th>
+                            <th style="text-align:right;">Harga</th>
+                            <th style="text-align:right;">Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${itemsHtml}
+                    </tbody>
+                </table>
+                <div class="inv-totals">
+                    <div class="inv-totals-row">
+                        <span>Subtotal Produk</span>
+                        <span>Rp ${subtotal.toLocaleString('id-ID')}</span>
+                    </div>
+                    <div class="inv-totals-row">
+                        <span>Ongkos Kirim (${order.courier})</span>
+                        <span>Rp ${order.shippingCost.toLocaleString('id-ID')}</span>
+                    </div>
+                    <div class="inv-totals-row grand">
+                        <span>TOTAL KESELURUHAN</span>
+                        <span>Rp ${order.total.toLocaleString('id-ID')}</span>
+                    </div>
+                </div>
+                <div class="inv-footer">
+                    Terima kasih telah berbelanja di GANKETI. Authentic Streetwear since 2026.<br>
+                    Jika ada pertanyaan, hubungi ganketistore@gmail.com atau WhatsApp 0851-7995-0609.
+                </div>
+            `;
+
+            // Proses cetak ke PDF pakai html2pdf
+            var opt = {
+              margin:       [15, 15, 15, 15],
+              filename:     `${order.invoice_no}.pdf`,
+              image:        { type: 'jpeg', quality: 0.98 },
+              html2canvas:  { scale: 2, useCORS: true },
+              jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            html2pdf().set(opt).from(printArea).save().then(() => {
+                showToast("Invoice berhasil diunduh! ✅", "success");
             });
         }
     </script>
