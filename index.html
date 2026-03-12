@@ -199,6 +199,16 @@
         .history-tabs::-webkit-scrollbar { display: none; }
         .h-tab-btn { background: transparent; color: #888; border: none; font-size: 12px; font-weight: bold; text-transform: uppercase; padding: 8px 12px; cursor: pointer; white-space: nowrap; border-radius: 4px;}
         .h-tab-btn.active { background: #222; color: var(--primary); }
+
+        /* 🔥 SCROLLING TRUST BANNER 🔥 */
+        .trust-marquee { background: #0a0a0a; border-top: 1px solid #222; padding: 25px 0; overflow: hidden; position: relative; width: 100%; white-space: nowrap; display: flex; align-items: center; }
+        .trust-track { display: inline-flex; animation: marqueeScroll 30s linear infinite; width: max-content; }
+        .trust-track:hover { animation-play-state: paused; } /* Berhenti kalau disentuh */
+        .trust-track img { height: 22px; margin: 0 35px; object-fit: contain; filter: grayscale(100%) opacity(0.5); transition: 0.3s; }
+        .trust-track img:hover { filter: grayscale(0%) opacity(1); transform: scale(1.1); }
+        @keyframes marqueeScroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+        
     </style>
 </head>
 <body>
@@ -305,6 +315,33 @@
         <h2 class="section-title" id="secTitle" style="display: none;">LATEST DROP</h2>
         <div class="grid" id="productGrid"><p style="text-align: center; width: 100%; color: var(--text-dim);">Loading catalogue...</p></div>
     </div>
+
+        <div class="trust-marquee">
+        <div class="trust-track">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/9/97/Logo_Bank_Indonesia.svg" alt="Bank Indonesia" title="Diawasi oleh Bank Indonesia">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/a/a2/Logo_QRIS.svg" alt="QRIS">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/8/86/Gopay_logo.svg" alt="GoPay">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/f/fe/ShopeePay_Logo.png" alt="ShopeePay">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/5/5c/Bank_Central_Asia.svg" alt="BCA">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/a/ad/Bank_Mandiri_logo_2016.svg" alt="Mandiri">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/9/97/Logo_BRI.png" alt="BRI">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/PCI_DSS_Logo.svg/512px-PCI_DSS_Logo.svg.png" alt="PCI DSS">
+            
+            <img src="https://upload.wikimedia.org/wikipedia/commons/9/97/Logo_Bank_Indonesia.svg" alt="Bank Indonesia" title="Diawasi oleh Bank Indonesia">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/a/a2/Logo_QRIS.svg" alt="QRIS">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/8/86/Gopay_logo.svg" alt="GoPay">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/f/fe/ShopeePay_Logo.png" alt="ShopeePay">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/5/5c/Bank_Central_Asia.svg" alt="BCA">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/a/ad/Bank_Mandiri_logo_2016.svg" alt="Mandiri">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/9/97/Logo_BRI.png" alt="BRI">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/5/5e/Visa_Inc._logo.svg" alt="Visa">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/2/2a/Mastercard-logo.svg" alt="Mastercard">
+            <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e0/PCI_DSS_Logo.svg/512px-PCI_DSS_Logo.svg.png" alt="PCI DSS">
+        </div>
+    </div>
+
 
     <footer>
         <div class="footer-grid">
