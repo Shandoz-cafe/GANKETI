@@ -33,7 +33,6 @@
         .order-card { background: #1a1a1a; border: 1px solid #333; border-radius: 10px; padding: 20px; margin-bottom: 20px; font-size: 13px; box-shadow: 0 4px 6px rgba(0,0,0,0.3);}
         .order-header { display: flex; justify-content: space-between; border-bottom: 1px dashed #444; padding-bottom: 12px; margin-bottom: 15px; align-items: flex-start;}
         .badge-status { padding: 6px 12px; border-radius: 6px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;}
-        .status-UNPAID { background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid #ef4444; }
         .status-PAID { background: rgba(245, 158, 11, 0.2); color: #f59e0b; border: 1px solid #f59e0b; }
         .status-SHIPPED { background: rgba(74, 222, 128, 0.2); color: #4ade80; border: 1px solid #4ade80; }
         .btn-status { padding: 8px 15px; font-size: 11px; cursor: pointer; border-radius: 6px; font-weight: bold; transition: 0.2s;}
@@ -156,6 +155,19 @@
             <div class="form-group"><label>Nama Kategori</label><input type="text" id="eCatName"></div>
             <div class="form-group"><label>Ganti Ikon / Foto (Opsional)</label><input type="file" id="eCatIcon" accept="image/*" style="padding: 9px;"></div>
             <button class="btn-action" style="background:#4ade80; color:black;" onclick="saveEditedCategory()">💾 SIMPAN KATEGORI</button>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="editFcModal">
+        <div class="modal-content">
+            <div class="modal-header"><h3 style="margin:0; font-size: 16px;">✏️ Edit Kotak Unggulan</h3><span style="font-size:20px; cursor:pointer; color:#ef4444;" onclick="closeEditFcModal()">×</span></div>
+            <div class="form-group"><label>Teks / Judul Kotak (Cth: LIFESTYLE)</label><input type="text" id="eFcTitle"></div>
+            <div class="form-group">
+                <label>Target Kategori (Bisa pilih beberapa sekaligus!)</label>
+                <div id="eFcCategoryContainer"><span style="color:#ef4444; font-size:11px;">Memuat data...</span></div>
+            </div>
+            <div class="form-group"><label>Ganti Gambar Background (Opsional)</label><input type="file" id="eFcImage" accept="image/*" style="padding: 9px;"><p style="font-size: 10px; color: #888;">*Kosongkan jika tidak ingin ganti gambar.</p></div>
+            <button class="btn-action" style="background:#f59e0b; color:black;" onclick="saveEditedFc()">💾 SIMPAN KOTAK UNGGULAN</button>
         </div>
     </div>
 
@@ -287,9 +299,8 @@
                 <div style="display: flex; gap: 10px; margin-bottom: 15px; flex-wrap: wrap;">
                     <input type="text" id="searchOrder" placeholder="🔍 Cari Invoice / Nama Pembeli..." style="flex: 1; min-width: 200px; padding: 10px; border-radius: 6px; border: 1px solid #333; background: #1a1a1a; color: white;" oninput="renderOrdersTab()">
                     <select id="filterOrderStatus" style="padding: 10px; border-radius: 6px; border: 1px solid #333; background: #1a1a1a; color: white;" onchange="renderOrdersTab()">
-                        <option value="ALL">Semua Status</option>
-                        <option value="UNPAID">Belum Bayar (UNPAID)</option>
-                        <option value="PAID">Lunas & Dikemas (PAID)</option>
+                        <option value="ALL">Semua Pesanan Lunas</option>
+                        <option value="PAID">Perlu Dikemas (PAID)</option>
                         <option value="SHIPPED">Selesai Dikirim (SHIPPED)</option>
                     </select>
                 </div>
@@ -402,6 +413,8 @@
         let allOrdersData = []; let allExpensesData = [];
         let currentFinFilter = 'hari'; let customFinDate = ''; let finChart = null;
         let currentCategoriesData = []; let currentEditCatId = null;
+        
+        let currentFeaturedCatsData = {}; let currentEditFcId = null;
 
         function switchTab(tabName) {
             ['upload', 'manage', 'orders', 'finance', 'design'].forEach(t => {
@@ -491,13 +504,14 @@
             const eCat = document.getElementById('eCategoryContainer'); 
             const bList = document.getElementById('categoryBubbleList');
             const fcCat = document.getElementById('fcCategoryContainer'); 
+            const eFcCat = document.getElementById('eFcCategoryContainer');
             const filterManageCat = document.getElementById('filterManageCat');
             
             if(!data) {
                 currentCategoriesData = [];
                 if(bList) bList.innerHTML = '<p style="color:#888; font-size:11px;">Belum ada kategori.</p>';
                 let emptyMsg = '<span style="color:#ef4444;">Bikin Kategori di tab TAMPILAN dulu!</span>';
-                if(pCat) pCat.innerHTML = emptyMsg; if(eCat) eCat.innerHTML = emptyMsg; if(fcCat) fcCat.innerHTML = emptyMsg;
+                if(pCat) pCat.innerHTML = emptyMsg; if(eCat) eCat.innerHTML = emptyMsg; if(fcCat) fcCat.innerHTML = emptyMsg; if(eFcCat) eFcCat.innerHTML = emptyMsg;
                 if(filterManageCat) filterManageCat.innerHTML = '<option value="ALL">Semua Kategori</option>';
                 return;
             }
@@ -524,10 +538,12 @@
             let cbHtmlUpload = currentCategoriesData.map(c => `<label><input type="checkbox" class="cat-checkbox pCatCb" value="${c.name}"><span class="cat-label">${c.name}</span></label>`).join('');
             let cbHtmlEdit = currentCategoriesData.map(c => `<label><input type="checkbox" class="cat-checkbox eCatCb" value="${c.name}"><span class="cat-label">${c.name}</span></label>`).join('');
             let cbHtmlFc = currentCategoriesData.map(c => `<label><input type="checkbox" class="cat-checkbox fcCatCb" value="${c.name}"><span class="cat-label">${c.name}</span></label>`).join('');
+            let cbHtmlEFc = currentCategoriesData.map(c => `<label><input type="checkbox" class="cat-checkbox eFcCatCb" value="${c.name}"><span class="cat-label">${c.name}</span></label>`).join('');
             
             if(pCat) pCat.innerHTML = cbHtmlUpload; 
             if(eCat) eCat.innerHTML = cbHtmlEdit;
             if(fcCat) fcCat.innerHTML = cbHtmlFc;
+            if(eFcCat) eFcCat.innerHTML = cbHtmlEFc;
 
             if(filterManageCat) {
                 filterManageCat.innerHTML = '<option value="ALL">Semua Kategori</option>' + currentCategoriesData.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
@@ -593,7 +609,13 @@
 
         db.ref('ui_featured_cats').on('value', snap => {
             const data = snap.val(); const list = document.getElementById('featuredCatList');
-            if(!data) return list.innerHTML = '<p style="color:#888; font-size:11px;">Belum ada Kotak Unggulan.</p>';
+            if(!data) {
+                currentFeaturedCatsData = {};
+                return list.innerHTML = '<p style="color:#888; font-size:11px;">Belum ada Kotak Unggulan.</p>';
+            }
+            
+            currentFeaturedCatsData = data; 
+            
             list.innerHTML = Object.keys(data).map(key => {
                 let fc = data[key];
                 return `<div class="list-item-admin">
@@ -601,12 +623,66 @@
                         <img src="${fc.image}" style="width:60px; height:40px; border-radius:4px; object-fit:cover;">
                         <div><b style="font-size:12px;">${fc.title}</b><br><span style="font-size:9px; color:#888;">Target: [${fc.target}]</span></div>
                     </div>
-                    <button onclick="if(confirm('Hapus kotak unggulan ini?')) db.ref('ui_featured_cats/${key}').remove()" style="background:none; border:1px solid #ef4444; color:#ef4444; cursor:pointer; padding:5px; border-radius:4px;">Hapus</button>
+                    <div style="display:flex; gap:5px;">
+                        <button onclick="openEditFcModal('${key}')" style="background:#3b82f6; color:white; border:none; cursor:pointer; padding:5px 15px; border-radius:4px;">✏️ Edit</button>
+                        <button onclick="if(confirm('Hapus kotak unggulan ini?')) db.ref('ui_featured_cats/${key}').remove()" style="background:none; border:1px solid #ef4444; color:#ef4444; cursor:pointer; padding:5px 15px; border-radius:4px;">Hapus</button>
+                    </div>
                 </div>`;
             }).join('');
         });
 
-        // 🔥 FUNGSI UPLOAD YANG UDAH ADA WARNA 🔥
+        function openEditFcModal(id) {
+            currentEditFcId = id;
+            const fc = currentFeaturedCatsData[id];
+            if(!fc) return;
+
+            document.getElementById('eFcTitle').value = fc.title || '';
+            document.getElementById('eFcImage').value = ''; 
+
+            let targets = fc.target ? fc.target.split(',').map(s => s.trim()) : [];
+            document.querySelectorAll('.eFcCatCb').forEach(cb => {
+                cb.checked = targets.includes(cb.value);
+            });
+
+            document.getElementById('editFcModal').style.display = 'flex';
+        }
+
+        function closeEditFcModal() {
+            document.getElementById('editFcModal').style.display = 'none';
+            currentEditFcId = null;
+        }
+
+        function saveEditedFc() {
+            if(!currentEditFcId) return;
+
+            const title = document.getElementById('eFcTitle').value.trim();
+            const checkedTargets = Array.from(document.querySelectorAll('.eFcCatCb:checked')).map(cb => cb.value);
+            const file = document.getElementById('eFcImage').files[0];
+
+            if(!title || checkedTargets.length === 0) return alert("Isi Judul dan Pilih Minimal 1 Target Kategori!");
+
+            const targetStr = checkedTargets.join(', ');
+            let updates = { title: title, target: targetStr };
+
+            if(file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    updates.image = e.target.result;
+                    db.ref('ui_featured_cats/' + currentEditFcId).update(updates).then(() => {
+                        closeEditFcModal();
+                        alert("Kotak Unggulan Berhasil Diupdate!");
+                    });
+                };
+                reader.readAsDataURL(file);
+            } else {
+                db.ref('ui_featured_cats/' + currentEditFcId).update(updates).then(() => {
+                    closeEditFcModal();
+                    alert("Kotak Unggulan Berhasil Diupdate!");
+                });
+            }
+        }
+
+
         function uploadProduct() { 
             const name = document.getElementById('pName').value; 
             const desc = document.getElementById('pDesc').value.trim();
@@ -789,6 +865,7 @@
             });
         }
 
+        // 🔥 FUNGSI RENDER PESANAN YANG UDAH DIFILTER HANYA PAID & SHIPPED 🔥
         function renderOrdersTab() {
             const list = document.getElementById('ordersList');
             if(allOrdersData.length === 0) return list.innerHTML = '<p style="color:#aaa; text-align:center;">Belum ada pesanan.</p>';
@@ -796,7 +873,10 @@
             const searchQuery = (document.getElementById('searchOrder') ? document.getElementById('searchOrder').value.toLowerCase() : '');
             const statusFilter = (document.getElementById('filterOrderStatus') ? document.getElementById('filterOrderStatus').value : 'ALL');
 
-            let filteredOrders = allOrdersData.filter(o => {
+            // HANYA MENGAMBIL PESANAN YANG SUDAH LUNAS ATAU DIKIRIM (Abaikan UNPAID)
+            let validPaidOrders = allOrdersData.filter(o => o.status === 'PAID' || o.status === 'SHIPPED');
+
+            let filteredOrders = validPaidOrders.filter(o => {
                 let matchStatus = (statusFilter === 'ALL') || (o.status === statusFilter);
                 let matchSearch = true;
                 if(searchQuery) {
@@ -808,7 +888,7 @@
             });
 
             if(filteredOrders.length === 0) {
-                return list.innerHTML = '<p style="color:#aaa; text-align:center; padding-top:20px;">Pesanan tidak ditemukan.</p>';
+                return list.innerHTML = '<p style="color:#aaa; text-align:center; padding-top:20px;">Pesanan Lunas tidak ditemukan.</p>';
             }
 
             list.innerHTML = filteredOrders.sort((a,b)=>b.timestamp-a.timestamp).map(o => {
@@ -866,8 +946,6 @@
                     </div>
                     
                     <div style="text-align:right; display:flex; justify-content:flex-end; align-items:center; gap:10px;">
-                        ${o.status === 'UNPAID' ? `<button class="btn-status" style="background:#f59e0b; border:none; color:black;" onclick="updateStatus('${o.id}', 'PAID')">✅ LUNAS (Lanjut Kemas)</button>` : ''} 
-                        
                         ${o.status === 'PAID' ? `
                             <input type="text" id="resi-${o.id}" placeholder="Input Nomor Resi..." style="padding:8px; font-size:11px; border-radius:6px; border:1px solid #444; background:#111; color:white; width:160px;">
                             <button class="btn-status" style="background:#4ade80; border:none; color:black; padding:9px 15px;" onclick="kirimPesanan('${o.id}')">📦 KIRIM</button>
@@ -878,8 +956,6 @@
                 </div>`;
             }).join('');
         }
-
-        function updateStatus(orderId, newStatus) { db.ref('orders/' + orderId).update({ status: newStatus }); }
 
         function kirimPesanan(orderId) {
             const resiVal = document.getElementById('resi-' + orderId).value.trim();
@@ -909,6 +985,7 @@
             return true;
         }
 
+        // 🔥 LAPORAN KEUANGAN OTOMATIS CUMA NGITUNG PESANAN LUNAS 🔥
         function loadFinanceReport() {
             const validOrders = allOrdersData.filter(o => matchDateLogic(o.timestamp) && (o.status === 'PAID' || o.status === 'SHIPPED'));
             const validExpenses = allExpensesData.filter(e => matchDateLogic(e.timestamp));
@@ -947,7 +1024,7 @@
             document.getElementById('uiNet').innerText = `Rp ${tNet.toLocaleString('id-ID')}`;
 
             let sortedItems = Object.keys(itemAnalytics).map(k => ({name:k, ...itemAnalytics[k]})).sort((a,b) => b.qty - a.qty);
-            document.getElementById('uiTopItems').innerHTML = sortedItems.length ? sortedItems.map(i => `<tr><td><b>${i.name}</b></td><td style="text-align:center;">${i.qty}</td><td style="text-align:right; color:#4ade80;">Rp ${i.total.toLocaleString('id-ID')}</td></tr>`).join('') : `<tr><td colspan="3" style="text-align:center;">Belum ada penjualan.</td></tr>`;
+            document.getElementById('uiTopItems').innerHTML = sortedItems.length ? sortedItems.map(i => `<tr><td><b>${i.name}</b></td><td style="text-align:center;">${i.qty}</td><td style="text-align:right; color:#4ade80;">Rp ${i.total.toLocaleString('id-ID')}</td></tr>`).join('') : `<tr><td colspan="3" style="text-align:center;">Belum ada penjualan Lunas.</td></tr>`;
             document.getElementById('uiExpenseList').innerHTML = expUIHtml || `<tr><td colspan="2" style="text-align:center;">Tidak ada pengeluaran.</td></tr>`;
 
             document.getElementById('docOmzet').innerText = `Rp ${tOmzet.toLocaleString('id-ID')}`;
