@@ -20,4 +20,75 @@
 
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        /* (Biarin kodingan CSS dan Body di bawahnya tetap utuh, jangan dihapus) */
+        :root { --bg: #050505; --surface: #121212; --primary: #ffffff; --text: #e5e5e5; --border: #262626; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background: var(--bg); color: var(--text); -webkit-font-smoothing: antialiased; line-height: 1.6; }
+        
+        header { background: var(--bg); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--border); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; }
+        .back-btn { color: var(--primary); text-decoration: none; font-size: 12px; font-weight: bold; text-transform: uppercase; letter-spacing: 1px; display: flex; align-items: center; gap: 5px; }
+        .logo img { max-height: 25px; object-fit: contain; mix-blend-mode: screen; }
+        
+        .container { max-width: 800px; margin: 0 auto; padding: 40px 20px; }
+        .page-title { font-family: 'Oswald', sans-serif; font-size: 32px; text-align: center; margin-bottom: 40px; letter-spacing: 2px; text-transform: uppercase; color: var(--primary); }
+        
+        .content-box { background: var(--surface); border: 1px solid var(--border); padding: 30px; border-radius: 8px; margin-bottom: 25px; }
+        .content-box h3 { font-family: 'Oswald', sans-serif; font-size: 20px; color: var(--primary); margin-bottom: 15px; border-bottom: 1px dashed #333; padding-bottom: 10px; letter-spacing: 1px; }
+        .content-box p { color: #ccc; font-size: 14px; margin-bottom: 15px; text-align: justify; }
+        
+        .filosofi-list { list-style: none; padding: 0; color: #ccc; font-size: 14px;}
+        .filosofi-list li { margin-bottom: 12px; padding-left: 15px; position: relative; }
+        .filosofi-list li::before { content: '▪'; position: absolute; left: 0; color: #f59e0b; font-size: 18px; line-height: 1; }
+        .filosofi-list b { color: var(--primary); font-family: 'Oswald', sans-serif; letter-spacing: 1px; font-size: 15px; }
+
+        footer { text-align: center; padding: 30px 20px; font-size: 11px; color: #555; border-top: 1px solid var(--border); margin-top: 40px; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="index.html" class="back-btn">← Kembali</a>
+        <div class="logo"><img src="ganketilogo.png" alt="GANKETI"></div>
+        <div style="width: 70px;"></div> </header>
+
+    <div class="container">
+        <h1 class="page-title">About Ganketi</h1>
+
+        <div class="content-box">
+            <h3>Our Story</h3>
+            <p><b>GANKETI</b> adalah brand fashion modern yang lahir dari semangat untuk menghadirkan gaya yang elegan, kreatif, dan relevan dengan perkembangan tren global. Kami percaya bahwa fashion bukan hanya sekadar pakaian, tetapi juga cara seseorang mengekspresikan identitas, karakter, dan gaya hidupnya.</p>
+            <p>GANKETI menggabungkan inspirasi dari berbagai budaya dunia dengan sentuhan desain modern dan inovatif. Setiap produk dirancang dengan perhatian terhadap detail, kualitas, dan estetika agar mampu memberikan pengalaman fashion yang berbeda bagi para penggunanya.</p>
+        </div>
+
+        <div class="content-box">
+            <h3>Filosofi Nama GANKETI</h3>
+            <p>Nama GANKETI memiliki makna mendalam yang merepresentasikan nilai dan filosofi brand kami:</p>
+            <ul class="filosofi-list">
+                <li><b>G – Gracia</b> (Spanyol): Melambangkan keanggunan dan keindahan alami.</li>
+                <li><b>A – Arte</b> (Portugis/Spanyol): Mewakili seni dan kreativitas dalam desain.</li>
+                <li><b>N – Novo</b> (Portugis): Menggambarkan sesuatu yang baru, modern, dan selalu berkembang.</li>
+                <li><b>K – Kultura</b> (Polandia): Merepresentasikan budaya dan identitas.</li>
+                <li><b>E – Elegancia</b> (Spanyol): Menunjukkan kesan elegan, premium, dan eksklusif.</li>
+                <li><b>T – Tendencia</b> (Spanyol): Melambangkan tren dan gaya modern.</li>
+                <li><b>I – Inovação</b> (Portugis): Menggambarkan inovasi dan pendekatan futuristik.</li>
+            </ul>
+        </div>
+
+        <div class="content-box">
+            <h3>Vision & Mission</h3>
+            <p><b>Vision:</b> Menjadi brand fashion dan lifestyle modern yang dikenal secara global dengan identitas yang kuat, desain yang inovatif, serta kualitas produk yang premium.</p>
+            <p><b>Mission:</b></p>
+            <ul class="filosofi-list">
+                <li>Menghadirkan produk fashion berkualitas dengan desain modern dan stylish.</li>
+                <li>Menggabungkan kreativitas, budaya, dan tren global dalam setiap koleksi.</li>
+                <li>Memberikan pengalaman fashion yang elegan dan berkelas bagi pelanggan.</li>
+                <li>Membangun identitas brand yang kuat di dunia fashion dan lifestyle.</li>
+            </ul>
+        </div>
+    </div>
+
+    <footer>
+        © 2026 GANKETI Official. All Rights Reserved.
+    </footer>
+
+</body>
+</html>
