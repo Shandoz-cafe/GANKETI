@@ -14,11 +14,6 @@
     <meta property="og:description" content="GANKETI represents modern elegance, authentic fashion, and timeless style">
     <meta property="og:image" content="https://ganketi.store/ganketiweb.png">
 
-    <meta name="twitter:card" content="summary_large_image">
-    <meta name="twitter:title" content="GANKETI | Authentic Streetwear">
-    <meta name="twitter:description" content="GANKETI represents modern elegance, authentic fashion, and timeless style">
-    <meta name="twitter:image" content="https://ganketi.store/ganketiweb.png">
-
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <script src="https://app.midtrans.com/snap/snap.js" data-client-key="Mid-client-ci-M4QXxtek0TsyV"></script>
@@ -156,7 +151,9 @@
         .status-badge { display: inline-block; padding: 4px 10px; border-radius: 4px; font-size: 10px; font-weight: 700; letter-spacing: 1px; }
         .status-UNPAID { background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid #ef4444; }
         .status-PAID { background: rgba(245, 158, 11, 0.2); color: #f59e0b; border: 1px solid #f59e0b; }
-        .status-SHIPPED { background: rgba(74, 222, 128, 0.2); color: #4ade80; border: 1px solid #4ade80; }
+        .status-SHIPPED { background: rgba(59, 130, 246, 0.2); color: #3b82f6; border: 1px solid #3b82f6; }
+        .status-SELESAI { background: rgba(74, 222, 128, 0.2); color: #4ade80; border: 1px solid #4ade80; }
+        .status-CANCELED { background: #111; color: #888; border: 1px solid #444; text-decoration: line-through;}
         
         .item-row { display: flex; gap: 12px; align-items: center; padding: 10px 0; border-bottom: 1px solid #222; }
         .item-row:last-child { border-bottom: none; }
@@ -196,6 +193,12 @@
         .inv-totals-row.grand { font-size: 18px; font-weight: bold; border-top: 2px solid #000; padding-top: 15px; margin-top: 5px; }
         .inv-footer { clear: both; text-align: center; margin-top: 50px; font-size: 12px; color: #888; border-top: 1px solid #eee; padding-top: 20px; }
         .inv-badge { display: inline-block; padding: 5px 15px; background: #000; color: #fff; font-weight: bold; letter-spacing: 2px; font-size: 12px; border-radius: 4px; }
+        
+        /* 🔥 CSS TABS TRACK ORDER 🔥 */
+        .history-tabs { display: flex; gap: 5px; overflow-x: auto; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 10px; scrollbar-width: none;}
+        .history-tabs::-webkit-scrollbar { display: none; }
+        .h-tab-btn { background: transparent; color: #888; border: none; font-size: 12px; font-weight: bold; text-transform: uppercase; padding: 8px 12px; cursor: pointer; white-space: nowrap; border-radius: 4px;}
+        .h-tab-btn.active { background: #222; color: var(--primary); }
     </style>
 </head>
 <body>
@@ -242,7 +245,8 @@
 
             <div class="sidebar-divider"></div>
 
-            <div class="sidebar-item-sub" onclick="openMyOrders(); toggleMenu();" style="margin-top: 10px;">Track Order</div>
+            <div class="sidebar-item-sub" onclick="openMyOrders('UNPAID'); toggleMenu();" style="margin-top: 10px; color:#f59e0b; font-weight:bold;">Menunggu Pembayaran ⏳</div>
+            <div class="sidebar-item-sub" onclick="openMyOrders('ALL'); toggleMenu();">Track Order / Riwayat</div>
             <div class="sidebar-item-sub" id="sideLoginBtn" onclick="handleAuth(); toggleMenu();" style="font-weight:bold; color:#fff;">Sign In</div>
         </div>
     </div>
@@ -496,7 +500,16 @@
 
             <div id="invoiceArea" style="display:none;"></div>
             
-            <div id="historyArea" style="display:none;"><div id="historyList"></div></div>
+            <div id="historyArea" style="display:none;">
+                <div class="history-tabs" id="historyTabsContainer">
+                    <button class="h-tab-btn active" onclick="renderHistoryItems('UNPAID', this)">Belum Bayar</button>
+                    <button class="h-tab-btn" onclick="renderHistoryItems('PAID', this)">Diproses</button>
+                    <button class="h-tab-btn" onclick="renderHistoryItems('SHIPPED', this)">Dikirim</button>
+                    <button class="h-tab-btn" onclick="renderHistoryItems('SELESAI', this)">Selesai</button>
+                </div>
+                <div id="historyList"></div>
+            </div>
+
             <div id="logoutConfirmArea" style="display:none; text-align:center;"><h3 style="font-size: 16px; margin-bottom: 10px;">Sign Out of Account?</h3><div style="display:flex; gap:10px;"><button class="btn-main" style="background:#333; color:white;" onclick="closeModal()">CANCEL</button><button class="btn-main" style="background:#ef4444;" onclick="executeLogout()">YES, SIGN OUT</button></div></div>
         </div>
     </div>
@@ -517,6 +530,7 @@
         let selectedShippingCost = 0;
         let selectedCourierName = "";
         let isCheckoutPending = false; 
+        
         let globalUserOrders = []; 
         let isSharedItemOpened = false; 
 
@@ -721,7 +735,7 @@
             const urlParams = new URLSearchParams(window.location.search);
             const itemId = urlParams.get('item');
             if(itemId && !isSharedItemOpened) {
-                isSharedItemOpened = true;
+                isSharedItemOpened = true; 
                 setTimeout(() => { openPreview(itemId); }, 500); 
             }
         });
@@ -791,6 +805,7 @@
             document.getElementById('mainModal').style.display = 'none'; 
             window.history.replaceState({}, '', window.location.pathname); 
         }
+
         function hideAllAreas() { ['previewArea', 'cartArea', 'shippingArea', 'shippingOptionsArea', 'paymentArea', 'invoiceArea', 'historyArea', 'logoutConfirmArea', 'textInfoArea', 'authArea'].forEach(id => document.getElementById(id).style.display = 'none'); }
 
         function openInfoModal(type) {
@@ -1239,38 +1254,19 @@
             el.style.borderColor = '#4ade80';
         }
 
+        // 🔥 LOGIKA BAYAR: SIMPAN TOKEN MIDTRANS KE FIREBASE BIAR BISA DIBUKA LAGI 🔥
         async function processPaymentMidtrans() {
-            if(!pendingOrderData) {
-                alert("Data pesanan kosong, silakan ulangi!");
-                return;
-            }
-
+            if(!pendingOrderData) { alert("Data pesanan kosong, silakan ulangi!"); return; }
             const btn = document.querySelector('button[onclick="processPaymentMidtrans()"]');
-            if(btn) {
-                btn.innerText = "MEMBUKA PEMBAYARAN... ⏳"; 
-                btn.disabled = true;
-            }
+            if(btn) { btn.innerText = "MEMBUKA PEMBAYARAN... ⏳"; btn.disabled = true; }
 
             try {
                 const invoiceNumber = "INV-GKT-" + Date.now(); 
                 const orderDate = new Date().toLocaleString('id-ID');
-
                 const newOrderRef = db.ref('orders').push(); 
                 const firebaseOrderId = newOrderRef.key; 
 
-                await newOrderRef.set({ 
-                    invoice_no: invoiceNumber, 
-                    date: orderDate, 
-                    customer: pendingOrderData.customer, 
-                    items: pendingOrderData.items, 
-                    shippingCost: pendingOrderData.shippingCost, 
-                    courier: pendingOrderData.courier,           
-                    total: pendingOrderData.total, 
-                    status: "UNPAID", 
-                    timestamp: Date.now() 
-                });
-
-                // 🔥 PAYLOAD INI YANG DIPERBARUI 🔥
+                // Minta Token Pop-up ke Mesin Vercel
                 const res = await fetch('https://ganketi-kasir.vercel.app/api/checkout', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -1288,6 +1284,20 @@
                 const midtransData = await res.json();
                 
                 if(midtransData.token) {
+                    // Simpan data orderan ke Firebase dengan status UNPAID + Token-nya
+                    await newOrderRef.set({ 
+                        invoice_no: invoiceNumber, 
+                        date: orderDate, 
+                        customer: pendingOrderData.customer, 
+                        items: pendingOrderData.items, 
+                        shippingCost: pendingOrderData.shippingCost, 
+                        courier: pendingOrderData.courier,           
+                        total: pendingOrderData.total, 
+                        status: "UNPAID", 
+                        payment_token: midtransData.token, // 🔥 INI KUNCI BIAR BISA RESUME BAYAR
+                        timestamp: Date.now() 
+                    });
+
                     cart = []; localStorage.setItem('ganketiCart', JSON.stringify(cart)); updateCartCount();
                     
                     window.snap.pay(midtransData.token, {
@@ -1298,15 +1308,15 @@
                         },
                         onPending: function(result){
                             showToast("Menunggu Pembayaran (Pending) ⏳", "info");
-                            closeModal();
+                            openMyOrders('UNPAID'); // Lempar ke menu Menunggu Pembayaran
                         },
                         onError: function(result){
                             showToast("Pembayaran Gagal ❌", "error");
                             if(btn) { btn.disabled = false; btn.innerText = "BAYAR SEKARANG ➔"; }
                         },
                         onClose: function(){
-                            showToast("Anda menutup halaman pembayaran", "warning");
-                            if(btn) { btn.disabled = false; btn.innerText = "BAYAR SEKARANG ➔"; }
+                            showToast("Pembayaran ditunda. Cek di Track Order.", "warning");
+                            openMyOrders('UNPAID'); // Lempar ke menu Menunggu Pembayaran
                         }
                     });
 
@@ -1320,87 +1330,161 @@
             }
         }
 
-        function openMyOrders() {
+        // 🔥 MENU TRACK ORDER DENGAN SISTEM TABS SEPERTI SHOPEE/TOKOPEDIA 🔥
+        function openMyOrders(initialTab = 'ALL') {
             if(!currentUser) { showToast("Please Sign In first!", 'warning'); setTimeout(() => handleAuth(), 1500); return; }
             hideAllAreas(); document.getElementById('modalTitle').innerText = "TRACK ORDER";
-            const list = document.getElementById('historyList'); list.innerHTML = `<p style="text-align:center; color:var(--text-dim); padding:20px;">Loading data...</p>`;
             document.getElementById('historyArea').style.display = 'block'; document.getElementById('mainModal').style.display = 'flex';
+            
+            // Pilih Tab Otomatis
+            let tabs = document.querySelectorAll('.h-tab-btn');
+            tabs.forEach(t => t.classList.remove('active'));
+            if(initialTab === 'UNPAID') tabs[0].classList.add('active');
+            else if(initialTab === 'PAID') tabs[1].classList.add('active');
+            else if(initialTab === 'SHIPPED') tabs[2].classList.add('active');
+            else if(initialTab === 'SELESAI') tabs[3].classList.add('active');
+            
+            document.getElementById('historyList').innerHTML = `<p style="text-align:center; color:var(--text-dim); padding:20px;">Loading data...</p>`;
             
             db.ref('orders').orderByChild('customer/email').equalTo(currentUser.email).once('value').then(snapshot => {
                 const data = snapshot.val();
-                if(!data) { list.innerHTML = `<p style="text-align:center; color:var(--text-dim); padding:40px 20px;">You have no orders yet.</p>`; return; }
+                if(!data) { document.getElementById('historyList').innerHTML = `<p style="text-align:center; color:var(--text-dim); padding:40px 20px;">Belum ada pesanan.</p>`; return; }
                 
-                globalUserOrders = Object.keys(data).map(k => data[k]).sort((a,b) => b.timestamp - a.timestamp);
-                let historyHtml = ''; 
-                
-                globalUserOrders.forEach(order => { 
-                    let itemsHtml = order.items.map(i => {
-                        let imgUrl = i.images ? i.images[0] : (i.image ? i.image : 'https://via.placeholder.com/50');
-                        return `
-                        <div class="item-row">
-                            <img src="${imgUrl}" class="item-img">
-                            <div style="flex:1;">
-                                <div style="font-size:12px; font-weight:bold; color:#fff;">${i.name}</div>
-                                <div style="font-size:10px; color:#888;">${i.qty}x @ Rp ${i.price.toLocaleString('id-ID')}</div>
-                            </div>
-                            <div style="font-size:12px; font-weight:bold; color:var(--primary);">
-                                Rp ${(i.price * i.qty).toLocaleString('id-ID')}
-                            </div>
-                        </div>`;
-                    }).join('');
-
-                    let resiHtml = '';
-                    if (order.status === 'SHIPPED' && order.resi) {
-                        resiHtml = `
-                        <div style="margin-top:12px; padding:10px; background:#111; border-radius:6px; border:1px solid #333;">
-                            <span style="font-size:10px; color:#888;">Tracking Number (Resi):</span><br>
-                            <div style="display:flex; justify-content:space-between; align-items:center; margin-top:5px;">
-                                <b style="color:#4ade80; font-size:14px; letter-spacing:1px;">${order.resi}</b>
-                                <div style="display:flex; gap:5px;">
-                                    <button onclick="navigator.clipboard.writeText('${order.resi}'); showToast('Resi copied!', 'success');" style="background:#3b82f6; color:white; border:none; padding:6px 10px; border-radius:4px; font-size:10px; font-weight:bold; cursor:pointer;">COPY</button>
-                                    <a href="https://cekresi.com/?noresi=${order.resi}" target="_blank" style="background:#f59e0b; color:black; border:none; padding:6px 10px; border-radius:4px; font-size:10px; text-decoration:none; font-weight:bold; text-align:center;">TRACK</a>
-                                </div>
-                            </div>
-                        </div>`;
-                    }
-
-                    let btnUnduhHtml = '';
-                    if(order.status === 'PAID' || order.status === 'SHIPPED') {
-                        btnUnduhHtml = `
-                        <div style="margin-top:15px; text-align:right; border-top:1px dashed #333; padding-top:15px;">
-                            <button onclick="downloadInvoice('${order.invoice_no}')" style="background:transparent; border:1px solid #fff; color:#fff; padding:8px 15px; border-radius:4px; font-size:10px; font-weight:bold; letter-spacing:1px; cursor:pointer; font-family:'Inter'; text-transform:uppercase; transition:0.3s;">📄 UNDUH INVOICE</button>
-                        </div>`;
-                    }
-
-                    historyHtml += `
-                    <div class="invoice-card">
-                        <div style="display:flex; justify-content:space-between; margin-bottom:10px; border-bottom:1px dashed var(--border); padding-bottom:10px;">
-                            <div>
-                                <b style="color:#3b82f6; font-size:13px;">${order.invoice_no}</b><br>
-                                <span style="font-size:10px; color:#888;">📅 ${order.date}</span>
-                            </div>
-                            <div><span class="status-badge status-${order.status}">${order.status}</span></div>
-                        </div>
-                        
-                        <div style="background:#0a0a0a; padding:10px; border-radius:8px; border:1px solid #222; margin-bottom:10px;">
-                            ${itemsHtml}
-                        </div>
-
-                        <div style="display:flex; justify-content:space-between; align-items:center; font-size:12px; color:var(--text-dim); line-height:1.5;">
-                            <div>
-                                Shipped to: <b style="color:#ccc;">${order.customer.name}</b>
-                            </div>
-                            <div style="text-align:right;">
-                                Total Amount:<br>
-                                <b style="color:#4ade80; font-size:15px;">Rp ${order.total.toLocaleString('id-ID')}</b>
-                            </div>
-                        </div>
-                        ${resiHtml}
-                        ${btnUnduhHtml}
-                    </div>`; 
-                });
-                list.innerHTML = historyHtml;
+                globalUserOrders = Object.keys(data).map(k => ({id: k, ...data[k]})).sort((a,b) => b.timestamp - a.timestamp);
+                renderHistoryItems(initialTab);
             });
+        }
+
+        function renderHistoryItems(filterStatus, btnEl = null) {
+            if(btnEl) {
+                document.querySelectorAll('.h-tab-btn').forEach(t => t.classList.remove('active'));
+                btnEl.classList.add('active');
+            }
+
+            const list = document.getElementById('historyList');
+            let filteredOrders = globalUserOrders;
+            
+            if(filterStatus !== 'ALL') {
+                filteredOrders = globalUserOrders.filter(o => o.status === filterStatus);
+            }
+
+            if(filteredOrders.length === 0) {
+                list.innerHTML = `<p style="text-align:center; color:var(--text-dim); padding:40px 20px;">Tidak ada pesanan di kategori ini.</p>`;
+                return;
+            }
+
+            let historyHtml = ''; 
+            filteredOrders.forEach(order => { 
+                let itemsHtml = order.items.map(i => {
+                    let imgUrl = i.images ? i.images[0] : (i.image ? i.image : 'https://via.placeholder.com/50');
+                    return `<div class="item-row"><img src="${imgUrl}" class="item-img"><div style="flex:1;"><div style="font-size:12px; font-weight:bold; color:#fff;">${i.name}</div><div style="font-size:10px; color:#888;">${i.qty}x @ Rp ${i.price.toLocaleString('id-ID')}</div></div><div style="font-size:12px; font-weight:bold; color:var(--primary);">Rp ${(i.price * i.qty).toLocaleString('id-ID')}</div></div>`;
+                }).join('');
+
+                let statusLabel = order.status;
+                if(statusLabel === 'UNPAID') statusLabel = 'MENUNGGU PEMBAYARAN';
+                if(statusLabel === 'PAID') statusLabel = 'DIPROSES';
+
+                let actionButtons = '';
+                
+                // 1. TAMPILAN KALAU BELUM BAYAR (Bisa Lanjut / Batal)
+                if(order.status === 'UNPAID') {
+                    actionButtons = `
+                    <div style="margin-top:15px; display:flex; gap:10px; border-top:1px dashed #333; padding-top:15px;">
+                        <button onclick="cancelOrder('${order.id}')" style="flex:1; background:transparent; border:1px solid #ef4444; color:#ef4444; padding:8px 0; border-radius:4px; font-size:11px; font-weight:bold; cursor:pointer;">BATALKAN</button>
+                        <button onclick="resumePayment('${order.payment_token}', '${order.id}')" style="flex:2; background:#3b82f6; border:none; color:#fff; padding:8px 0; border-radius:4px; font-size:11px; font-weight:bold; cursor:pointer;">LANJUT BAYAR ➔</button>
+                    </div>`;
+                } 
+                // 2. TAMPILAN KALAU UDAH LUNAS / DIPROSES (Bisa Unduh Invoice)
+                else if(order.status === 'PAID') {
+                    actionButtons = `
+                    <div style="margin-top:15px; text-align:right; border-top:1px dashed #333; padding-top:15px;">
+                        <button onclick="downloadInvoice('${order.invoice_no}')" style="background:transparent; border:1px solid #fff; color:#fff; padding:8px 15px; border-radius:4px; font-size:10px; font-weight:bold; letter-spacing:1px; cursor:pointer;">📄 INVOICE</button>
+                    </div>`;
+                }
+                // 3. TAMPILAN KALAU DIKIRIM (Bisa Cek Resi, Selesaikan, & Unduh Invoice)
+                else if(order.status === 'SHIPPED') {
+                    actionButtons = `
+                    <div style="margin-top:12px; padding:10px; background:#111; border-radius:6px; border:1px solid #333;">
+                        <span style="font-size:10px; color:#888;">No. Resi:</span><br>
+                        <div style="display:flex; justify-content:space-between; align-items:center; margin-top:5px;">
+                            <b style="color:#4ade80; font-size:14px;">${order.resi}</b>
+                            <div style="display:flex; gap:5px;">
+                                <button onclick="navigator.clipboard.writeText('${order.resi}'); showToast('Resi disalin!', 'success');" style="background:#333; color:white; border:none; padding:6px 10px; border-radius:4px; font-size:10px; cursor:pointer;">COPY</button>
+                                <a href="https://cekresi.com/?noresi=${order.resi}" target="_blank" style="background:#f59e0b; color:black; border:none; padding:6px 10px; border-radius:4px; font-size:10px; text-decoration:none; text-align:center; font-weight:bold;">LACAK</a>
+                            </div>
+                        </div>
+                    </div>
+                    <div style="margin-top:15px; display:flex; justify-content:space-between; border-top:1px dashed #333; padding-top:15px;">
+                        <button onclick="downloadInvoice('${order.invoice_no}')" style="background:transparent; border:1px solid #888; color:#888; padding:8px 15px; border-radius:4px; font-size:10px; font-weight:bold; cursor:pointer;">📄 INVOICE</button>
+                        <button onclick="completeOrder('${order.id}')" style="background:#4ade80; border:none; color:#000; padding:8px 15px; border-radius:4px; font-size:11px; font-weight:bold; cursor:pointer;">PESANAN DITERIMA ✅</button>
+                    </div>`;
+                }
+                // 4. TAMPILAN KALAU SELESAI
+                else if(order.status === 'SELESAI') {
+                    actionButtons = `
+                    <div style="margin-top:15px; text-align:right; border-top:1px dashed #333; padding-top:15px;">
+                        <button onclick="downloadInvoice('${order.invoice_no}')" style="background:transparent; border:1px solid #4ade80; color:#4ade80; padding:8px 15px; border-radius:4px; font-size:10px; font-weight:bold; cursor:pointer;">📄 UNDUH INVOICE FINAL</button>
+                    </div>`;
+                }
+
+                historyHtml += `
+                <div class="invoice-card">
+                    <div style="display:flex; justify-content:space-between; margin-bottom:10px; border-bottom:1px dashed var(--border); padding-bottom:10px;">
+                        <div>
+                            <b style="color:#3b82f6; font-size:13px;">${order.invoice_no}</b><br>
+                            <span style="font-size:10px; color:#888;">📅 ${order.date}</span>
+                        </div>
+                        <div><span class="status-badge status-${order.status}">${statusLabel}</span></div>
+                    </div>
+                    
+                    <div style="background:#0a0a0a; padding:10px; border-radius:8px; border:1px solid #222; margin-bottom:10px;">
+                        ${itemsHtml}
+                    </div>
+
+                    <div style="display:flex; justify-content:space-between; align-items:center; font-size:12px; color:var(--text-dim); line-height:1.5;">
+                        <div>Penerima: <b style="color:#ccc;">${order.customer.name}</b></div>
+                        <div style="text-align:right;">Total Tagihan:<br><b style="color:#f59e0b; font-size:15px;">Rp ${order.total.toLocaleString('id-ID')}</b></div>
+                    </div>
+                    ${actionButtons}
+                </div>`; 
+            });
+            list.innerHTML = historyHtml;
+        }
+
+        // 🔥 FUNGSI LANJUT BAYAR DARI POPUP YANG KETUTUP 🔥
+        function resumePayment(token, orderId) {
+            if(!token) return showToast("Token kadaluarsa, silakan buat pesanan baru.", "error");
+            window.snap.pay(token, {
+                onSuccess: function(result){
+                    db.ref('orders/' + orderId).update({ status: 'PAID' }).then(() => {
+                        showToast("Pembayaran Berhasil! ✅", "success");
+                        openMyOrders('PAID');
+                    });
+                },
+                onPending: function(result){ showToast("Menunggu Pembayaran (Pending)", "info"); },
+                onError: function(result){ showToast("Pembayaran Gagal", "error"); },
+                onClose: function(){ showToast("Anda menutup halaman pembayaran", "warning"); }
+            });
+        }
+
+        // 🔥 FUNGSI BATALKAN PESANAN (Cuma bisa kalau belum lunas) 🔥
+        function cancelOrder(orderId) {
+            if(confirm("Yakin ingin membatalkan pesanan ini?")) {
+                db.ref('orders/' + orderId).update({ status: 'CANCELED' }).then(() => {
+                    showToast("Pesanan Dibatalkan.", "info");
+                    openMyOrders('ALL');
+                });
+            }
+        }
+
+        // 🔥 FUNGSI KONFIRMASI PESANAN DITERIMA 🔥
+        function completeOrder(orderId) {
+            if(confirm("Apakah paket sudah Anda terima dengan baik?")) {
+                db.ref('orders/' + orderId).update({ status: 'SELESAI' }).then(() => {
+                    showToast("Terima kasih! Pesanan Selesai.", "success");
+                    openMyOrders('SELESAI');
+                });
+            }
         }
 
         function downloadInvoice(invNo) {
@@ -1408,7 +1492,6 @@
             if(!order) return showToast("Data pesanan tidak ditemukan", "error");
 
             showToast("Menyiapkan file Invoice... ⏳", "info");
-
             const printArea = document.getElementById('invoicePrintArea');
             
             let itemsHtml = order.items.map(i => `
@@ -1421,11 +1504,12 @@
             `).join('');
 
             let subtotal = order.total - order.shippingCost;
+            let statusLabel = order.status === 'PAID' ? 'LUNAS (DIPROSES)' : (order.status === 'SHIPPED' ? 'LUNAS (DIKIRIM)' : order.status);
 
             printArea.innerHTML = `
                 <div class="inv-header">
                     <div class="inv-logo">GANKETI</div>
-                    <div class="inv-title">INVOICE</div>
+                    <div class="inv-title">INVOICE LUNAS</div>
                 </div>
                 <div class="inv-details">
                     <div>
@@ -1438,7 +1522,7 @@
                         <b style="color:#000;">DETAIL PESANAN:</b><br><br>
                         <b>No. Invoice:</b> ${order.invoice_no}<br>
                         <b>Tanggal:</b> ${order.date}<br>
-                        <b>Status:</b> <span class="inv-badge">${order.status}</span>
+                        <b>Status:</b> <span class="inv-badge">${statusLabel}</span>
                     </div>
                 </div>
                 <table class="inv-table">
