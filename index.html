@@ -20,6 +20,9 @@
     <meta name="twitter:image" content="https://shandoz-cafe.github.io/GANKETI/ganketiweb.png">
 
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script src="https://app.midtrans.com/snap/snap.js" data-client-key="Mid-client-ci-M4QXxtek0TsyV"></script>
+
     <style>
         :root { --bg: #050505; --surface: #121212; --primary: #ffffff; --text: #e5e5e5; --text-dim: #888888; --border: #262626; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
@@ -459,7 +462,7 @@
             </div>
 
             <div id="paymentArea" style="display:none;">
-                <p style="font-size: 12px; color: #4ade80; margin-bottom: 15px; text-align:center;">🔒 Secured by iPaymu</p>
+                <p style="font-size: 12px; color: #4ade80; margin-bottom: 15px; text-align:center;">🔒 Secured by Midtrans</p>
                 <div style="text-align:center; margin-bottom:20px;">
                     <span style="font-size:12px; color:#888;">Total Pembayaran</span><br>
                     <b style="font-size:24px; color:var(--primary);" id="payTotalDisplay">Rp 0</b>
@@ -480,7 +483,7 @@
                     <span style="font-size:16px;">🏪</span>
                 </div>
                 
-                <button class="btn-main" onclick="simulateXenditSuccess()" style="margin-top: 20px; background:#3b82f6; color:#fff;">BAYAR SEKARANG ➔</button>
+                <button class="btn-main" onclick="processPaymentMidtrans()" style="margin-top: 20px; background:#3b82f6; color:#fff;">BAYAR SEKARANG ➔</button>
 
             </div>
 
@@ -1204,15 +1207,16 @@
             el.style.borderColor = '#4ade80';
         }
 
-        async function simulateXenditSuccess() {
+        /* 🔥 FUNGSI BAYAR MIDTRANS BARU 🔥 */
+        async function processPaymentMidtrans() {
             if(!pendingOrderData) {
                 alert("Data pesanan kosong, silakan ulangi!");
                 return;
             }
 
-            const btn = document.querySelector('button[onclick="simulateXenditSuccess()"]') || document.getElementById('btnCheckout');
+            const btn = document.querySelector('button[onclick="processPaymentMidtrans()"]');
             if(btn) {
-                btn.innerText = "MEMBUAT TAGIHAN... ⏳"; 
+                btn.innerText = "MEMBUKA PEMBAYARAN... ⏳"; 
                 btn.disabled = true;
             }
 
@@ -1223,6 +1227,7 @@
                 const newOrderRef = db.ref('orders').push(); 
                 const firebaseOrderId = newOrderRef.key; 
 
+                // Simpan data orderan ke Firebase dengan status UNPAID
                 await newOrderRef.set({ 
                     invoice_no: invoiceNumber, 
                     date: orderDate, 
@@ -1235,6 +1240,7 @@
                     timestamp: Date.now() 
                 });
 
+                // Minta Token Pop-up ke Mesin Vercel
                 const res = await fetch('https://ganketi-kasir.vercel.app/api/checkout', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -1246,18 +1252,41 @@
                     })
                 });
                 
-                const xenditData = await res.json();
+                const midtransData = await res.json();
                 
-                if(xenditData.invoice_url) {
+                if(midtransData.token) {
+                    // Kosongkan keranjang
                     cart = []; localStorage.setItem('ganketiCart', JSON.stringify(cart)); updateCartCount();
-                    window.location.href = xenditData.invoice_url; 
+                    
+                    // BUKA POP-UP SNAP MIDTRANS ✨
+                    window.snap.pay(midtransData.token, {
+                        onSuccess: function(result){
+                            // Bisa langsung lunas tanpa nunggu webhook
+                            db.ref('orders/' + firebaseOrderId).update({ status: 'PAID' });
+                            showToast("Pembayaran Berhasil! ✅", "success");
+                            closeModal();
+                        },
+                        onPending: function(result){
+                            showToast("Menunggu Pembayaran (Pending) ⏳", "info");
+                            closeModal();
+                        },
+                        onError: function(result){
+                            showToast("Pembayaran Gagal ❌", "error");
+                            if(btn) { btn.disabled = false; btn.innerText = "BAYAR SEKARANG ➔"; }
+                        },
+                        onClose: function(){
+                            showToast("Anda menutup halaman pembayaran", "warning");
+                            if(btn) { btn.disabled = false; btn.innerText = "BAYAR SEKARANG ➔"; }
+                        }
+                    });
+
                 } else {
-                    alert("Gagal dari sistem bayar: " + JSON.stringify(xenditData));
-                    if(btn) { btn.disabled = false; btn.innerText = "COBA LAGI"; }
+                    alert("Gagal dari Midtrans: " + JSON.stringify(midtransData));
+                    if(btn) { btn.disabled = false; btn.innerText = "BAYAR SEKARANG ➔"; }
                 }
             } catch(e) {
-                alert("Gagal konek ke Vercel: " + e.message);
-                if(btn) { btn.disabled = false; btn.innerText = "COBA LAGI"; }
+                alert("Gagal konek ke server: " + e.message);
+                if(btn) { btn.disabled = false; btn.innerText = "BAYAR SEKARANG ➔"; }
             }
         }
 
