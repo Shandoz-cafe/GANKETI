@@ -1487,77 +1487,82 @@
             }
         }
 
+                // 🔥 FUNGSI CETAK PDF ANTI-BLANK (BISA BACA DATA LAMA & BARU) 🔥
         function downloadInvoice(invNo) {
             const order = globalUserOrders.find(o => o.invoice_no === invNo);
             if(!order) return showToast("Data pesanan tidak ditemukan", "error");
 
             showToast("Menyiapkan file Invoice... ⏳", "info");
-            const printArea = document.getElementById('invoicePrintArea');
-            
+
+            // Antisipasi pesanan lama yang belum ada ongkir/kurir
+            let shipCost = order.shippingCost || 0;
+            let courierName = order.courier || '-';
+            let subtotal = order.total - shipCost;
+            let statusLabel = order.status === 'PAID' ? 'LUNAS (DIPROSES)' : (order.status === 'SHIPPED' ? 'LUNAS (DIKIRIM)' : order.status);
+
+            let custName = order.customer && order.customer.name ? order.customer.name : '-';
+            let custPhone = order.customer && order.customer.phone ? order.customer.phone : '-';
+            let custAddress = order.customer && order.customer.address ? order.customer.address : '-';
+
+            // Susun baris barang belanjaan
             let itemsHtml = order.items.map(i => `
                 <tr>
-                    <td><b>${i.name}</b><br><span style="color:#888; font-size:11px;">Size: ${i.sizes || 'All Size'} | Color: ${i.color || 'Default'}</span></td>
-                    <td style="text-align:center;">${i.qty}</td>
-                    <td style="text-align:right;">Rp ${i.price.toLocaleString('id-ID')}</td>
-                    <td style="text-align:right; font-weight:bold;">Rp ${(i.price * i.qty).toLocaleString('id-ID')}</td>
+                    <td style="border-bottom: 1px solid #eee; padding: 15px 0;"><b>${i.name || 'Produk'}</b><br><span style="color:#888; font-size:11px;">Size: ${i.sizes || 'All Size'} | Color: ${i.color || 'Default'}</span></td>
+                    <td style="border-bottom: 1px solid #eee; padding: 15px 0; text-align:center;">${i.qty || 1}</td>
+                    <td style="border-bottom: 1px solid #eee; padding: 15px 0; text-align:right;">Rp ${(i.price || 0).toLocaleString('id-ID')}</td>
+                    <td style="border-bottom: 1px solid #eee; padding: 15px 0; text-align:right; font-weight:bold;">Rp ${((i.price || 0) * (i.qty || 1)).toLocaleString('id-ID')}</td>
                 </tr>
             `).join('');
 
-            let subtotal = order.total - order.shippingCost;
-            let statusLabel = order.status === 'PAID' ? 'LUNAS (DIPROSES)' : (order.status === 'SHIPPED' ? 'LUNAS (DIKIRIM)' : order.status);
-
-            printArea.innerHTML = `
-                <div class="inv-header">
-                    <div class="inv-logo">GANKETI</div>
-                    <div class="inv-title">INVOICE LUNAS</div>
-                </div>
-                <div class="inv-details">
-                    <div>
-                        <b style="color:#000;">DITERBITKAN UNTUK:</b><br><br>
-                        <b>${order.customer.name}</b><br>
-                        ${order.customer.phone}<br>
-                        ${order.customer.address}
+            // Rakit Desain Struk secara "Virtual" (Nggak nyicil di layar)
+            const invoiceHTML = `
+                <div style="background: #fff; color: #000; padding: 40px; font-family: 'Inter', sans-serif; width: 100%;">
+                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #000; padding-bottom: 20px; margin-bottom: 20px;">
+                        <div style="font-family: 'Oswald', sans-serif; font-size: 32px; font-weight: bold; letter-spacing: 2px;">GANKETI</div>
+                        <div style="font-size: 24px; font-weight: bold; color: #888; letter-spacing: 4px;">INVOICE LUNAS</div>
                     </div>
-                    <div style="text-align:right;">
-                        <b style="color:#000;">DETAIL PESANAN:</b><br><br>
-                        <b>No. Invoice:</b> ${order.invoice_no}<br>
-                        <b>Tanggal:</b> ${order.date}<br>
-                        <b>Status:</b> <span class="inv-badge">${statusLabel}</span>
+                    <div style="display: flex; justify-content: space-between; margin-bottom: 30px; font-size: 13px; line-height: 1.6;">
+                        <div>
+                            <b style="color:#000;">DITERBITKAN UNTUK:</b><br><br>
+                            <b>${custName}</b><br>${custPhone}<br>${custAddress}
+                        </div>
+                        <div style="text-align:right;">
+                            <b style="color:#000;">DETAIL PESANAN:</b><br><br>
+                            <b>No. Invoice:</b> ${order.invoice_no}<br>
+                            <b>Tanggal:</b> ${order.date}<br>
+                            <b>Status:</b> <span style="display: inline-block; padding: 5px 15px; background: #000; color: #fff; font-weight: bold; letter-spacing: 2px; font-size: 12px; border-radius: 4px;">${statusLabel}</span>
+                        </div>
                     </div>
-                </div>
-                <table class="inv-table">
-                    <thead>
-                        <tr>
-                            <th>Deskripsi Produk</th>
-                            <th style="text-align:center;">Qty</th>
-                            <th style="text-align:right;">Harga</th>
-                            <th style="text-align:right;">Total</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        ${itemsHtml}
-                    </tbody>
-                </table>
-                <div class="inv-totals">
-                    <div class="inv-totals-row">
-                        <span>Subtotal Produk</span>
-                        <span>Rp ${subtotal.toLocaleString('id-ID')}</span>
+                    <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px; font-size: 13px;">
+                        <thead>
+                            <tr>
+                                <th style="border-bottom: 2px solid #000; padding: 10px 0; text-align: left; font-weight: bold; text-transform: uppercase;">Deskripsi Produk</th>
+                                <th style="border-bottom: 2px solid #000; padding: 10px 0; text-align: center; font-weight: bold; text-transform: uppercase;">Qty</th>
+                                <th style="border-bottom: 2px solid #000; padding: 10px 0; text-align: right; font-weight: bold; text-transform: uppercase;">Harga</th>
+                                <th style="border-bottom: 2px solid #000; padding: 10px 0; text-align: right; font-weight: bold; text-transform: uppercase;">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>${itemsHtml}</tbody>
+                    </table>
+                    <div style="width: 300px; float: right; font-size: 14px;">
+                        <div style="display: flex; justify-content: space-between; padding: 8px 0;">
+                            <span>Subtotal Produk</span><span>Rp ${subtotal.toLocaleString('id-ID')}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 8px 0;">
+                            <span>Ongkos Kirim (${courierName})</span><span>Rp ${shipCost.toLocaleString('id-ID')}</span>
+                        </div>
+                        <div style="display: flex; justify-content: space-between; padding: 8px 0; font-size: 18px; font-weight: bold; border-top: 2px solid #000; padding-top: 15px; margin-top: 5px;">
+                            <span>TOTAL KESELURUHAN</span><span>Rp ${order.total.toLocaleString('id-ID')}</span>
+                        </div>
                     </div>
-                    <div class="inv-totals-row">
-                        <span>Ongkos Kirim (${order.courier})</span>
-                        <span>Rp ${order.shippingCost.toLocaleString('id-ID')}</span>
+                    <div style="clear: both; text-align: center; margin-top: 50px; font-size: 12px; color: #888; border-top: 1px solid #eee; padding-top: 20px;">
+                        Terima kasih telah berbelanja di GANKETI. Authentic Streetwear since 2026.<br>
+                        Jika ada pertanyaan, hubungi ganketistore@gmail.com atau WhatsApp 0851-7995-0609.
                     </div>
-                    <div class="inv-totals-row grand">
-                        <span>TOTAL KESELURUHAN</span>
-                        <span>Rp ${order.total.toLocaleString('id-ID')}</span>
-                    </div>
-                </div>
-                <div class="inv-footer">
-                    Terima kasih telah berbelanja di GANKETI. Authentic Streetwear since 2026.<br>
-                    Jika ada pertanyaan, hubungi ganketistore@gmail.com atau WhatsApp 0851-7995-0609.
                 </div>
             `;
 
+            // Proses convert ke PDF pakai metode string (Paling stabil buat HP)
             var opt = {
               margin:       [15, 15, 15, 15],
               filename:     `${order.invoice_no}.pdf`,
@@ -1566,10 +1571,11 @@
               jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
 
-            html2pdf().set(opt).from(printArea).save().then(() => {
+            html2pdf().set(opt).from(invoiceHTML).save().then(() => {
                 showToast("Invoice berhasil diunduh! ✅", "success");
             });
         }
+
     </script>
 </body>
 </html>
