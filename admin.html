@@ -33,6 +33,7 @@
         .order-card { background: #1a1a1a; border: 1px solid #333; border-radius: 10px; padding: 20px; margin-bottom: 20px; font-size: 13px; box-shadow: 0 4px 6px rgba(0,0,0,0.3);}
         .order-header { display: flex; justify-content: space-between; border-bottom: 1px dashed #444; padding-bottom: 12px; margin-bottom: 15px; align-items: flex-start;}
         .badge-status { padding: 6px 12px; border-radius: 6px; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px;}
+        .status-UNPAID { background: rgba(239, 68, 68, 0.2); color: #ef4444; border: 1px solid #ef4444; }
         .status-PAID { background: rgba(245, 158, 11, 0.2); color: #f59e0b; border: 1px solid #f59e0b; }
         .status-SHIPPED { background: rgba(74, 222, 128, 0.2); color: #4ade80; border: 1px solid #4ade80; }
         .btn-status { padding: 8px 15px; font-size: 11px; cursor: pointer; border-radius: 6px; font-weight: bold; transition: 0.2s;}
@@ -144,8 +145,9 @@
 
             <div class="form-group"><label>Link URL Supplier</label><input type="url" id="eLink" placeholder="https://shopee.co.id/..."></div>
 
-            <div class="form-group"><label>Ganti Foto</label><input type="file" id="eImages" accept="image/*" multiple style="padding: 9px;"><p style="font-size: 10px; color: #888;">*Akan menimpa foto lama.</p></div>
+            <div class="form-group"><label>Ganti Foto</label><input type="file" id="eImages" accept="image/*" multiple style="padding: 9px;"><p style="font-size: 10px; color: #888;">*Akan menimpa foto lama. Otomatis terkompresi HD.</p></div>
             <button class="btn-action" style="background:#3b82f6; color:white;" onclick="saveEditedProduct()">💾 SIMPAN PERUBAHAN</button>
+            <div id="eStatusMessage" style="text-align:center; margin-top:10px; font-size:12px;"></div>
         </div>
     </div>
 
@@ -253,7 +255,11 @@
                 </div>
 
                 <div class="form-group"><label>Link URL Supplier (Khusus Admin)</label><input type="url" id="pLink" placeholder="Opsional..."></div>
-                <div class="form-group"><label>Foto Produk</label><input type="file" id="pImages" accept="image/*" multiple style="padding: 9px;"></div>
+                <div class="form-group">
+                    <label>Foto Produk</label>
+                    <input type="file" id="pImages" accept="image/*" multiple style="padding: 9px;">
+                    <p style="font-size: 10px; color: #f59e0b; margin-top:5px;">*Foto otomatis dikompres menjadi ukuran kecil (HD) sebelum diupload.</p>
+                </div>
                 <button class="btn-action" onclick="uploadProduct()">UPLOAD KE ETALASE</button>
                 <div id="statusMessage" style="text-align:center; margin-top:15px; font-size:13px; font-weight: 600;"></div>
             </div>
@@ -273,6 +279,7 @@
                 <div class="form-group">
                     <input type="file" id="promoBanners" accept="image/*" multiple style="padding: 9px;">
                     <button onclick="uploadBanners()" class="btn-action" style="padding:10px; font-size:11px;">Upload Banner</button>
+                    <div id="bStatusMessage" style="text-align:center; margin-top:5px; font-size:11px;"></div>
                 </div>
                 <div id="bannerList" style="margin-bottom: 30px;"></div>
                 
@@ -292,6 +299,7 @@
                 </div>
                 <div class="form-group"><label>Gambar Background</label><input type="file" id="fcImage" accept="image/*" style="padding: 9px;"></div>
                 <button onclick="uploadFeaturedCat()" class="btn-action" style="padding:10px; font-size:11px; background:#f59e0b; color:black;">Tambah Kotak Unggulan</button>
+                <div id="fcStatusMessage" style="text-align:center; margin-top:5px; font-size:11px;"></div>
                 <div id="featuredCatList" style="margin-top: 15px;"></div>
             </div>
 
@@ -413,8 +421,37 @@
         let allOrdersData = []; let allExpensesData = [];
         let currentFinFilter = 'hari'; let customFinDate = ''; let finChart = null;
         let currentCategoriesData = []; let currentEditCatId = null;
-        
         let currentFeaturedCatsData = {}; let currentEditFcId = null;
+
+        // 🔥 MESIN KOMPRESOR GAMBAR OTOMATIS (SMART CANVAS) 🔥
+        function compressImage(file, maxWidth = 1000, quality = 0.8) {
+            return new Promise((resolve) => {
+                const reader = new FileReader();
+                reader.readAsDataURL(file);
+                reader.onload = event => {
+                    const img = new Image();
+                    img.src = event.target.result;
+                    img.onload = () => {
+                        let width = img.width;
+                        let height = img.height;
+                        
+                        if (width > maxWidth) {
+                            height = Math.round((height * maxWidth) / width);
+                            width = maxWidth;
+                        }
+                        
+                        const canvas = document.createElement('canvas');
+                        canvas.width = width;
+                        canvas.height = height;
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, width, height);
+                        
+                        // Konversi ke JPEG ukuran kecil (anti lelet)
+                        resolve(canvas.toDataURL('image/jpeg', quality));
+                    };
+                };
+            });
+        }
 
         function switchTab(tabName) {
             ['upload', 'manage', 'orders', 'finance', 'design'].forEach(t => {
@@ -571,9 +608,10 @@
             if(!newName) return alert("Nama kategori tidak boleh kosong!");
             let updates = { name: newName };
             if(file) {
-                const reader = new FileReader();
-                reader.onload = function(e) { updates.icon = e.target.result; db.ref('ui_categories/' + currentEditCatId).update(updates).then(() => { closeEditCatModal(); alert("Kategori berhasil diupdate!"); }); }; 
-                reader.readAsDataURL(file);
+                compressImage(file, 300, 0.8).then(compressedImg => { // Ikon kecil aja (300px)
+                    updates.icon = compressedImg; 
+                    db.ref('ui_categories/' + currentEditCatId).update(updates).then(() => { closeEditCatModal(); alert("Kategori berhasil diupdate!"); });
+                });
             } else { db.ref('ui_categories/' + currentEditCatId).update(updates).then(() => { closeEditCatModal(); alert("Kategori berhasil diupdate!"); }); }
         }
 
@@ -582,9 +620,11 @@
             if(!name) return alert("Isi nama kategori!");
             const baseData = { name: name, timestamp: Date.now(), order: Date.now() };
             if(file) {
-                const reader = new FileReader();
-                reader.onload = function(e) { baseData.icon = e.target.result; db.ref('ui_categories').push(baseData); document.getElementById('catName').value = ''; document.getElementById('catIcon').value = ''; }; 
-                reader.readAsDataURL(file);
+                compressImage(file, 300, 0.8).then(compressedImg => {
+                    baseData.icon = compressedImg; 
+                    db.ref('ui_categories').push(baseData); 
+                    document.getElementById('catName').value = ''; document.getElementById('catIcon').value = '';
+                });
             } else { db.ref('ui_categories').push(baseData); document.getElementById('catName').value = ''; document.getElementById('catIcon').value = ''; }
         }
 
@@ -594,17 +634,17 @@
             const file = document.getElementById('fcImage').files[0];
             
             if(!title || checkedTargets.length === 0 || !file) return alert("Isi Judul, Pilih Minimal 1 Target Kategori, dan Pilih Gambar!");
+            document.getElementById('fcStatusMessage').innerHTML = "<span style='color:white;'>Mengompres & Upload...</span>";
             
             const targetStr = checkedTargets.join(', ');
             
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                db.ref('ui_featured_cats').push({ title: title, target: targetStr, image: e.target.result, timestamp: Date.now() });
+            compressImage(file, 800, 0.8).then(compressedImg => { // 800px cukup buat promo
+                db.ref('ui_featured_cats').push({ title: title, target: targetStr, image: compressedImg, timestamp: Date.now() });
                 document.getElementById('fcTitle').value = ''; document.getElementById('fcImage').value = '';
                 document.querySelectorAll('.fcCatCb').forEach(cb => cb.checked = false);
-                alert("Kotak Unggulan Berhasil Ditambahkan!");
-            };
-            reader.readAsDataURL(file);
+                document.getElementById('fcStatusMessage').innerHTML = "<span style='color:#4ade80;'>Berhasil!</span>";
+                setTimeout(() => { document.getElementById('fcStatusMessage').innerHTML = ""; }, 3000);
+            });
         }
 
         db.ref('ui_featured_cats').on('value', snap => {
@@ -665,19 +705,15 @@
             let updates = { title: title, target: targetStr };
 
             if(file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    updates.image = e.target.result;
+                compressImage(file, 800, 0.8).then(compressedImg => {
+                    updates.image = compressedImg;
                     db.ref('ui_featured_cats/' + currentEditFcId).update(updates).then(() => {
-                        closeEditFcModal();
-                        alert("Kotak Unggulan Berhasil Diupdate!");
+                        closeEditFcModal(); alert("Kotak Unggulan Berhasil Diupdate!");
                     });
-                };
-                reader.readAsDataURL(file);
+                });
             } else {
                 db.ref('ui_featured_cats/' + currentEditFcId).update(updates).then(() => {
-                    closeEditFcModal();
-                    alert("Kotak Unggulan Berhasil Diupdate!");
+                    closeEditFcModal(); alert("Kotak Unggulan Berhasil Diupdate!");
                 });
             }
         }
@@ -701,14 +737,17 @@
             if(checkedCats.length === 0) return alert("Pilih minimal 1 kategori!");
             if(!name || !cost || !price || !stock || !origin || !originId || !checkedCouriers || files.length===0) return alert("Lengkapi data yang wajib!");
             
-            document.getElementById('statusMessage').innerHTML = "<span style='color:white;'>Mengunggah...</span>";
-            const readFiles = Array.from(files).map(file => new Promise(resolve => { const reader = new FileReader(); reader.onload = e => resolve(e.target.result); reader.readAsDataURL(file); }));
+            document.getElementById('statusMessage').innerHTML = "<span style='color:white;'>Mengompres Foto & Uploading... ⏳</span>";
+            
+            // Proses Kompres Semua Foto Produk (Maks 1000px, Kualitas 80%)
+            const readFiles = Array.from(files).map(file => compressImage(file, 1000, 0.8));
+            
             Promise.all(readFiles).then(imgs => {
                 let data = { name, desc, unit, sizes, colors, minOrder: parseInt(minOrder), maxOrder: parseInt(maxOrder), origin, originId, couriers: checkedCouriers, category: checkedCats.join(', '), cost: parseInt(cost), price: parseInt(price), stock: parseInt(stock), images: imgs, timestamp: Date.now(), isPopular: false };
                 if(orig) data.originalPrice = parseInt(orig); if(link) data.link = link; 
                 
                 db.ref('products').push(data).then(() => { 
-                    document.getElementById('statusMessage').innerHTML = "<span style='color:#4ade80;'>✅ Upload sukses!</span>"; 
+                    document.getElementById('statusMessage').innerHTML = "<span style='color:#4ade80;'>✅ Upload sukses! Fotonya ringan!</span>"; 
                     ['pName','pDesc','pSizes','pColors','pMinOrder','pMaxOrder','pOrigin','pOriginId','pCost','pPrice','pStock','pOriginalPrice','pLink','pImages'].forEach(id=>document.getElementById(id).value=''); 
                     document.querySelectorAll('.pCatCb, .pCourierCb').forEach(cb => cb.checked = false); 
                     setTimeout(() => { document.getElementById('statusMessage').innerHTML = ""; }, 3000);
@@ -778,7 +817,7 @@
             document.getElementById('eDesc').value = p.desc || '';
             document.getElementById('eUnit').value = p.unit || 'pcs';
             document.getElementById('eSizes').value = p.sizes || 'All Size';
-            document.getElementById('eColors').value = p.colors || ''; // Edit warna
+            document.getElementById('eColors').value = p.colors || ''; 
             document.getElementById('eMinOrder').value = p.minOrder || '';
             document.getElementById('eMaxOrder').value = p.maxOrder || '';
             document.getElementById('eCost').value = p.cost || '';
@@ -834,17 +873,36 @@
             let l = document.getElementById('eLink').value.trim(); if(l) u.link = l; else u.link = null; 
             let files = document.getElementById('eImages').files;
             
-            if(files.length>0) { Promise.all(Array.from(files).map(file => new Promise(resolve => { const reader = new FileReader(); reader.onload = e => resolve(e.target.result); reader.readAsDataURL(file); }))).then(imgs => { u.images = imgs; db.ref('products/'+currentEditId).update(u).then(()=>{closeEditModal(); alert('Tersimpan!');}); }); } 
-            else { db.ref('products/'+currentEditId).update(u).then(()=>{closeEditModal(); alert('Tersimpan!');}); }
+            document.getElementById('eStatusMessage').innerHTML = "<span style='color:white;'>Menyimpan & Mengompres...</span>";
+
+            if(files.length>0) { 
+                Promise.all(Array.from(files).map(file => compressImage(file, 1000, 0.8))).then(imgs => { 
+                    u.images = imgs; 
+                    db.ref('products/'+currentEditId).update(u).then(()=>{
+                        document.getElementById('eStatusMessage').innerHTML = "";
+                        closeEditModal(); alert('Tersimpan!');
+                    }); 
+                }); 
+            } 
+            else { 
+                db.ref('products/'+currentEditId).update(u).then(()=>{
+                    document.getElementById('eStatusMessage').innerHTML = "";
+                    closeEditModal(); alert('Tersimpan!');
+                }); 
+            }
         }
 
         function uploadBanners() { 
             const files = document.getElementById('promoBanners').files;
             if(files.length === 0) return alert("Pilih gambar banner dulu!");
-            const readFiles = Array.from(files).map(file => new Promise(resolve => { const reader = new FileReader(); reader.onload = e => resolve(e.target.result); reader.readAsDataURL(file); }));
+            document.getElementById('bStatusMessage').innerHTML = "<span style='color:white;'>Mengompres Banner...</span>";
+
+            const readFiles = Array.from(files).map(file => compressImage(file, 1200, 0.8)); // Banner bisa agak lebar (1200px)
             Promise.all(readFiles).then(base64Images => {
                 base64Images.forEach(img => { db.ref('ui_banners').push({ image: img, timestamp: Date.now() }); });
-                document.getElementById('promoBanners').value = ''; alert("Banner berhasil diupload!");
+                document.getElementById('promoBanners').value = ''; 
+                document.getElementById('bStatusMessage').innerHTML = "<span style='color:#4ade80;'>Banner berhasil diupload!</span>";
+                setTimeout(() => { document.getElementById('bStatusMessage').innerHTML = ""; }, 3000);
             });
         }
         
@@ -865,7 +923,6 @@
             });
         }
 
-        // 🔥 FUNGSI RENDER PESANAN YANG UDAH DIFILTER HANYA PAID & SHIPPED 🔥
         function renderOrdersTab() {
             const list = document.getElementById('ordersList');
             if(allOrdersData.length === 0) return list.innerHTML = '<p style="color:#aaa; text-align:center;">Belum ada pesanan.</p>';
@@ -873,7 +930,6 @@
             const searchQuery = (document.getElementById('searchOrder') ? document.getElementById('searchOrder').value.toLowerCase() : '');
             const statusFilter = (document.getElementById('filterOrderStatus') ? document.getElementById('filterOrderStatus').value : 'ALL');
 
-            // HANYA MENGAMBIL PESANAN YANG SUDAH LUNAS ATAU DIKIRIM (Abaikan UNPAID)
             let validPaidOrders = allOrdersData.filter(o => o.status === 'PAID' || o.status === 'SHIPPED');
 
             let filteredOrders = validPaidOrders.filter(o => {
@@ -946,6 +1002,8 @@
                     </div>
                     
                     <div style="text-align:right; display:flex; justify-content:flex-end; align-items:center; gap:10px;">
+                        ${o.status === 'UNPAID' ? `<button class="btn-status" style="background:#f59e0b; border:none; color:black;" onclick="updateStatus('${o.id}', 'PAID')">✅ LUNAS (Lanjut Kemas)</button>` : ''} 
+                        
                         ${o.status === 'PAID' ? `
                             <input type="text" id="resi-${o.id}" placeholder="Input Nomor Resi..." style="padding:8px; font-size:11px; border-radius:6px; border:1px solid #444; background:#111; color:white; width:160px;">
                             <button class="btn-status" style="background:#4ade80; border:none; color:black; padding:9px 15px;" onclick="kirimPesanan('${o.id}')">📦 KIRIM</button>
@@ -985,7 +1043,6 @@
             return true;
         }
 
-        // 🔥 LAPORAN KEUANGAN OTOMATIS CUMA NGITUNG PESANAN LUNAS 🔥
         function loadFinanceReport() {
             const validOrders = allOrdersData.filter(o => matchDateLogic(o.timestamp) && (o.status === 'PAID' || o.status === 'SHIPPED'));
             const validExpenses = allExpensesData.filter(e => matchDateLogic(e.timestamp));
