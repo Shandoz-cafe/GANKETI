@@ -181,7 +181,13 @@
         .info-content ul { padding-left: 20px; margin-bottom: 10px; }
         .info-content li { margin-bottom: 5px; }
         
-        footer { border-top: 1px solid var(--border); padding: 30px 20px; text-align: center; margin-top: 30px;}
+        /* 🔥 UPGRADE FOOTER: TAMBAH ALAMAT & LINK KEBIJAKAN BIAR LOLOS IPAYMU 🔥 */
+        footer { border-top: 1px solid var(--border); padding: 40px 20px; margin-top: 30px; background: #0a0a0a;}
+        .footer-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 30px; margin-bottom: 30px; text-align: left; border-bottom: 1px solid #222; padding-bottom: 30px;}
+        .footer-title { font-family: 'Oswald', sans-serif; font-size: 16px; margin-bottom: 15px; color: #fff; letter-spacing: 1px;}
+        .footer-text { font-size: 12px; color: #888; line-height: 1.8;}
+        .footer-link { display: block; font-size: 12px; color: #888; text-decoration: none; margin-bottom: 8px; transition: 0.3s;}
+        .footer-link:hover { color: var(--primary); }
         .newsletter input { width: 100%; max-width: 300px; padding: 12px; background: #111; border: 1px solid #333; color: white; border-radius: 4px; margin-bottom: 10px; outline: none;}
         .newsletter button { background: var(--primary); color: var(--bg); padding: 12px 20px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;}
     </style>
@@ -291,13 +297,38 @@
     </div>
 
     <footer>
-        <h3 style="font-family:'Oswald'; margin-bottom:10px; font-size:18px;">Newsletter</h3>
-        <p style="font-size:11px; color:#888; margin-bottom:15px;">Subscribe to be the first to hear about our exclusive offers and latest arrivals.</p>
-        <div class="newsletter">
-            <input type="email" placeholder="Your email address" id="nlEmail">
-            <button onclick="document.getElementById('nlEmail').value=''; showToast('Subscribed Successfully!', 'success')">›</button>
+        <div class="footer-grid">
+            <div>
+                <h3 class="footer-title">GANKETI STORE</h3>
+                <div class="footer-text">
+                    Jl. Sarijadi Raya No. 15<br>
+                    Kec. Sukasari, Kota Bandung<br>
+                    Jawa Barat, Indonesia 40151<br><br>
+                    <b>WhatsApp:</b> 0851-7995-0609<br>
+                    <b>Email:</b> ganketistore@gmail.com
+                </div>
+            </div>
+            
+            <div>
+                <h3 class="footer-title">INFORMATION</h3>
+                <a href="#" class="footer-link" onclick="openInfoModal('terms'); return false;">Terms & Conditions</a>
+                <a href="#" class="footer-link" onclick="openInfoModal('privacy'); return false;">Privacy Policy</a>
+                <a href="#" class="footer-link" onclick="openInfoModal('return'); return false;">Refund Policy</a>
+                <a href="#" class="footer-link" onclick="openInfoModal('faq'); return false;">FAQ</a>
+                <a href="#" class="footer-link" onclick="openInfoModal('contact'); return false;">Contact Us</a>
+            </div>
+
+            <div>
+                <h3 class="footer-title">NEWSLETTER</h3>
+                <p class="footer-text" style="margin-bottom:10px;">Subscribe to be the first to hear about our exclusive offers and latest arrivals.</p>
+                <div class="newsletter">
+                    <input type="email" placeholder="Your email address" id="nlEmail">
+                    <button onclick="document.getElementById('nlEmail').value=''; showToast('Subscribed Successfully!', 'success')">›</button>
+                </div>
+            </div>
         </div>
-        <div style="margin-top:30px; font-size:10px; color:#555;">
+        
+        <div style="text-align: center; font-size:10px; color:#555;">
             &copy; 2026 GANKETI Official. All Rights Reserved.
         </div>
     </footer>
@@ -428,7 +459,7 @@
             </div>
 
             <div id="paymentArea" style="display:none;">
-                <p style="font-size: 12px; color: #4ade80; margin-bottom: 15px; text-align:center;">🔒 Secured by Xendit</p>
+                <p style="font-size: 12px; color: #4ade80; margin-bottom: 15px; text-align:center;">🔒 Secured by iPaymu</p>
                 <div style="text-align:center; margin-bottom:20px;">
                     <span style="font-size:12px; color:#888;">Total Pembayaran</span><br>
                     <b style="font-size:24px; color:var(--primary);" id="payTotalDisplay">Rp 0</b>
@@ -445,13 +476,11 @@
                     <span style="font-size:16px;">🏦</span>
                 </div>
                 <div class="payment-method-card" onclick="selectPaymentMethod(this)">
-                    <div><b style="font-size:13px; color:#fff;">E-Wallet</b><br><span style="font-size:11px; color:#888;">OVO, Dana, ShopeePay</span></div>
-                    <span style="font-size:16px;">💳</span>
+                    <div><b style="font-size:13px; color:#fff;">Minimarket</b><br><span style="font-size:11px; color:#888;">Alfamart, Indomaret</span></div>
+                    <span style="font-size:16px;">🏪</span>
                 </div>
-
-                <p style="font-size:10px; color:#666; text-align:center; margin-top:20px;">*Sistem pembayaran sedang dalam tahap integrasi.</p>
                 
-                <button class="btn-main" onclick="simulateXenditSuccess()" style="margin-top: 10px; background:#3b82f6; color:#fff;">BAYAR SEKARANG ➔</button>
+                <button class="btn-main" onclick="simulateXenditSuccess()" style="margin-top: 20px; background:#3b82f6; color:#fff;">BAYAR SEKARANG ➔</button>
 
             </div>
 
@@ -767,13 +796,13 @@
                 content = `<h4>Terms of Service</h4><p>Dengan mengakses dan menggunakan website GANKETI, Anda setuju untuk mematuhi syarat dan ketentuan yang berlaku di website ini.</p><h4>Use of Website</h4><p>Pengguna setuju untuk menggunakan website ini hanya untuk tujuan yang sah dan tidak melanggar hukum yang berlaku.</p><h4>Product Information</h4><p>Kami berusaha memberikan informasi produk yang akurat. Namun, kami tidak menjamin bahwa semua informasi di website selalu bebas dari kesalahan atau perubahan.</p><h4>Intellectual Property</h4><p>Seluruh konten yang terdapat di website GANKETI, termasuk logo, desain, gambar, dan teks, merupakan milik GANKETI dan dilindungi oleh hukum hak kekayaan intelektual.</p><h4>Changes to Terms</h4><p>GANKETI berhak untuk memperbarui atau mengubah syarat dan ketentuan ini kapan saja tanpa pemberitahuan sebelumnya.</p>`;
             } else if(type === 'faq') {
                 title = "FAQ";
-                content = `<h4>General Questions</h4><p><b>Apa itu GANKETI?</b><br>GANKETI adalah brand fashion dan lifestyle modern yang menghadirkan produk dengan desain stylish, elegan, dan berkualitas. Kami menggabungkan kreativitas, tren global, dan identitas brand untuk menciptakan produk yang unik dan modern.</p><p><b>Apakah produk GANKETI original?</b><br>Ya. Semua produk yang dijual di website resmi GANKETI adalah produk original yang dirancang dan dikembangkan oleh brand GANKETI.</p><h4>Orders</h4><p><b>Bagaimana cara memesan produk di website GANKETI?</b></p><ul><li>Pilih produk yang ingin dibeli</li><li>Pilih ukuran atau variasi produk</li><li>Klik tombol Add to Cart / Add to Bag</li><li>Lanjutkan ke halaman checkout</li><li>Masukkan alamat pengiriman & pilih metode pembayaran</li><li>Selesaikan pembayaran</li></ul><p><b>Apakah saya bisa membatalkan pesanan?</b><br>Pesanan hanya dapat dibatalkan sebelum pesanan diproses atau dikirimkan. Silakan hubungi tim kami sesegera mungkin jika ingin melakukan pembatalan.</p><h4>Payment & Shipping</h4><p><b>Metode pembayaran apa saja yang tersedia?</b><br>Kami menerima Transfer Bank, E-Wallet, Virtual Account, dan Payment Gateway.</p><p><b>Berapa lama waktu pengiriman?</b><br>Dalam kota: 1–3 hari kerja. Antar kota: 2–5 hari kerja. Internasional: 5–10 hari kerja.</p>`;
+                content = `<h4>General Questions</h4><p><b>Apa itu GANKETI?</b><br>GANKETI adalah brand fashion dan lifestyle modern yang menghadirkan produk dengan desain stylish, elegan, dan berkualitas. Kami menggabungkan kreativitas, tren global, dan identitas brand untuk menciptakan produk yang unik dan modern.</p><p><b>Apakah produk GANKETI original?</b><br>Ya. Semua produk yang dijual di website resmi GANKETI adalah produk original yang dirancang dan dikembangkan oleh brand GANKETI.</p><h4>Orders</h4><p><b>Bagaimana cara memesan produk di website GANKETI?</b></p><ul><li>Pilih produk yang ingin dibeli</li><li>Pilih ukuran atau variasi produk</li><li>Klik tombol Add to Cart / Add to Bag</li><li>Lanjutkan ke halaman checkout</li><li>Masukkan alamat pengiriman & pilih metode pembayaran</li><li>Selesaikan pembayaran</li></ul><p><b>Apakah saya bisa membatalkan pesanan?</b><br>Pesanan hanya dapat dibatalkan sebelum pesanan diproses atau dikirimkan. Silakan hubungi tim kami sesegera mungkin jika ingin melakukan pembatalan.</p><h4>Payment & Shipping</h4><p><b>Metode pembayaran apa saja yang tersedia?</b><br>Kami menerima Transfer Bank, Virtual Account, Minimarket, dan QRIS Payment.</p><p><b>Berapa lama waktu pengiriman?</b><br>Dalam kota: 1–3 hari kerja. Antar kota: 2–5 hari kerja. Internasional: 5–10 hari kerja.</p>`;
             } else if(type === 'return') {
                 title = "SHIPPING & RETURNS";
                 content = `<h4>Shipping Policy</h4><p>GANKETI berkomitmen untuk mengirimkan pesanan dengan aman dan cepat kepada pelanggan. Setelah pembayaran berhasil dikonfirmasi, pesanan akan diproses dalam waktu 1–2 hari kerja sebelum dikirimkan.</p><h4>Delivery Time</h4><ul><li>Pengiriman lokal: 1–3 hari kerja</li><li>Pengiriman nasional: 2–5 hari kerja</li><li>Pengiriman internasional: 5–10 hari kerja</li></ul><h4>Return Policy</h4><p>Produk dapat dikembalikan atau ditukar jika produk rusak saat diterima atau tidak sesuai dengan pesanan. Pengajuan retur harus dilakukan dalam waktu maksimal 7 hari setelah produk diterima.</p><p>Produk yang dikembalikan harus dalam kondisi belum dipakai, tidak rusak, dan masih memiliki label serta kemasan asli.</p><h4>Refund Policy</h4><p>Jika retur disetujui, pengembalian dana akan diproses sesuai metode pembayaran yang digunakan oleh pelanggan (memerlukan waktu 3–7 hari kerja).</p>`;
             } else if(type === 'contact') {
                 title = "CONTACT US";
-                content = `<h4>Get In Touch</h4><p>Kami selalu terbuka untuk berkomunikasi dengan pelanggan, partner bisnis, maupun komunitas yang tertarik dengan brand GANKETI. Jika Anda memiliki pertanyaan, masukan, atau ingin bekerja sama dengan kami, silakan hubungi melalui informasi berikut:</p><ul><li><b>Email:</b> ganketi.store@gmail.com</li><li><b>Instagram:</b> @ganketi.store</li><li><b>Website:</b> www.ganketi.store</li></ul><h4>Send Us a Message</h4><p>Anda juga dapat mengirimkan pesan langsung melalui WhatsApp atau Email. Tim kami akan merespons secepat mungkin untuk membantu kebutuhan Anda.</p>`;
+                content = `<h4>Get In Touch</h4><p>Kami selalu terbuka untuk berkomunikasi dengan pelanggan, partner bisnis, maupun komunitas yang tertarik dengan brand GANKETI. Jika Anda memiliki pertanyaan, masukan, atau ingin bekerja sama dengan kami, silakan hubungi melalui informasi berikut:</p><ul><li><b>WhatsApp:</b> 0851-7995-0609</li><li><b>Email:</b> ganketistore@gmail.com</li><li><b>Instagram:</b> @ganketi.store</li></ul><h4>Send Us a Message</h4><p>Anda juga dapat mengirimkan pesan langsung melalui WhatsApp atau Email. Tim kami akan merespons secepat mungkin untuk membantu kebutuhan Anda.</p>`;
             } else if(type === 'size') {
                 title = "SIZE GUIDE";
                 content = `<h4>General Size Guide</h4><p>Measurements are in Centimeters (cm):</p><ul><li><b>S:</b> Chest 48 - Length 68</li><li><b>M:</b> Chest 50 - Length 70</li><li><b>L:</b> Chest 52 - Length 72</li><li><b>XL:</b> Chest 54 - Length 74</li><li><b>XXL:</b> Chest 56 - Length 76</li></ul><p><i>*Please allow 1-2 cm margin of error due to manual measurement.</i></p>`;
@@ -785,7 +814,6 @@
             document.getElementById('mainModal').style.display = 'flex';
         }
 
-        // 🔥 FUNGSI BUKA DETAIL PRODUK (SUDAH ADA FITUR WARNA) 🔥
         function openPreview(id) {
             hideAllAreas(); const p = globalProducts.find(x => x.id === id); if(!p) return;
             document.getElementById('modalTitle').innerText = 'PRODUCT DETAIL'; 
@@ -795,12 +823,10 @@
             let sliderHtml = `<div class="preview-slider">`; imgArray.forEach(img => { sliderHtml += `<img src="${img}" style="${isHabis ? 'filter: grayscale(100%); opacity: 0.5;' : ''}">`; }); sliderHtml += `</div>`;
             if(imgArray.length > 1) sliderHtml += `<div style="text-align:center; font-size:10px; color:var(--text-dim); margin-top:-10px; margin-bottom:15px;">⟵ Swipe Image ⟶</div>`;
             
-            // Dropdown Ukuran
             let sizesArr = p.sizes ? p.sizes.split(',').map(s => s.trim()) : ['All Size'];
             let sizeOptions = sizesArr.map(s => `<option value="${s}">${s}</option>`).join('');
             let sizeHtml = `<div class="form-group"><label>Pilih Ukuran / Varian</label><select id="previewSize">${sizeOptions}</select></div>`;
             
-            // 🔥 Dropdown Warna Dinamis 🔥
             let colorsArr = p.colors && p.colors !== 'Default' ? p.colors.split(',').map(c => c.trim()) : [];
             let colorHtml = '';
             if (colorsArr.length > 0) {
@@ -835,12 +861,10 @@
             let btnHtml = isHabis ? `<button class="btn-main" disabled>SOLD OUT</button>` : `<button class="btn-main" style="background:#f59e0b; color:#000;" onclick="addToCart('${p.id}')">ADD TO CART</button>`;
             let priceHtml = p.originalPrice ? `<span style="font-size:12px; text-decoration:line-through; color:#ef4444; margin-right:8px; font-family:'Inter';">Rp ${p.originalPrice.toLocaleString('id-ID')}</span>Rp ${p.price.toLocaleString('id-ID')}` : `Rp ${p.price.toLocaleString('id-ID')}`;
             
-            // Masukin colorHtml ke tampilan
             previewBox.innerHTML = `${sliderHtml}<h3 style="font-size: 18px; color: white; margin-bottom: 5px; line-height: 1.3;">${p.name}</h3><p style="font-size: 16px; font-weight: bold; color: var(--primary); margin-bottom: 15px; font-family: 'Oswald';">${priceHtml} <span style="font-size:12px; font-weight:normal; color:#888; font-family:'Inter';">/ ${unit}</span></p>${descHtml}${stockHtml}${colorHtml}${sizeHtml}${qtyHtml}${btnHtml}`;
             previewBox.style.display = 'block'; document.getElementById('mainModal').style.display = 'flex';
         }
 
-        // 🔥 FUNGSI ADD TO CART (ANTI BENTROK WARNA & UKURAN) 🔥
         function addToCart(id) {
             const product = globalProducts.find(p => p.id === id); 
             const selectedSize = document.getElementById('previewSize').value; 
@@ -854,7 +878,6 @@
             if (isNaN(inputQty) || inputQty < minQty) { showToast(`Minimal order adalah ${minQty} ${product.unit || 'pcs'}`, 'warning'); return; }
             if (inputQty > maxQty) { showToast(`Maksimal order adalah ${maxQty} ${product.unit || 'pcs'}`, 'warning'); return; }
 
-            // Bikin ID unik gabungan Nama, Warna, Ukuran biar gak numpuk
             const cartItemId = id + '-' + selectedColor + '-' + selectedSize;
             const existing = cart.find(c => c.cartItemId === cartItemId);
             
@@ -1229,7 +1252,7 @@
                     cart = []; localStorage.setItem('ganketiCart', JSON.stringify(cart)); updateCartCount();
                     window.location.href = xenditData.invoice_url; 
                 } else {
-                    alert("Gagal dari Xendit: " + JSON.stringify(xenditData));
+                    alert("Gagal dari sistem bayar: " + JSON.stringify(xenditData));
                     if(btn) { btn.disabled = false; btn.innerText = "COBA LAGI"; }
                 }
             } catch(e) {
