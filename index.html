@@ -200,7 +200,7 @@
         .h-tab-btn { background: transparent; color: #888; border: none; font-size: 12px; font-weight: bold; text-transform: uppercase; padding: 8px 12px; cursor: pointer; white-space: nowrap; border-radius: 4px;}
         .h-tab-btn.active { background: #222; color: var(--primary); }
 
-                          /* 🔥 SCROLLING TRUST BANNER 🔥 */
+        /* 🔥 SCROLLING TRUST BANNER 🔥 */
         .trust-marquee { background: #0a0a0a; border-top: 1px solid #222; padding: 25px 0; overflow: hidden; position: relative; width: 100%; white-space: nowrap; display: flex; align-items: center; }
         .trust-track { display: inline-flex; animation: marqueeScroll 30s linear infinite; width: max-content; }
         .trust-track:hover { animation-play-state: paused; }
@@ -208,6 +208,14 @@
         .trust-track img:hover { filter: grayscale(0%) brightness(100%) opacity(1); transform: scale(1.1); }
         @keyframes marqueeScroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 
+        /* 🔥 SKELETON LOADING ALA SHOPEE/TOKOPEDIA 🔥 */
+        .skeleton-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; animation: pulseSkel 1.5s infinite; aspect-ratio: auto; }
+        .skel-img { width: 100%; aspect-ratio: 1/1; background: #1a1a1a; }
+        .skel-info { padding: 15px; display: flex; flex-direction: column; gap: 10px; flex-grow: 1; }
+        .skel-line { height: 12px; background: #222; border-radius: 4px; }
+        .skel-line.short { width: 40%; }
+        .skel-line.medium { width: 70%; }
+        @keyframes pulseSkel { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
         
     </style>
 </head>
@@ -295,7 +303,7 @@
     </div>
 
     <div class="sort-bar">
-        <div class="sort-info"><span id="productCountUi" style="color:var(--primary); font-weight:bold;">0</span> Products</div>
+        <div class="sort-info"><span id="productCountUi" style="color:var(--primary); font-weight:bold;">...</span> Products</div>
         <div>
             <span style="font-size:12px; color:#888; margin-right:5px;">Sort By:</span>
             <select class="sort-select" id="sortSelect" onchange="renderProducts()">
@@ -313,7 +321,14 @@
 
     <div class="container">
         <h2 class="section-title" id="secTitle" style="display: none;">LATEST DROP</h2>
-        <div class="grid" id="productGrid"><p style="text-align: center; width: 100%; color: var(--text-dim);">Loading catalogue...</p></div>
+        <div class="grid" id="productGrid">
+            <div class="skeleton-card"><div class="skel-img"></div><div class="skel-info"><div class="skel-line short"></div><div class="skel-line"></div><div class="skel-line medium" style="margin-top:20px;"></div></div></div>
+            <div class="skeleton-card"><div class="skel-img"></div><div class="skel-info"><div class="skel-line short"></div><div class="skel-line"></div><div class="skel-line medium" style="margin-top:20px;"></div></div></div>
+            <div class="skeleton-card"><div class="skel-img"></div><div class="skel-info"><div class="skel-line short"></div><div class="skel-line"></div><div class="skel-line medium" style="margin-top:20px;"></div></div></div>
+            <div class="skeleton-card"><div class="skel-img"></div><div class="skel-info"><div class="skel-line short"></div><div class="skel-line"></div><div class="skel-line medium" style="margin-top:20px;"></div></div></div>
+            <div class="skeleton-card"><div class="skel-img"></div><div class="skel-info"><div class="skel-line short"></div><div class="skel-line"></div><div class="skel-line medium" style="margin-top:20px;"></div></div></div>
+            <div class="skeleton-card"><div class="skel-img"></div><div class="skel-info"><div class="skel-line short"></div><div class="skel-line"></div><div class="skel-line medium" style="margin-top:20px;"></div></div></div>
+        </div>
     </div>
 
     <div class="trust-marquee">
