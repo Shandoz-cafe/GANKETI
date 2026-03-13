@@ -97,6 +97,11 @@
         .img-box { width: 100%; aspect-ratio: 1 / 1; background: #1a1a1a; position: relative; overflow: hidden; }
         .img-box img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
         .card:hover .img-box img { transform: scale(1.05); }
+        
+        /* 🔥 EFEK HOVER GAMBAR KEDUA ALA WEB BRAND MAHAL 🔥 */
+        .img-hover { position: absolute; top: 0; left: 0; opacity: 0; transition: opacity 0.5s ease; z-index: 2; width: 100%; height: 100%; object-fit: cover; }
+        .card:hover .img-hover { opacity: 1; }
+
         .badge { position: absolute; top: 10px; left: 10px; background: var(--primary); color: var(--bg); font-size: 10px; font-weight: 800; padding: 4px 8px; text-transform: uppercase; border-radius: 2px;}
         .info { padding: 15px; display: flex; flex-direction: column; flex-grow: 1; }
         .cat { font-size: 9px; color: var(--bg); background: var(--text-dim); padding: 3px 6px; border-radius: 4px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; font-weight: bold; align-self: flex-start;}
@@ -114,14 +119,6 @@
         .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 15px; margin-bottom: 20px; }
         .modal-title { font-family: 'Oswald', sans-serif; font-size: 18px; letter-spacing: 1px; text-transform: uppercase; }
         .close-btn { color: var(--text-dim); font-size: 24px; cursor: pointer; line-height: 1; }
-        .preview-slider { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 15px; aspect-ratio: 1/1;}
-        .preview-slider::-webkit-scrollbar { display: none; }
-        .preview-slider img { width: 100%; height: 100%; object-fit: cover; flex-shrink: 0; scroll-snap-align: start; }
-        
-        .product-desc-box { background: #0a0a0a; border: 1px solid #222; border-radius: 8px; padding: 15px; margin-bottom: 15px; font-size: 12px; color: #ccc; line-height: 1.6;}
-        .product-desc-title { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; font-weight: bold; border-bottom: 1px dashed #333; padding-bottom: 5px;}
-
-        .stock-warn { font-size: 12px; font-weight: 600; padding: 8px; background: rgba(245, 158, 11, 0.1); color: #f59e0b; border-radius: 6px; margin-bottom: 15px; border: 1px solid rgba(245, 158, 11, 0.2);}
         
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; font-size: 11px; color: #aaa; margin-bottom: 5px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;}
@@ -194,13 +191,11 @@
         .inv-footer { clear: both; text-align: center; margin-top: 50px; font-size: 12px; color: #888; border-top: 1px solid #eee; padding-top: 20px; }
         .inv-badge { display: inline-block; padding: 5px 15px; background: #000; color: #fff; font-weight: bold; letter-spacing: 2px; font-size: 12px; border-radius: 4px; }
         
-        /* 🔥 CSS TABS TRACK ORDER 🔥 */
         .history-tabs { display: flex; gap: 5px; overflow-x: auto; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 10px; scrollbar-width: none;}
         .history-tabs::-webkit-scrollbar { display: none; }
         .h-tab-btn { background: transparent; color: #888; border: none; font-size: 12px; font-weight: bold; text-transform: uppercase; padding: 8px 12px; cursor: pointer; white-space: nowrap; border-radius: 4px;}
         .h-tab-btn.active { background: #222; color: var(--primary); }
 
-        /* 🔥 SCROLLING TRUST BANNER 🔥 */
         .trust-marquee { background: #0a0a0a; border-top: 1px solid #222; padding: 25px 0; overflow: hidden; position: relative; width: 100%; white-space: nowrap; display: flex; align-items: center; }
         .trust-track { display: inline-flex; animation: marqueeScroll 30s linear infinite; width: max-content; }
         .trust-track:hover { animation-play-state: paused; }
@@ -208,7 +203,7 @@
         .trust-track img:hover { filter: grayscale(0%) brightness(100%) opacity(1); transform: scale(1.1); }
         @keyframes marqueeScroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 
-        /* 🔥 SKELETON LOADING ALA SHOPEE/TOKOPEDIA 🔥 */
+        /* 🔥 SKELETON LOADING 🔥 */
         .skeleton-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; animation: pulseSkel 1.5s infinite; aspect-ratio: auto; }
         .skel-img { width: 100%; aspect-ratio: 1/1; background: #1a1a1a; }
         .skel-info { padding: 15px; display: flex; flex-direction: column; gap: 10px; flex-grow: 1; }
@@ -333,23 +328,17 @@
 
     <div class="trust-marquee">
         <div class="trust-track">
-            <img src="kominfo.png" alt="Kominfo">
-            <img src="bi.png" alt="Bank Indonesia">
             <img src="https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Logo_QRIS.svg/512px-Logo_QRIS.svg.png" alt="QRIS">
             <img src="https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/8/86/Gopay_logo.svg/512px-Gopay_logo.svg.png" alt="GoPay">
             <img src="https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Bank_Central_Asia.svg/512px-Bank_Central_Asia.svg.png" alt="BCA">
             <img src="https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/a/ad/Bank_Mandiri_logo_2016.svg/512px-Bank_Mandiri_logo_2016.svg.png" alt="Mandiri">
             <img src="https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/9/97/Logo_BRI.png/512px-Logo_BRI.png" alt="BRI">
-            <img src="https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Mastercard-logo.svg/512px-Mastercard-logo.svg.png" alt="Mastercard">
             
-            <img src="kominfo.png" alt="Kominfo">
-            <img src="bi.png" alt="Bank Indonesia">
             <img src="https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/a/a2/Logo_QRIS.svg/512px-Logo_QRIS.svg.png" alt="QRIS">
             <img src="https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/8/86/Gopay_logo.svg/512px-Gopay_logo.svg.png" alt="GoPay">
             <img src="https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/5/5c/Bank_Central_Asia.svg/512px-Bank_Central_Asia.svg.png" alt="BCA">
             <img src="https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/a/ad/Bank_Mandiri_logo_2016.svg/512px-Bank_Mandiri_logo_2016.svg.png" alt="Mandiri">
             <img src="https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/9/97/Logo_BRI.png/512px-Logo_BRI.png" alt="BRI">
-            <img src="https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/2/2a/Mastercard-logo.svg/512px-Mastercard-logo.svg.png" alt="Mastercard">
         </div>
     </div>
 
@@ -397,8 +386,6 @@
     <div class="modal" id="mainModal">
         <div class="modal-box">
             <div class="modal-header"><div class="modal-title" id="modalTitle" style="font-size: 14px; background:#222; padding:5px 10px; border-radius:4px;">MODAL</div><div class="close-btn" onclick="closeModal()">×</div></div>
-            
-            <div id="previewArea" style="display:none;"></div>
             
             <div id="cartArea" style="display:none;">
                 <div id="cartItemsList"></div>
@@ -781,11 +768,11 @@
             globalProducts = Object.keys(data).map(key => ({ id: key, ...data[key] }));
             renderProducts();
 
+            // 🔥 LINK DARI HALAMAN PRODUK KALAU KLIK KERANJANG BAKAL NGEBUKA MODAL DI SINI 🔥
             const urlParams = new URLSearchParams(window.location.search);
-            const itemId = urlParams.get('item');
-            if(itemId && !isSharedItemOpened) {
-                isSharedItemOpened = true; 
-                setTimeout(() => { openPreview(itemId); }, 500); 
+            const openCartQuery = urlParams.get('cart');
+            if(openCartQuery === 'true') {
+                setTimeout(() => { openCart(); }, 500); 
             }
         });
 
@@ -811,11 +798,15 @@
             renderProducts();
         }
 
+        // 🔥 FUNGSI KARTU PRODUK UDAH DIGANTI JADI ADA HOVER & KLIK KE HALAMAN BARU 🔥
         function createProductCard(p) {
-            let imgThumb = p.images ? p.images[0] : p.image; let isHabis = (!p.stock || p.stock <= 0);
+            let imgThumb = p.images && p.images.length > 0 ? p.images[0] : (p.image || 'https://via.placeholder.com/300');
+            let hoverHtml = p.images && p.images.length > 1 ? `<img src="${p.images[1]}" class="img-hover" style="${(!p.stock || p.stock <= 0) ? 'filter: grayscale(100%);' : ''}">` : '';
+            let isHabis = (!p.stock || p.stock <= 0);
             let priceHtml = p.originalPrice ? `<span class="price-strike">Rp ${p.originalPrice.toLocaleString('id-ID')}</span>Rp ${p.price.toLocaleString('id-ID')}` : `Rp ${p.price.toLocaleString('id-ID')}`;
             let displayCat = p.category ? p.category.split(',')[0] : '';
-            return `<div class="card" onclick="openPreview('${p.id}')"><div class="img-box"><div class="badge" style="background: ${isHabis ? '#ef4444' : 'var(--primary)'}; color: ${isHabis ? 'white' : 'black'};">${isHabis ? 'SOLD OUT' : 'ORIGINAL'}</div><img src="${imgThumb}" style="${isHabis ? 'filter: grayscale(100%); opacity: 0.5;' : ''}"></div><div class="info"><div class="cat">${displayCat}</div><div class="name">${p.name}</div><div class="price">${priceHtml}</div></div></div>`;
+            
+            return `<div class="card" onclick="window.location.href='product.html?id=${p.id}'"><div class="img-box"><div class="badge" style="background: ${isHabis ? '#ef4444' : 'var(--primary)'}; color: ${isHabis ? 'white' : 'black'}; z-index: 3;">${isHabis ? 'SOLD OUT' : 'ORIGINAL'}</div><img src="${imgThumb}" style="${isHabis ? 'filter: grayscale(100%); opacity: 0.5;' : ''}">${hoverHtml}</div><div class="info"><div class="cat">${displayCat}</div><div class="name">${p.name}</div><div class="price">${priceHtml}</div></div></div>`;
         }
 
         function renderProducts() {
@@ -855,7 +846,7 @@
             window.history.replaceState({}, '', window.location.pathname); 
         }
 
-        function hideAllAreas() { ['previewArea', 'cartArea', 'shippingArea', 'shippingOptionsArea', 'paymentArea', 'invoiceArea', 'historyArea', 'logoutConfirmArea', 'textInfoArea', 'authArea'].forEach(id => document.getElementById(id).style.display = 'none'); }
+        function hideAllAreas() { ['cartArea', 'shippingArea', 'shippingOptionsArea', 'paymentArea', 'invoiceArea', 'historyArea', 'logoutConfirmArea', 'textInfoArea', 'authArea'].forEach(id => document.getElementById(id).style.display = 'none'); }
 
         function openInfoModal(type) {
             hideAllAreas();
@@ -883,119 +874,6 @@
             infoBox.innerHTML = content;
             infoBox.style.display = 'block';
             document.getElementById('mainModal').style.display = 'flex';
-        }
-
-        function openPreview(id) {
-            hideAllAreas(); const p = globalProducts.find(x => x.id === id); if(!p) return;
-            document.getElementById('modalTitle').innerText = 'PRODUCT DETAIL'; 
-            const previewBox = document.getElementById('previewArea');
-            let imgArray = p.images ? p.images : [p.image]; let isHabis = (!p.stock || p.stock <= 0);
-            
-            let sliderHtml = `<div class="preview-slider">`; imgArray.forEach(img => { sliderHtml += `<img src="${img}" style="${isHabis ? 'filter: grayscale(100%); opacity: 0.5;' : ''}">`; }); sliderHtml += `</div>`;
-            if(imgArray.length > 1) sliderHtml += `<div style="text-align:center; font-size:10px; color:var(--text-dim); margin-top:-10px; margin-bottom:15px;">⟵ Swipe Image ⟶</div>`;
-            
-            let sizesArr = p.sizes ? p.sizes.split(',').map(s => s.trim()) : ['All Size'];
-            let sizeOptions = sizesArr.map(s => `<option value="${s}">${s}</option>`).join('');
-            let sizeHtml = `<div class="form-group"><label>Pilih Ukuran / Varian</label><select id="previewSize">${sizeOptions}</select></div>`;
-            
-            let colorsArr = p.colors && p.colors !== 'Default' ? p.colors.split(',').map(c => c.trim()) : [];
-            let colorHtml = '';
-            if (colorsArr.length > 0) {
-                let colorOptions = colorsArr.map(c => `<option value="${c}">${c}</option>`).join('');
-                colorHtml = `<div class="form-group"><label>Pilih Warna</label><select id="previewColor">${colorOptions}</select></div>`;
-            } else {
-                colorHtml = `<input type="hidden" id="previewColor" value="Default">`;
-            }
-
-            let unit = p.unit || 'pcs';
-            let minQty = p.minOrder ? parseInt(p.minOrder) : 1;
-            let maxQty = p.maxOrder && p.maxOrder < 9999 ? parseInt(p.maxOrder) : p.stock;
-            if(maxQty > p.stock) maxQty = p.stock; 
-
-            let qtyHtml = `<div style="display:flex; gap:10px; margin-bottom:15px;">
-                <div class="form-group" style="flex:1;">
-                    <label>Jumlah (${unit})</label>
-                    <input type="number" id="previewQty" value="${minQty}" min="${minQty}" max="${maxQty}" style="width:100%; font-weight:bold; font-size:16px;">
-                </div>
-                <div style="flex:1; align-self:center; font-size:10px; color:#888;">
-                    Min Order: ${minQty} ${unit} <br> Max Order: ${maxQty} ${unit}
-                </div>
-            </div>`;
-
-            let descHtml = '';
-            if(p.desc && p.desc.trim() !== '') {
-                let formattedDesc = p.desc.replace(/\n/g, '<br>');
-                descHtml = `<div class="product-desc-box"><div class="product-desc-title">Deskripsi Detail</div>${formattedDesc}</div>`;
-            }
-
-            let stockHtml = isHabis ? `<div class="stock-warn" style="color:#ef4444; border-color:rgba(239,68,68,0.2); background:rgba(239,68,68,0.1);">Out of Stock!</div>` : `<div class="stock-warn">🔥 Sisa ${p.stock} ${unit} lagi di gudang!</div>`;
-            let btnHtml = isHabis ? `<button class="btn-main" disabled>SOLD OUT</button>` : `<button class="btn-main" style="background:#f59e0b; color:#000;" onclick="addToCart('${p.id}')">ADD TO CART</button>`;
-            let priceHtml = p.originalPrice ? `<span style="font-size:12px; text-decoration:line-through; color:#ef4444; margin-right:8px; font-family:'Inter';">Rp ${p.originalPrice.toLocaleString('id-ID')}</span>Rp ${p.price.toLocaleString('id-ID')}` : `Rp ${p.price.toLocaleString('id-ID')}`;
-            
-            let titleAndShareHtml = `
-            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom: 5px;">
-                <h3 style="font-size: 18px; color: white; line-height: 1.3; flex:1; padding-right:10px;">${p.name}</h3>
-                <button onclick="shareProduct('${p.id}')" style="background:#222; border:1px solid #444; color:white; border-radius:50%; width:35px; height:35px; font-size:16px; cursor:pointer; display:flex; justify-content:center; align-items:center; flex-shrink:0;" title="Bagikan Produk">📤</button>
-            </div>`;
-
-            previewBox.innerHTML = `${sliderHtml}${titleAndShareHtml}<p style="font-size: 16px; font-weight: bold; color: var(--primary); margin-bottom: 15px; font-family: 'Oswald';">${priceHtml} <span style="font-size:12px; font-weight:normal; color:#888; font-family:'Inter';">/ ${unit}</span></p>${descHtml}${stockHtml}${colorHtml}${sizeHtml}${qtyHtml}${btnHtml}`;
-            previewBox.style.display = 'block'; document.getElementById('mainModal').style.display = 'flex';
-
-            window.history.replaceState({}, '', '?item=' + p.id);
-        }
-
-        function shareProduct(id) {
-            const p = globalProducts.find(x => x.id === id);
-            if(!p) return;
-            
-            const shareUrl = window.location.origin + window.location.pathname + '?item=' + p.id;
-            const shareText = `GANKETI | ${p.name}\nHarga: Rp ${p.price.toLocaleString('id-ID')}\n\nCek selengkapnya di sini: `;
-
-            if (navigator.share) {
-                navigator.share({
-                    title: p.name,
-                    text: shareText,
-                    url: shareUrl
-                }).catch(console.error);
-            } else {
-                navigator.clipboard.writeText(shareText + shareUrl).then(() => {
-                    showToast("Link produk berhasil disalin! 📋", "success");
-                });
-            }
-        }
-
-        function addToCart(id) {
-            const product = globalProducts.find(p => p.id === id); 
-            const selectedSize = document.getElementById('previewSize').value; 
-            const selectedColor = document.getElementById('previewColor') ? document.getElementById('previewColor').value : 'Default';
-            const inputQty = parseInt(document.getElementById('previewQty').value);
-
-            let minQty = product.minOrder ? parseInt(product.minOrder) : 1;
-            let maxQty = product.maxOrder && product.maxOrder < 9999 ? parseInt(product.maxOrder) : product.stock;
-            if(maxQty > product.stock) maxQty = product.stock;
-
-            if (isNaN(inputQty) || inputQty < minQty) { showToast(`Minimal order adalah ${minQty} ${product.unit || 'pcs'}`, 'warning'); return; }
-            if (inputQty > maxQty) { showToast(`Maksimal order adalah ${maxQty} ${product.unit || 'pcs'}`, 'warning'); return; }
-
-            const cartItemId = id + '-' + selectedColor + '-' + selectedSize;
-            const existing = cart.find(c => c.cartItemId === cartItemId);
-            
-            let totalRequested = existing ? existing.qty + inputQty : inputQty;
-            if (totalRequested > maxQty) { showToast(`Total di keranjang melebihi batas maksimal / stok!`, 'warning'); return; }
-
-            if(existing) { 
-                existing.qty += inputQty; 
-            } else { 
-                let displayName = selectedColor === 'Default' ? `${product.name} (${selectedSize})` : `${product.name} (${selectedColor} - ${selectedSize})`;
-                cart.push({ ...product, cartItemId: cartItemId, name: displayName, qty: inputQty, color: selectedColor }); 
-            }
-            
-            let cartItemIndex = cart.findIndex(c => c.cartItemId === cartItemId);
-            cart[cartItemIndex].origin = product.origin || 'JAKARTA SELATAN'; 
-            cart[cartItemIndex].originId = product.originId || null; 
-            cart[cartItemIndex].couriers = product.couriers || 'jne,jnt,sicepat';
-
-            localStorage.setItem('ganketiCart', JSON.stringify(cart)); updateCartCount(); closeModal(); showToast('Added to Cart! 🛒', 'success');
         }
 
         function updateCartCount() { document.getElementById('cartCount').innerText = cart.reduce((sum, item) => sum + item.qty, 0); }
