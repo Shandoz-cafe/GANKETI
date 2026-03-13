@@ -93,11 +93,12 @@
         .container { padding: 0 20px 30px 20px; max-width: 1200px; margin: 0 auto; min-height: 40vh; }
         .section-title { font-family: 'Oswald', sans-serif; font-size: 20px; letter-spacing: 1px; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px; display:flex; justify-content: space-between; align-items:center;}
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; }
-        .card { background: var(--surface); border-radius: 8px; overflow: hidden; border: 1px solid var(--border); cursor: pointer; transition: 0.3s; display: flex; flex-direction: column; }
+        .card { background: var(--surface); border-radius: 8px; overflow: hidden; border: 1px solid var(--border); cursor: pointer; transition: 0.3s; display: flex; flex-direction: column; text-decoration: none;}
         .img-box { width: 100%; aspect-ratio: 1 / 1; background: #1a1a1a; position: relative; overflow: hidden; }
         .img-box img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
         .card:hover .img-box img { transform: scale(1.05); }
         
+        /* 🔥 EFEK HOVER GAMBAR KEDUA ALA WEB BRAND MAHAL 🔥 */
         .img-hover { position: absolute; top: 0; left: 0; opacity: 0; transition: opacity 0.5s ease; z-index: 2; width: 100%; height: 100%; object-fit: cover; }
         .card:hover .img-hover { opacity: 1; }
 
@@ -202,6 +203,7 @@
         .trust-track img:hover { filter: grayscale(0%) brightness(100%) opacity(1); transform: scale(1.1); }
         @keyframes marqueeScroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 
+        /* 🔥 SKELETON LOADING 🔥 */
         .skeleton-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; animation: pulseSkel 1.5s infinite; aspect-ratio: auto; }
         .skel-img { width: 100%; aspect-ratio: 1/1; background: #1a1a1a; }
         .skel-info { padding: 15px; display: flex; flex-direction: column; gap: 10px; flex-grow: 1; }
@@ -679,6 +681,8 @@
             if(!data) { sec.style.display = 'none'; return; }
             sec.style.display = 'block';
             let features = Object.keys(data).map(k => data[k]).sort((a,b) => a.timestamp - b.timestamp).slice(0, 3);
+            
+            // 🔥 UDAH DITAMBAHIN FITUR SCROLL PAS KLIK KOTAK PROMO 🔥
             container.innerHTML = features.map(f => `<div class="f-card" onclick="filterCategory('${f.target}')"><img src="${f.image}"><div class="f-overlay"><span class="f-title">${f.title}</span></div></div>`).join('');
         });
 
@@ -748,6 +752,12 @@
             if(openCartQuery === 'true') {
                 setTimeout(() => { openCart(); }, 500); 
             }
+            
+            // 🔥 LINK DARI HALAMAN PRODUK KALAU KLIK BUY NOW BAKAL LANGSUNG BUKA CART 🔥
+            const checkoutQuery = urlParams.get('checkout');
+            if(checkoutQuery === 'true') {
+                setTimeout(() => { openCart(); }, 500); 
+            }
         });
 
         // 🔥 FUNGSI FILTER KATEGORI UDAH BISA SCROLL OTOMATIS 🔥
@@ -807,7 +817,8 @@
             let priceHtml = p.originalPrice ? `<span class="price-strike">Rp ${p.originalPrice.toLocaleString('id-ID')}</span>Rp ${p.price.toLocaleString('id-ID')}` : `Rp ${p.price.toLocaleString('id-ID')}`;
             let displayCat = p.category ? p.category.split(',')[0] : '';
             
-            return `<div class="card" onclick="window.location.href='product.html?id=${p.id}'"><div class="img-box"><div class="badge" style="background: ${isHabis ? '#ef4444' : 'var(--primary)'}; color: ${isHabis ? 'white' : 'black'}; z-index: 3;">${isHabis ? 'SOLD OUT' : 'ORIGINAL'}</div><img src="${imgThumb}" style="${isHabis ? 'filter: grayscale(100%); opacity: 0.5;' : ''}">${hoverHtml}</div><div class="info"><div class="cat">${displayCat}</div><div class="name">${p.name}</div><div class="price">${priceHtml}</div></div></div>`;
+            // 🔥 FIX: Arah klik sekarang 100% bener lari ke product.html 🔥
+            return `<a href="product.html?id=${p.id}" class="card" style="text-decoration:none;"><div class="img-box"><div class="badge" style="background: ${isHabis ? '#ef4444' : 'var(--primary)'}; color: ${isHabis ? 'white' : 'black'}; z-index: 3;">${isHabis ? 'SOLD OUT' : 'ORIGINAL'}</div><img src="${imgThumb}" style="${isHabis ? 'filter: grayscale(100%); opacity: 0.5;' : ''}">${hoverHtml}</div><div class="info"><div class="cat">${displayCat}</div><div class="name">${p.name}</div><div class="price">${priceHtml}</div></div></a>`;
         }
 
         function renderProducts() {
@@ -1169,7 +1180,6 @@
             pendingOrderData.total = grandTotal;
         }
 
-        // 🔥 FUNGSI PEMBAYARAN DIROMBAK JADI INVOICE SUMMARY 🔥
         function goToPayment() {
             if(!pendingOrderData.shippingCost) return alert("Pilih jasa pengiriman dulu!");
             hideAllAreas();
@@ -1222,7 +1232,6 @@
                 const newOrderRef = db.ref('orders').push(); 
                 const firebaseOrderId = newOrderRef.key; 
 
-                // Minta Token Pop-up ke Mesin Vercel
                 const res = await fetch('https://ganketi-kasir.vercel.app/api/checkout', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -1240,7 +1249,6 @@
                 const midtransData = await res.json();
                 
                 if(midtransData.token) {
-                    // Simpan data orderan ke Firebase dengan status UNPAID + Token-nya
                     await newOrderRef.set({ 
                         invoice_no: invoiceNumber, 
                         date: orderDate, 
@@ -1286,7 +1294,6 @@
             }
         }
 
-        // 🔥 MENU TRACK ORDER 🔥
         function openMyOrders(initialTab = 'ALL') {
             if(!currentUser) { showToast("Please Sign In first!", 'warning'); setTimeout(() => handleAuth(), 1500); return; }
             hideAllAreas(); document.getElementById('modalTitle').innerText = "TRACK ORDER";
@@ -1341,7 +1348,6 @@
 
                 let actionButtons = '';
                 
-                // 🔥 TAMBAHAN TOMBOL UNDUH TAGIHAN DI STATUS UNPAID 🔥
                 if(order.status === 'UNPAID') {
                     actionButtons = `
                     <div style="margin-top:15px; display:flex; flex-direction:column; gap:10px; border-top:1px dashed #333; padding-top:15px;">
@@ -1439,7 +1445,6 @@
             }
         }
 
-        // 🔥 FUNGSI CETAK PDF UDAH BISA NGENALIN STATUS BELUM LUNAS 🔥
         function downloadInvoice(invNo) {
             const order = globalUserOrders.find(o => o.invoice_no === invNo);
             if(!order) return showToast("Data pesanan tidak ditemukan", "error");
@@ -1450,12 +1455,10 @@
             let courierName = order.courier || '-';
             let subtotal = order.total - shipCost;
             
-            // Logic Status Tagihan
             let statusLabel = order.status === 'PAID' ? 'LUNAS (DIPROSES)' : 
                               (order.status === 'SHIPPED' ? 'LUNAS (DIKIRIM)' : 
                               (order.status === 'UNPAID' ? 'BELUM LUNAS / TAGIHAN' : order.status));
             
-            // Warna Status Biar Keren (Merah kalau belum bayar, hitam kalau lunas)
             let statusBgColor = order.status === 'UNPAID' ? '#ef4444' : '#000';
 
             let custName = order.customer && order.customer.name ? order.customer.name : '-';
