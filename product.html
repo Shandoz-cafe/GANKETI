@@ -350,8 +350,10 @@
             
             localStorage.setItem('ganketiCart', JSON.stringify(cart)); 
             
-            if(isBuyNow) {
-                window.location.href = 'index.html?checkout=true';
+                        if(isBuyNow) {
+                window.location.href = 'index.html?cart=true';
+            }
+
             } else {
                 document.getElementById('cartCount').innerText = cart.reduce((sum, item) => sum + item.qty, 0);
                 showToast("Berhasil ditambahkan ke Keranjang! 🛒", "success");
