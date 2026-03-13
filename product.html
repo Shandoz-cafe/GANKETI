@@ -1,0 +1,377 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GANKETI | Product Detail</title>
+    <link rel="icon" href="ganketiweb.png" type="image/png">
+    <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root { --bg: #050505; --surface: #121212; --primary: #ffffff; --text: #e5e5e5; --text-dim: #888888; --border: #262626; }
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
+        body { background: var(--bg); color: var(--text); overflow-x: hidden; }
+
+        header { background: var(--bg); position: sticky; top: 0; z-index: 100; border-bottom: 1px solid var(--border); padding: 15px 20px; display: flex; justify-content: space-between; align-items: center;}
+        .logo img { max-height: 25px; object-fit: contain; mix-blend-mode: screen; } 
+        .icon-btn { background: none; border: none; color: var(--text); font-size: 20px; cursor: pointer; position: relative;}
+        .cart-badge { position: absolute; top: -5px; right: -8px; background: #ef4444; color: white; font-size: 9px; font-weight: 800; padding: 2px 6px; border-radius: 20px; }
+
+        .breadcrumb { padding: 20px; font-size: 11px; color: var(--text-dim); text-transform: uppercase; letter-spacing: 1px; }
+        .breadcrumb span { color: var(--primary); font-weight: bold; }
+
+        .product-container { display: flex; flex-wrap: wrap; max-width: 1200px; margin: 0 auto; padding: 0 20px 50px 20px; gap: 40px;}
+        .gallery-col { flex: 1; min-width: 300px; }
+        .info-col { flex: 1; min-width: 300px; }
+
+        .main-img { width: 100%; aspect-ratio: 4/5; object-fit: cover; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 10px; background: #111; cursor: zoom-in;}
+        .thumb-row { display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; }
+        .thumb-row::-webkit-scrollbar { display: none; }
+        .thumb-img { width: 70px; height: 70px; object-fit: cover; border-radius: 6px; border: 2px solid transparent; cursor: pointer; opacity: 0.6; transition: 0.3s; background: #111;}
+        .thumb-img.active, .thumb-img:hover { opacity: 1; border-color: var(--primary); }
+
+        .p-title { font-family: 'Oswald', sans-serif; font-size: 28px; line-height: 1.2; text-transform: uppercase; margin-bottom: 10px; }
+        .p-price { font-size: 22px; font-weight: 700; color: var(--primary); margin-bottom: 15px; }
+        .p-strike { font-size: 14px; text-decoration: line-through; color: #ef4444; font-weight: normal; margin-right: 10px;}
+        
+        .rating-summary { display: flex; align-items: center; gap: 10px; font-size: 12px; margin-bottom: 20px; color: #f59e0b; font-weight: bold;}
+        .rating-summary span { color: var(--text-dim); font-weight: normal; }
+
+        .form-group { margin-bottom: 20px; }
+        .form-group label { display: block; font-size: 11px; color: #aaa; margin-bottom: 8px; text-transform: uppercase; font-weight: bold;}
+        .form-group select, .form-group input { width: 100%; padding: 15px; background: #111; border: 1px solid #333; color: white; border-radius: 6px; outline: none; font-size: 14px;}
+        .form-group select:focus, .form-group input:focus { border-color: var(--primary); }
+
+        .action-row { display: flex; gap: 10px; margin-bottom: 30px; margin-top: 10px;}
+        .btn-add { flex: 1; background: var(--primary); color: var(--bg); border: none; padding: 15px; border-radius: 6px; font-weight: 700; text-transform: uppercase; font-size: 14px; cursor: pointer; transition: 0.3s;}
+        .btn-add:hover { opacity: 0.8; }
+        .btn-add:disabled { background: #333; color: #666; cursor: not-allowed; }
+        .btn-wishlist { background: #111; border: 1px solid #333; color: white; width: 50px; border-radius: 6px; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.3s;}
+        .btn-wishlist:hover, .btn-wishlist.saved { border-color: #ef4444; color: #ef4444; }
+
+        /* Accordion Details */
+        .accordion { border-top: 1px solid #333; }
+        .acc-item { border-bottom: 1px solid #333; }
+        .acc-btn { width: 100%; text-align: left; background: transparent; border: none; color: white; padding: 15px 0; font-weight: 600; font-size: 12px; text-transform: uppercase; display: flex; justify-content: space-between; cursor: pointer; }
+        .acc-content { display: none; padding-bottom: 15px; font-size: 13px; color: #aaa; line-height: 1.6; }
+
+        /* Review Section */
+        .review-section { max-width: 1200px; margin: 40px auto; padding: 0 20px; border-top: 1px solid #222; padding-top: 40px;}
+        .r-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;}
+        .r-header h2 { font-family: 'Oswald', sans-serif; font-size: 20px; text-transform: uppercase; }
+        .btn-write-review { background: transparent; border: 1px solid var(--primary); color: white; padding: 8px 15px; border-radius: 4px; font-size: 11px; font-weight: bold; cursor: pointer;}
+        
+        .review-card { background: #0a0a0a; border: 1px solid #222; padding: 20px; border-radius: 8px; margin-bottom: 15px;}
+        .r-stars { color: #f59e0b; margin-bottom: 8px; font-size: 14px;}
+        .r-user { font-weight: bold; font-size: 13px; margin-bottom: 4px; color: white;}
+        .r-date { font-size: 10px; color: #666; margin-bottom: 10px;}
+        .r-text { font-size: 13px; color: #ccc; line-height: 1.5;}
+
+        /* Review Modal */
+        .modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(5px);}
+        .modal-box { background: var(--surface); padding: 25px; border-radius: 12px; width: 90%; max-width: 400px; border: 1px solid var(--border);}
+        .star-input { display: flex; gap: 10px; font-size: 24px; color: #444; cursor: pointer; justify-content: center; margin-bottom: 20px;}
+        .star-input span.active { color: #f59e0b; }
+
+        /* Toast */
+        .toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 99999; display: flex; flex-direction: column; gap: 10px; pointer-events: none;}
+        .modern-toast { background: var(--surface); border: 1px solid var(--border); color: white; padding: 16px 20px; border-radius: 12px; font-size: 13px; font-weight: bold; box-shadow: 0 10px 40px rgba(0,0,0,0.8); animation: toastSlideDown 0.4s forwards;}
+        @keyframes toastSlideDown { from { transform: translateY(-50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
+
+    </style>
+</head>
+<body>
+
+    <div id="toast-container" class="toast-container"></div>
+
+    <header>
+        <button class="icon-btn" onclick="window.location.href='index.html'">←</button>
+        <div class="logo"><img src="ganketilogo.png" alt="GANKETI"></div>
+        <button class="icon-btn" onclick="window.location.href='index.html?cart=true'">🛒 <span class="cart-badge" id="cartCount">0</span></button>
+    </header>
+
+    <div class="breadcrumb">
+        <a href="index.html" style="color:var(--text-dim); text-decoration:none;">HOME</a> / 
+        <span id="bcCategory">SHOP</span> / 
+        <span id="bcName">LOADING...</span>
+    </div>
+
+    <div class="product-container" id="productContent" style="display:none;">
+        <div class="gallery-col">
+            <img src="https://via.placeholder.com/800" id="mainImage" class="main-img">
+            <div class="thumb-row" id="thumbGallery"></div>
+        </div>
+
+        <div class="info-col">
+            <h1 class="p-title" id="pName">Product Name</h1>
+            <div class="rating-summary" id="topRatingSummary">⭐⭐⭐⭐⭐ <span>(Belum ada ulasan)</span></div>
+            <div class="p-price" id="pPriceHtml">Rp 0</div>
+            
+            <p style="font-size: 12px; color:#4ade80; font-weight:bold; margin-bottom:20px; background:rgba(74,222,128,0.1); padding:8px; border-radius:4px; display:inline-block;" id="pStockAlert">In Stock</p>
+
+            <div id="colorContainer"></div>
+            <div class="form-group"><label>SIZE</label><select id="pSize"></select></div>
+            <div class="form-group"><label>QUANTITY</label><input type="number" id="pQty" value="1" min="1"></div>
+
+            <div class="action-row">
+                <button class="btn-add" id="btnAddToCart" onclick="addToCart()">ADD TO CART</button>
+                <button class="btn-wishlist" id="btnWishlist" onclick="toggleWishlist()">♡</button>
+            </div>
+
+            <div class="accordion">
+                <div class="acc-item">
+                    <button class="acc-btn" onclick="toggleAcc('descAcc')">DESCRIPTION <span>+</span></button>
+                    <div class="acc-content" id="descAcc"></div>
+                </div>
+                <div class="acc-item">
+                    <button class="acc-btn" onclick="toggleAcc('sizeAcc')">SIZE GUIDE <span>+</span></button>
+                    <div class="acc-content" id="sizeAcc">
+                        <p>Measurements are in Centimeters (cm):<br><br>
+                        <b>S:</b> Chest 48 - Length 68<br>
+                        <b>M:</b> Chest 50 - Length 70<br>
+                        <b>L:</b> Chest 52 - Length 72<br>
+                        <b>XL:</b> Chest 54 - Length 74<br>
+                        <b>XXL:</b> Chest 56 - Length 76<br><br>
+                        <i>*Please allow 1-2 cm margin of error due to manual measurement.</i></p>
+                    </div>
+                </div>
+                <div class="acc-item">
+                    <button class="acc-btn" onclick="toggleAcc('shipAcc')">SHIPPING & RETURNS <span>+</span></button>
+                    <div class="acc-content" id="shipAcc">
+                        <p><b>Pengiriman:</b> Diproses dalam 1-2 hari kerja. Estimasi tiba 2-4 hari kerja (Reguler). Dikirim menggunakan layanan ekspedisi resmi terintegrasi otomatis.<br><br>
+                        <b>Retur:</b> Garansi tukar barang atau uang kembali maksimal 7 hari setelah pesanan diterima dengan syarat tag/label belum dilepas dan ada video unboxing.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="review-section">
+        <div class="r-header">
+            <h2>CUSTOMER REVIEWS</h2>
+            <button class="btn-write-review" onclick="openReviewModal()">WRITE A REVIEW</button>
+        </div>
+        <div id="reviewsList">
+            <p style="color:#666; font-size:13px; font-style:italic;">Belum ada ulasan untuk produk ini. Jadilah yang pertama!</p>
+        </div>
+    </div>
+
+    <div class="modal" id="reviewModal">
+        <div class="modal-box">
+            <h3 style="margin-bottom:15px; text-transform:uppercase; font-family:'Oswald'; border-bottom:1px solid #333; padding-bottom:10px;">Nilai Produk Ini</h3>
+            <div class="star-input" id="starInput">
+                <span onclick="setRating(1)">★</span><span onclick="setRating(2)">★</span><span onclick="setRating(3)">★</span><span onclick="setRating(4)">★</span><span onclick="setRating(5)">★</span>
+            </div>
+            <div class="form-group"><label>Nama Anda</label><input type="text" id="rName" placeholder="Cth: Dika"></div>
+            <div class="form-group"><label>Ulasan / Komentar</label><textarea id="rText" style="width:100%; padding:15px; background:#111; border:1px solid #333; color:white; border-radius:6px; outline:none; resize:none;" rows="3" placeholder="Gimana bahan dan ukurannya?"></textarea></div>
+            <div style="display:flex; gap:10px;">
+                <button class="btn-add" style="background:#333; color:white;" onclick="document.getElementById('reviewModal').style.display='none'">BATAL</button>
+                <button class="btn-add" style="background:#f59e0b; color:black;" onclick="submitReview()">KIRIM ULASAN</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        <div style="text-align: center; font-size:11px; color:#555; padding: 40px 20px; border-top:1px solid #222; margin-top:50px;">
+            &copy; 2026 GANKETI Official. All Rights Reserved.
+        </div>
+    </footer>
+
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    <script>
+        const firebaseConfig = { apiKey: "AIzaSyDoh1VBH6YEicKHPyViPi0NUsnILaTin8g", authDomain: "ganketi.firebaseapp.com", databaseURL: "https://ganketi-default-rtdb.firebaseio.com", projectId: "ganketi", storageBucket: "ganketi.firebasestorage.app", messagingSenderId: "61078873925", appId: "1:61078873925:web:c5bf3bdf7cc18f11d6002c" };
+        if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+        const db = firebase.database();
+
+        let currentProduct = null;
+        let cart = JSON.parse(localStorage.getItem('ganketiCart') || '[]');
+        let wishlist = JSON.parse(localStorage.getItem('ganketiWishlist') || '[]');
+        let selectedRating = 5;
+
+        // Ambil ID Produk dari URL (contoh: product.html?id=-OnZxyz...)
+        const urlParams = new URLSearchParams(window.location.search);
+        const productId = urlParams.get('id');
+
+        document.getElementById('cartCount').innerText = cart.reduce((sum, item) => sum + item.qty, 0);
+
+        if(!productId) {
+            window.location.href = 'index.html';
+        } else {
+            // Ambil Data Produk
+            db.ref('products/' + productId).once('value').then(snap => {
+                currentProduct = snap.val();
+                if(!currentProduct) return window.location.href = 'index.html';
+                currentProduct.id = productId;
+                renderProductPage();
+                loadReviews();
+            });
+        }
+
+        function renderProductPage() {
+            document.getElementById('productContent').style.display = 'flex';
+            
+            // Breadcrumb
+            document.getElementById('bcCategory').innerText = currentProduct.category ? currentProduct.category.split(',')[0] : 'SHOP';
+            document.getElementById('bcName').innerText = currentProduct.name;
+            
+            // Text Info
+            document.getElementById('pName').innerText = currentProduct.name;
+            
+            let isHabis = (!currentProduct.stock || currentProduct.stock <= 0);
+            let pHtml = currentProduct.originalPrice ? `<span class="p-strike">Rp ${currentProduct.originalPrice.toLocaleString('id-ID')}</span>Rp ${currentProduct.price.toLocaleString('id-ID')}` : `Rp ${currentProduct.price.toLocaleString('id-ID')}`;
+            document.getElementById('pPriceHtml').innerHTML = pHtml;
+
+            if(isHabis) {
+                document.getElementById('pStockAlert').innerText = "SOLD OUT";
+                document.getElementById('pStockAlert').style.color = "#ef4444";
+                document.getElementById('pStockAlert').style.background = "rgba(239,68,68,0.1)";
+                document.getElementById('btnAddToCart').innerText = "STOK HABIS";
+                document.getElementById('btnAddToCart').disabled = true;
+            } else {
+                document.getElementById('pStockAlert').innerText = `🔥 Sisa ${currentProduct.stock} di gudang!`;
+            }
+
+            // Desc
+            if(currentProduct.desc) document.getElementById('descAcc').innerHTML = currentProduct.desc.replace(/\n/g, '<br>');
+            else document.getElementById('descAcc').innerHTML = "Tidak ada deskripsi spesifik.";
+
+            // Min Max Qty
+            let minQ = currentProduct.minOrder || 1;
+            let maxQ = currentProduct.maxOrder && currentProduct.maxOrder < 9999 ? currentProduct.maxOrder : currentProduct.stock;
+            if(maxQ > currentProduct.stock) maxQ = currentProduct.stock;
+            document.getElementById('pQty').min = minQ;
+            document.getElementById('pQty').max = maxQ;
+            document.getElementById('pQty').value = minQ;
+
+            // Variasi Warna & Size
+            let sizesArr = currentProduct.sizes ? currentProduct.sizes.split(',').map(s => s.trim()) : ['All Size'];
+            document.getElementById('pSize').innerHTML = sizesArr.map(s => `<option value="${s}">${s}</option>`).join('');
+
+            let colorsArr = currentProduct.colors && currentProduct.colors !== 'Default' ? currentProduct.colors.split(',').map(c => c.trim()) : [];
+            if(colorsArr.length > 0) {
+                document.getElementById('colorContainer').innerHTML = `<div class="form-group"><label>COLOR</label><select id="pColor">${colorsArr.map(c => `<option value="${c}">${c}</option>`).join('')}</select></div>`;
+            } else {
+                document.getElementById('colorContainer').innerHTML = `<input type="hidden" id="pColor" value="Default">`;
+            }
+
+            // Gallery
+            let imgArr = currentProduct.images || [currentProduct.image];
+            document.getElementById('mainImage').src = imgArr[0];
+            if(isHabis) document.getElementById('mainImage').style.filter = "grayscale(100%) opacity(0.5)";
+
+            if(imgArr.length > 1) {
+                document.getElementById('thumbGallery').innerHTML = imgArr.map((img, idx) => `<img src="${img}" class="thumb-img ${idx===0?'active':''}" onclick="changeImg('${img}', this)">`).join('');
+            }
+
+            // Cek Wishlist
+            if(wishlist.includes(productId)) {
+                document.getElementById('btnWishlist').classList.add('saved');
+                document.getElementById('btnWishlist').innerText = '❤️';
+            }
+        }
+
+        function changeImg(url, el) {
+            document.getElementById('mainImage').src = url;
+            document.querySelectorAll('.thumb-img').forEach(t => t.classList.remove('active'));
+            el.classList.add('active');
+        }
+
+        function toggleAcc(id) {
+            const content = document.getElementById(id);
+            const btnSpan = content.previousElementSibling.querySelector('span');
+            if(content.style.display === 'block') { content.style.display = 'none'; btnSpan.innerText = '+'; } 
+            else { content.style.display = 'block'; btnSpan.innerText = '−'; }
+        }
+
+        function showToast(msg) {
+            const cont = document.getElementById('toast-container');
+            const toast = document.createElement('div'); toast.className = 'modern-toast'; toast.innerText = msg;
+            cont.appendChild(toast); setTimeout(() => { toast.remove(); }, 3000);
+        }
+
+        function toggleWishlist() {
+            const btn = document.getElementById('btnWishlist');
+            if(wishlist.includes(productId)) {
+                wishlist = wishlist.filter(id => id !== productId);
+                btn.classList.remove('saved'); btn.innerText = '♡'; showToast("Dihapus dari Wishlist");
+            } else {
+                wishlist.push(productId);
+                btn.classList.add('saved'); btn.innerText = '❤️'; showToast("Disimpan ke Wishlist!");
+            }
+            localStorage.setItem('ganketiWishlist', JSON.stringify(wishlist));
+        }
+
+        function addToCart() {
+            const selectedSize = document.getElementById('pSize').value; 
+            const selectedColor = document.getElementById('pColor') ? document.getElementById('pColor').value : 'Default';
+            const inputQty = parseInt(document.getElementById('pQty').value);
+
+            let minQ = parseInt(document.getElementById('pQty').min);
+            let maxQ = parseInt(document.getElementById('pQty').max);
+
+            if (isNaN(inputQty) || inputQty < minQ) return showToast(`Minimal order: ${minQ}`);
+            if (inputQty > maxQ) return showToast(`Maksimal order/stok: ${maxQ}`);
+
+            const cartItemId = productId + '-' + selectedColor + '-' + selectedSize;
+            const existing = cart.find(c => c.cartItemId === cartItemId);
+            
+            if(existing) { 
+                if(existing.qty + inputQty > maxQ) return showToast("Melebihi batas stok!");
+                existing.qty += inputQty; 
+            } else { 
+                let dName = selectedColor === 'Default' ? `${currentProduct.name} (${selectedSize})` : `${currentProduct.name} (${selectedColor} - ${selectedSize})`;
+                cart.push({ ...currentProduct, cartItemId: cartItemId, name: dName, qty: inputQty, color: selectedColor }); 
+            }
+            
+            localStorage.setItem('ganketiCart', JSON.stringify(cart)); 
+            document.getElementById('cartCount').innerText = cart.reduce((sum, item) => sum + item.qty, 0);
+            showToast("Berhasil ditambahkan ke Keranjang! 🛒");
+        }
+
+        // --- SISTEM RATING & REVIEW ---
+        function openReviewModal() { setRating(5); document.getElementById('reviewModal').style.display='flex'; }
+        
+        function setRating(val) {
+            selectedRating = val;
+            const stars = document.getElementById('starInput').children;
+            for(let i=0; i<5; i++) { if(i<val) stars[i].classList.add('active'); else stars[i].classList.remove('active'); }
+        }
+
+        function submitReview() {
+            let nama = document.getElementById('rName').value.trim() || 'Guest';
+            let teks = document.getElementById('rText').value.trim();
+            if(!teks) return alert("Ulasan tidak boleh kosong!");
+            
+            db.ref('reviews/' + productId).push({
+                name: nama, rating: selectedRating, text: teks, timestamp: Date.now()
+            }).then(() => {
+                document.getElementById('reviewModal').style.display='none';
+                showToast("Terima kasih atas ulasannya! ⭐");
+                loadReviews();
+            });
+        }
+
+        function loadReviews() {
+            db.ref('reviews/' + productId).on('value', snap => {
+                const data = snap.val(); const list = document.getElementById('reviewsList');
+                if(!data) return;
+                
+                let revs = Object.keys(data).map(k => data[k]).sort((a,b) => b.timestamp - a.timestamp);
+                let totalBintang = revs.reduce((sum, r) => sum + r.rating, 0);
+                let rataRata = (totalBintang / revs.length).toFixed(1);
+                
+                // Update Top Summary
+                let starDisplay = '★'.repeat(Math.round(rataRata)) + '☆'.repeat(5 - Math.round(rataRata));
+                document.getElementById('topRatingSummary').innerHTML = `${starDisplay} <span>(${rataRata} / 5 dari ${revs.length} ulasan)</span>`;
+
+                // Update List
+                list.innerHTML = revs.map(r => {
+                    let rStars = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
+                    let d = new Date(r.timestamp).toLocaleDateString('id-ID');
+                    return `<div class="review-card"><div class="r-stars">${rStars}</div><div class="r-user">${r.name}</div><div class="r-date">${d}</div><div class="r-text">${r.text}</div></div>`;
+                }).join('');
+            });
+        }
+    </script>
+</body>
+</html>
