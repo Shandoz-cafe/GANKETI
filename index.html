@@ -273,7 +273,7 @@
             </div>
         </div>
         <div class="search-container">
-            <input type="search" class="search-box" id="searchInput" placeholder="Search hoodie, t-shirt, pants..." onkeyup="searchProducts()">
+            <input type="search" class="search-box" id="searchInput" placeholder="Search hoodie, t-shirt, pants..." onkeyup="searchProducts(event)">
         </div>
     </header>
 
@@ -529,7 +529,9 @@
     <script>
         const firebaseConfig = { apiKey: "AIzaSyDoh1VBH6YEicKHPyViPi0NUsnILaTin8g", authDomain: "ganketi.firebaseapp.com", databaseURL: "https://ganketi-default-rtdb.firebaseio.com", projectId: "ganketi", storageBucket: "ganketi.firebasestorage.app", messagingSenderId: "61078873925", appId: "1:61078873925:web:c5bf3bdf7cc18f11d6002c" };
         if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
-        const auth = firebase.auth(); const db = firebase.database();
+        
+        const auth = firebase.auth(); 
+        const db = firebase.database();
 
         let globalProducts = []; let activeCategory = 'ALL'; 
         let cart = JSON.parse(localStorage.getItem('ganketiCart') || '[]');
@@ -746,13 +748,9 @@
             if(openCartQuery === 'true') {
                 setTimeout(() => { openCart(); }, 500); 
             }
-            
-            const checkoutQuery = urlParams.get('checkout');
-            if(checkoutQuery === 'true') {
-                setTimeout(() => { goToShipping(); }, 500); 
-            }
         });
 
+        // 🔥 FUNGSI FILTER KATEGORI UDAH BISA SCROLL OTOMATIS 🔥
         function filterCategory(cat) { 
             activeCategory = cat; 
             let titleText = cat === 'ALL' ? 'LATEST DROP' : cat;
@@ -762,17 +760,44 @@
             document.querySelectorAll('.icon-item').forEach(el => { 
                 el.classList.remove('active'); 
                 if(el.innerText.trim().toUpperCase() === cat.toUpperCase() || (cat === 'ALL' && el.innerText.trim().toUpperCase() === 'SEMUA')) { 
-                    el.classList.add('active'); el.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+                    el.classList.add('active'); 
+                    el.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
                 } 
             });
             renderProducts(); 
+            
+            // Auto Scroll ke etalase biar pembeli langsung lihat bajunya
+            setTimeout(() => {
+                const el = document.getElementById('secTitle');
+                if (el) {
+                    const y = el.getBoundingClientRect().top + window.scrollY - 80;
+                    window.scrollTo({top: y, behavior: 'smooth'});
+                }
+            }, 100);
         }
 
-        function searchProducts() {
-            const keyword = document.getElementById('searchInput').value.toLowerCase(); activeCategory = 'ALL'; 
+        // 🔥 FUNGSI SEARCH JUGA BISA SCROLL KALAU PENCET ENTER 🔥
+        function searchProducts(event) {
+            const keyword = document.getElementById('searchInput').value.toLowerCase(); 
+            activeCategory = 'ALL'; 
+            
             document.querySelectorAll('.icon-item').forEach(el => el.classList.remove('active')); 
-            if(document.querySelector('.icon-item')) document.querySelector('.icon-item').classList.add('active'); 
+            if(document.querySelector('.icon-item')) {
+                document.querySelector('.icon-item').classList.add('active'); 
+            }
             renderProducts();
+            
+            // Kalau pencet Enter di keyboard HP/Laptop, otomatis scroll ke bawah!
+            if (event && event.key === 'Enter') {
+                document.getElementById('searchInput').blur(); // Tutup keyboard HP
+                setTimeout(() => {
+                    const el = document.getElementById('secTitle');
+                    if (el) {
+                        const y = el.getBoundingClientRect().top + window.scrollY - 80;
+                        window.scrollTo({top: y, behavior: 'smooth'});
+                    }
+                }, 100);
+            }
         }
 
         function createProductCard(p) {
