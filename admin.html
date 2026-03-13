@@ -601,49 +601,78 @@
         }
         function closeEditCatModal() { document.getElementById('editCatModal').style.display = 'none'; currentEditCatId = null; }
         
-        function saveEditedCategory() {
+        // 🔥 FUNGSI EDIT KATEGORI (JALUR MUTANT) 🔥
+        async function saveEditedCategory() {
             if(!currentEditCatId) return;
             const newName = document.getElementById('eCatName').value.trim(); const file = document.getElementById('eCatIcon').files[0];
             if(!newName) return alert("Nama kategori tidak boleh kosong!");
             let updates = { name: newName };
+            
             if(file) {
-                compressImage(file, 300, 0.8).then(compressedImg => { 
-                    updates.icon = compressedImg; 
-                    db.ref('ui_categories/' + currentEditCatId).update(updates).then(() => { closeEditCatModal(); alert("Kategori berhasil diupdate!"); });
-                });
-            } else { db.ref('ui_categories/' + currentEditCatId).update(updates).then(() => { closeEditCatModal(); alert("Kategori berhasil diupdate!"); }); }
+                document.querySelector('#editCatModal .btn-action').innerText = "UPLOADING... ⏳";
+                try {
+                    let compressedImg = await compressImage(file, 300, 0.8);
+                    updates.icon = await uploadToImgBB(compressedImg);
+                    await db.ref('ui_categories/' + currentEditCatId).update(updates);
+                    closeEditCatModal(); alert("Kategori berhasil diupdate!");
+                } catch(e) {
+                    alert("Gagal upload icon: " + e.message);
+                } finally {
+                    document.querySelector('#editCatModal .btn-action').innerText = "💾 SIMPAN KATEGORI";
+                }
+            } else {
+                await db.ref('ui_categories/' + currentEditCatId).update(updates);
+                closeEditCatModal(); alert("Kategori berhasil diupdate!");
+            }
         }
 
-        function uploadCategoryBubble() { 
+        // 🔥 FUNGSI UPLOAD KATEGORI (JALUR MUTANT) 🔥
+        async function uploadCategoryBubble() { 
             const name = document.getElementById('catName').value.trim(); const file = document.getElementById('catIcon').files[0];
             if(!name) return alert("Isi nama kategori!");
             const baseData = { name: name, timestamp: Date.now(), order: Date.now() };
+            
             if(file) {
-                compressImage(file, 300, 0.8).then(compressedImg => {
-                    baseData.icon = compressedImg; 
-                    db.ref('ui_categories').push(baseData); 
+                const btn = document.querySelector('button[onclick="uploadCategoryBubble()"]');
+                btn.innerText = "UPLOADING... ⏳";
+                try {
+                    let compressedImg = await compressImage(file, 300, 0.8);
+                    baseData.icon = await uploadToImgBB(compressedImg);
+                    await db.ref('ui_categories').push(baseData); 
                     document.getElementById('catName').value = ''; document.getElementById('catIcon').value = '';
-                });
-            } else { db.ref('ui_categories').push(baseData); document.getElementById('catName').value = ''; document.getElementById('catIcon').value = ''; }
+                } catch(e) {
+                    alert("Gagal upload icon: " + e.message);
+                } finally {
+                    btn.innerText = "Tambah Kategori";
+                }
+            } else { 
+                await db.ref('ui_categories').push(baseData); 
+                document.getElementById('catName').value = ''; document.getElementById('catIcon').value = ''; 
+            }
         }
 
-        function uploadFeaturedCat() {
+        // 🔥 FUNGSI UPLOAD KOTAK UNGGULAN (JALUR MUTANT) 🔥
+        async function uploadFeaturedCat() {
             const title = document.getElementById('fcTitle').value.trim();
             const checkedTargets = Array.from(document.querySelectorAll('.fcCatCb:checked')).map(cb => cb.value);
             const file = document.getElementById('fcImage').files[0];
             
             if(!title || checkedTargets.length === 0 || !file) return alert("Isi Judul, Pilih Minimal 1 Target Kategori, dan Pilih Gambar!");
-            document.getElementById('fcStatusMessage').innerHTML = "<span style='color:white;'>Mengompres & Upload...</span>";
+            document.getElementById('fcStatusMessage').innerHTML = "<span style='color:white;'>Mengompres & Upload ke ImgBB... ⏳</span>";
             
             const targetStr = checkedTargets.join(', ');
             
-            compressImage(file, 800, 0.8).then(compressedImg => { 
-                db.ref('ui_featured_cats').push({ title: title, target: targetStr, image: compressedImg, timestamp: Date.now() });
+            try {
+                let compressedImg = await compressImage(file, 800, 0.8);
+                let proxyUrl = await uploadToImgBB(compressedImg);
+                await db.ref('ui_featured_cats').push({ title: title, target: targetStr, image: proxyUrl, timestamp: Date.now() });
                 document.getElementById('fcTitle').value = ''; document.getElementById('fcImage').value = '';
                 document.querySelectorAll('.fcCatCb').forEach(cb => cb.checked = false);
                 document.getElementById('fcStatusMessage').innerHTML = "<span style='color:#4ade80;'>Berhasil!</span>";
                 setTimeout(() => { document.getElementById('fcStatusMessage').innerHTML = ""; }, 3000);
-            });
+            } catch(e) {
+                document.getElementById('fcStatusMessage').innerHTML = "<span style='color:#ef4444;'>Gagal: " + e.message + "</span>";
+            }
         }
 
         db.ref('ui_featured_cats').on('value', snap => {
@@ -691,7 +720,8 @@
             currentEditFcId = null;
         }
 
-        function saveEditedFc() {
+        // 🔥 FUNGSI EDIT KOTAK UNGGULAN (JALUR MUTANT) 🔥
+        async function saveEditedFc() {
             if(!currentEditFcId) return;
 
             const title = document.getElementById('eFcTitle').value.trim();
@@ -704,16 +734,20 @@
             let updates = { title: title, target: targetStr };
 
             if(file) {
-                compressImage(file, 800, 0.8).then(compressedImg => {
-                    updates.image = compressedImg;
-                    db.ref('ui_featured_cats/' + currentEditFcId).update(updates).then(() => {
-                        closeEditFcModal(); alert("Kotak Unggulan Berhasil Diupdate!");
-                    });
-                });
-            } else {
-                db.ref('ui_featured_cats/' + currentEditFcId).update(updates).then(() => {
+                document.querySelector('#editFcModal .btn-action').innerText = "UPLOADING... ⏳";
+                try {
+                    let compressedImg = await compressImage(file, 800, 0.8);
+                    updates.image = await uploadToImgBB(compressedImg);
+                    await db.ref('ui_featured_cats/' + currentEditFcId).update(updates);
                     closeEditFcModal(); alert("Kotak Unggulan Berhasil Diupdate!");
-                });
+                } catch(e) {
+                    alert("Gagal upload gambar: " + e.message);
+                } finally {
+                    document.querySelector('#editFcModal .btn-action').innerText = "💾 SIMPAN KOTAK UNGGULAN";
+                }
+            } else {
+                await db.ref('ui_featured_cats/' + currentEditFcId).update(updates);
+                closeEditFcModal(); alert("Kotak Unggulan Berhasil Diupdate!");
             }
         }
 
@@ -919,18 +953,24 @@
 
         function closeEditModal() { document.getElementById('editModal').style.display='none'; currentEditId=null; }
         
-        function uploadBanners() { 
+        // 🔥 FUNGSI UPLOAD BANNER (JALUR MUTANT) 🔥
+        async function uploadBanners() { 
             const files = document.getElementById('promoBanners').files;
             if(files.length === 0) return alert("Pilih gambar banner dulu!");
-            document.getElementById('bStatusMessage').innerHTML = "<span style='color:white;'>Mengompres Banner...</span>";
+            document.getElementById('bStatusMessage').innerHTML = "<span style='color:white;'>Mengompres & Upload Banner... ⏳</span>";
 
-            const readFiles = Array.from(files).map(file => compressImage(file, 1200, 0.8)); // Banner bisa agak lebar (1200px)
-            Promise.all(readFiles).then(base64Images => {
-                base64Images.forEach(img => { db.ref('ui_banners').push({ image: img, timestamp: Date.now() }); });
+            try {
+                for(let file of files) {
+                    let compressedImg = await compressImage(file, 1200, 0.8);
+                    let proxyUrl = await uploadToImgBB(compressedImg);
+                    await db.ref('ui_banners').push({ image: proxyUrl, timestamp: Date.now() });
+                }
                 document.getElementById('promoBanners').value = ''; 
                 document.getElementById('bStatusMessage').innerHTML = "<span style='color:#4ade80;'>Banner berhasil diupload!</span>";
                 setTimeout(() => { document.getElementById('bStatusMessage').innerHTML = ""; }, 3000);
-            });
+            } catch(e) {
+                document.getElementById('bStatusMessage').innerHTML = "<span style='color:#ef4444;'>Gagal: " + e.message + "</span>";
+            }
         }
         
         db.ref('ui_banners').on('value', snap => {
