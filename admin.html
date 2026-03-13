@@ -121,6 +121,18 @@
                 <textarea id="eDesc" rows="4" placeholder="Cth: Bahan Katun Denim tebal..."></textarea>
             </div>
             
+            <div style="background: #0a0a0a; padding: 15px; border-radius: 8px; border: 1px solid #333; margin-bottom: 15px;">
+                <label style="color:#f59e0b; margin-bottom: 10px;">📏 SIZE GUIDE KHUSUS PRODUK INI</label>
+                <div class="form-group">
+                    <label>Teks Keterangan Ukuran</label>
+                    <textarea id="eSizeText" rows="3" placeholder="Cth: S = Lingkar Dada 90cm..."></textarea>
+                </div>
+                <div class="form-group">
+                    <label>Ganti Foto Tabel Ukuran (Opsional)</label>
+                    <input type="file" id="eSizeImg" accept="image/*" style="padding: 9px;">
+                </div>
+            </div>
+
             <div class="form-group">
                 <label>Kategori</label>
                 <div id="eCategoryContainer"><span style="color:#888; font-size:11px;">Memuat...</span></div>
@@ -232,6 +244,18 @@
                     <textarea id="pDesc" rows="4" placeholder="Ketik deskripsi manual di sini..."></textarea>
                 </div>
 
+                <div style="background: #0a0a0a; padding: 15px; border-radius: 8px; border: 1px solid #333; margin-bottom: 15px;">
+                    <label style="color:#f59e0b; margin-bottom: 10px;">📏 SIZE GUIDE KHUSUS PRODUK INI</label>
+                    <div class="form-group">
+                        <label>Teks Keterangan Ukuran</label>
+                        <textarea id="pSizeText" rows="3" placeholder="Cth: S = Lingkar Dada 90cm..."></textarea>
+                    </div>
+                    <div class="form-group">
+                        <label>Upload Foto Tabel Ukuran (Opsional)</label>
+                        <input type="file" id="pSizeImg" accept="image/*" style="padding: 9px;">
+                    </div>
+                </div>
+
                 <div class="form-group">
                     <label>Kategori (BISA DIKLIK LEBIH DARI SATU!)</label>
                     <div id="pCategoryContainer"><span style="color:#ef4444; font-size:11px;">Memuat data...</span></div>
@@ -256,7 +280,7 @@
 
                 <div class="form-group"><label>Link URL Supplier (Khusus Admin)</label><input type="url" id="pLink" placeholder="Opsional..."></div>
                 <div class="form-group">
-                    <label>Foto Produk</label>
+                    <label>Foto Produk (Bisa lebih dari 1 file!)</label>
                     <input type="file" id="pImages" accept="image/*" multiple style="padding: 9px;">
                     <p style="font-size: 10px; color: #4ade80; margin-top:5px;">*Foto otomatis dibungkus Proxy Anti-Blokir (Resolusi Tinggi).</p>
                 </div>
@@ -434,18 +458,9 @@
                     img.onload = () => {
                         let width = img.width;
                         let height = img.height;
-                        
-                        if (width > maxWidth) {
-                            height = Math.round((height * maxWidth) / width);
-                            width = maxWidth;
-                        }
-                        
-                        const canvas = document.createElement('canvas');
-                        canvas.width = width;
-                        canvas.height = height;
-                        const ctx = canvas.getContext('2d');
-                        ctx.drawImage(img, 0, 0, width, height);
-                        
+                        if (width > maxWidth) { height = Math.round((height * maxWidth) / width); width = maxWidth; }
+                        const canvas = document.createElement('canvas'); canvas.width = width; canvas.height = height;
+                        const ctx = canvas.getContext('2d'); ctx.drawImage(img, 0, 0, width, height);
                         resolve(canvas.toDataURL('image/jpeg', quality));
                     };
                 };
@@ -464,8 +479,7 @@
         auth.onAuthStateChanged(user => {
             if (user && user.email === "ganketistore@gmail.com") {
                 document.getElementById('loginWorkspace').style.display = 'none'; document.getElementById('adminWorkspace').style.display = 'block'; 
-                fetchDataSuper(); 
-                loadBiteshipCouriers(); 
+                fetchDataSuper(); loadBiteshipCouriers(); 
             } else if (user) { auth.signOut(); } 
             else { document.getElementById('loginWorkspace').style.display = 'block'; document.getElementById('adminWorkspace').style.display = 'none'; }
         });
@@ -476,310 +490,112 @@
         let searchTimeout;
 
         async function loadBiteshipCouriers() {
-            const pContainer = document.getElementById('pCourierContainer');
-            const eContainer = document.getElementById('eCourierContainer');
-            
+            const pContainer = document.getElementById('pCourierContainer'); const eContainer = document.getElementById('eCourierContainer');
             try {
-                const res = await fetch('https://api.biteship.com/v1/couriers', {
-                    headers: { 'Authorization': BITESHIP_KEY }
-                });
+                const res = await fetch('https://api.biteship.com/v1/couriers', { headers: { 'Authorization': BITESHIP_KEY } });
                 const data = await res.json();
                 if(data.success && data.couriers) {
-                    let uniqueCouriers = [...new Set(data.couriers.map(c => c.courier_name))];
-                    uniqueCouriers.sort(); 
-                    
+                    let uniqueCouriers = [...new Set(data.couriers.map(c => c.courier_name))]; uniqueCouriers.sort(); 
                     let cbUpload = uniqueCouriers.map(c => `<label><input type="checkbox" class="cat-checkbox pCourierCb" value="${c}"><span class="cat-label" style="text-transform:uppercase;">${c}</span></label>`).join('');
                     let cbEdit = uniqueCouriers.map(c => `<label><input type="checkbox" class="cat-checkbox eCourierCb" value="${c}"><span class="cat-label" style="text-transform:uppercase;">${c}</span></label>`).join('');
-                    
-                    if(pContainer) pContainer.innerHTML = cbUpload;
-                    if(eContainer) eContainer.innerHTML = cbEdit;
+                    if(pContainer) pContainer.innerHTML = cbUpload; if(eContainer) eContainer.innerHTML = cbEdit;
                 }
-            } catch(e) {
-                if(pContainer) pContainer.innerHTML = '<span style="color:#ef4444; font-size:11px;">Gagal memuat API kurir. Cek koneksi Anda.</span>';
-            }
+            } catch(e) { if(pContainer) pContainer.innerHTML = '<span style="color:#ef4444; font-size:11px;">Gagal memuat API kurir. Cek koneksi Anda.</span>'; }
         }
 
         function searchBiteshipOrigin(query, type) {
             const resultBox = document.getElementById(type + 'OriginResults');
             if(query.length < 3) { resultBox.style.display = 'none'; return; }
-            
             clearTimeout(searchTimeout);
             searchTimeout = setTimeout(async () => {
-                resultBox.innerHTML = '<div style="padding:10px; font-size:11px; color:#aaa;">Mencari di Biteship...</div>';
-                resultBox.style.display = 'block';
+                resultBox.innerHTML = '<div style="padding:10px; font-size:11px; color:#aaa;">Mencari di Biteship...</div>'; resultBox.style.display = 'block';
                 try {
-                    const res = await fetch(`https://api.biteship.com/v1/maps/areas?countries=ID&input=${encodeURIComponent(query)}&type=single`, {
-                        headers: { 'Authorization': BITESHIP_KEY }
-                    });
+                    const res = await fetch(`https://api.biteship.com/v1/maps/areas?countries=ID&input=${encodeURIComponent(query)}&type=single`, { headers: { 'Authorization': BITESHIP_KEY } });
                     const data = await res.json();
-                    
                     if(data.success && data.areas && data.areas.length > 0) {
-                        resultBox.innerHTML = data.areas.map(a => {
-                            let fullText = `${a.name}, ${a.administrative_division_level_2_name}, ${a.administrative_division_level_1_name}`;
-                            return `<div class="biteship-item" onclick="selectBiteshipOrigin('${a.id}', '${a.name.replace(/'/g, "\\'")}', '${type}')">${fullText}</div>`;
-                        }).join('');
-                    } else {
-                        let errorMsg = data.error || data.message || "Kecamatan/Kota tidak ditemukan.";
-                        resultBox.innerHTML = `<div style="padding:10px; font-size:11px; color:#ef4444;">Pesan Server: ${errorMsg}</div>`;
-                    }
-                } catch(e) {
-                    resultBox.innerHTML = `<div style="padding:10px; font-size:11px; color:#ef4444;">Gagal menghubungi server Biteship.</div>`;
-                }
+                        resultBox.innerHTML = data.areas.map(a => { let fullText = `${a.name}, ${a.administrative_division_level_2_name}, ${a.administrative_division_level_1_name}`; return `<div class="biteship-item" onclick="selectBiteshipOrigin('${a.id}', '${a.name.replace(/'/g, "\\'")}', '${type}')">${fullText}</div>`; }).join('');
+                    } else { resultBox.innerHTML = `<div style="padding:10px; font-size:11px; color:#ef4444;">Kecamatan tidak ditemukan.</div>`; }
+                } catch(e) { resultBox.innerHTML = `<div style="padding:10px; font-size:11px; color:#ef4444;">Gagal menghubungi server Biteship.</div>`; }
             }, 600);
         }
 
-        function selectBiteshipOrigin(id, shortName, type) {
-            document.getElementById(type + 'Origin').value = shortName; 
-            document.getElementById(type + 'OriginId').value = id;
-            document.getElementById(type + 'OriginResults').style.display = 'none';
-        }
+        function selectBiteshipOrigin(id, shortName, type) { document.getElementById(type + 'Origin').value = shortName; document.getElementById(type + 'OriginId').value = id; document.getElementById(type + 'OriginResults').style.display = 'none'; }
 
         db.ref('ui_categories').on('value', snap => {
             const data = snap.val(); 
-            const pCat = document.getElementById('pCategoryContainer'); 
-            const eCat = document.getElementById('eCategoryContainer'); 
-            const bList = document.getElementById('categoryBubbleList');
-            const fcCat = document.getElementById('fcCategoryContainer'); 
-            const eFcCat = document.getElementById('eFcCategoryContainer');
-            const filterManageCat = document.getElementById('filterManageCat');
+            const pCat = document.getElementById('pCategoryContainer'); const eCat = document.getElementById('eCategoryContainer'); const bList = document.getElementById('categoryBubbleList'); const fcCat = document.getElementById('fcCategoryContainer'); const eFcCat = document.getElementById('eFcCategoryContainer'); const filterManageCat = document.getElementById('filterManageCat');
             
             if(!data) {
                 currentCategoriesData = [];
                 if(bList) bList.innerHTML = '<p style="color:#888; font-size:11px;">Belum ada kategori.</p>';
                 let emptyMsg = '<span style="color:#ef4444;">Bikin Kategori di tab TAMPILAN dulu!</span>';
                 if(pCat) pCat.innerHTML = emptyMsg; if(eCat) eCat.innerHTML = emptyMsg; if(fcCat) fcCat.innerHTML = emptyMsg; if(eFcCat) eFcCat.innerHTML = emptyMsg;
-                if(filterManageCat) filterManageCat.innerHTML = '<option value="ALL">Semua Kategori</option>';
-                return;
+                if(filterManageCat) filterManageCat.innerHTML = '<option value="ALL">Semua Kategori</option>'; return;
             }
 
-            currentCategoriesData = Object.keys(data).map(key => ({ id: key, ...data[key] }));
-            currentCategoriesData.sort((a,b) => (a.order || a.timestamp) - (b.order || b.timestamp));
+            currentCategoriesData = Object.keys(data).map(key => ({ id: key, ...data[key] })); currentCategoriesData.sort((a,b) => (a.order || a.timestamp) - (b.order || b.timestamp));
 
-            if(bList) {
-                bList.innerHTML = currentCategoriesData.map((c, index) => `
-                <div class="list-item-admin">
-                    <div style="display:flex; align-items:center; gap:10px;">
-                        <img src="${c.icon || 'https://via.placeholder.com/30'}" style="width:30px; height:30px; border-radius:50%; object-fit:cover; background:#222;"> 
-                        <span style="font-weight:bold;">${c.name}</span>
-                    </div> 
-                    <div style="display:flex; gap:5px;">
-                        <button onclick="moveCategory(${index}, -1)" style="background:#333; color:white; border:none; padding:5px 8px; border-radius:4px; cursor:pointer;" title="Naik">⬆️</button>
-                        <button onclick="moveCategory(${index}, 1)" style="background:#333; color:white; border:none; padding:5px 8px; border-radius:4px; cursor:pointer;" title="Turun">⬇️</button>
-                        <button onclick="openEditCatModal('${c.id}')" style="background:#3b82f6; color:white; border:none; cursor:pointer; padding:5px; border-radius:4px;">✏️ Edit</button>
-                        <button onclick="if(confirm('Hapus kategori ini?')) db.ref('ui_categories/${c.id}').remove()" style="background:none; border:1px solid #ef4444; color:#ef4444; cursor:pointer; padding:5px; border-radius:4px;">Hapus</button>
-                    </div>
-                </div>`).join('');
-            }
+            if(bList) { bList.innerHTML = currentCategoriesData.map((c, index) => `<div class="list-item-admin"><div style="display:flex; align-items:center; gap:10px;"><img src="${c.icon || 'https://via.placeholder.com/30'}" style="width:30px; height:30px; border-radius:50%; object-fit:cover; background:#222;"> <span style="font-weight:bold;">${c.name}</span></div> <div style="display:flex; gap:5px;"><button onclick="moveCategory(${index}, -1)" style="background:#333; color:white; border:none; padding:5px 8px; border-radius:4px; cursor:pointer;">⬆️</button><button onclick="moveCategory(${index}, 1)" style="background:#333; color:white; border:none; padding:5px 8px; border-radius:4px; cursor:pointer;">⬇️</button><button onclick="openEditCatModal('${c.id}')" style="background:#3b82f6; color:white; border:none; cursor:pointer; padding:5px; border-radius:4px;">✏️ Edit</button><button onclick="if(confirm('Hapus kategori ini?')) db.ref('ui_categories/${c.id}').remove()" style="background:none; border:1px solid #ef4444; color:#ef4444; cursor:pointer; padding:5px; border-radius:4px;">Hapus</button></div></div>`).join(''); }
             
             let cbHtmlUpload = currentCategoriesData.map(c => `<label><input type="checkbox" class="cat-checkbox pCatCb" value="${c.name}"><span class="cat-label">${c.name}</span></label>`).join('');
             let cbHtmlEdit = currentCategoriesData.map(c => `<label><input type="checkbox" class="cat-checkbox eCatCb" value="${c.name}"><span class="cat-label">${c.name}</span></label>`).join('');
             let cbHtmlFc = currentCategoriesData.map(c => `<label><input type="checkbox" class="cat-checkbox fcCatCb" value="${c.name}"><span class="cat-label">${c.name}</span></label>`).join('');
             let cbHtmlEFc = currentCategoriesData.map(c => `<label><input type="checkbox" class="cat-checkbox eFcCatCb" value="${c.name}"><span class="cat-label">${c.name}</span></label>`).join('');
             
-            if(pCat) pCat.innerHTML = cbHtmlUpload; 
-            if(eCat) eCat.innerHTML = cbHtmlEdit;
-            if(fcCat) fcCat.innerHTML = cbHtmlFc;
-            if(eFcCat) eFcCat.innerHTML = cbHtmlEFc;
-
-            if(filterManageCat) {
-                filterManageCat.innerHTML = '<option value="ALL">Semua Kategori</option>' + currentCategoriesData.map(c => `<option value="${c.name}">${c.name}</option>`).join('');
-            }
+            if(pCat) pCat.innerHTML = cbHtmlUpload; if(eCat) eCat.innerHTML = cbHtmlEdit; if(fcCat) fcCat.innerHTML = cbHtmlFc; if(eFcCat) eFcCat.innerHTML = cbHtmlEFc;
+            if(filterManageCat) { filterManageCat.innerHTML = '<option value="ALL">Semua Kategori</option>' + currentCategoriesData.map(c => `<option value="${c.name}">${c.name}</option>`).join(''); }
         });
 
-        function moveCategory(index, direction) {
-            if(index + direction < 0 || index + direction >= currentCategoriesData.length) return;
-            let item1 = currentCategoriesData[index]; let item2 = currentCategoriesData[index + direction];
-            let order1 = item1.order || item1.timestamp; let order2 = item2.order || item2.timestamp;
-            if(order1 === order2) { if(direction === -1) order2++; else order2--; }
-            db.ref('ui_categories/' + item1.id).update({ order: order2 }); db.ref('ui_categories/' + item2.id).update({ order: order1 });
-        }
-
-        function openEditCatModal(id) {
-            currentEditCatId = id; const c = currentCategoriesData.find(x => x.id === id);
-            document.getElementById('eCatName').value = c.name; document.getElementById('eCatIcon').value = '';
-            document.getElementById('editCatModal').style.display = 'flex';
-        }
+        function moveCategory(index, direction) { if(index + direction < 0 || index + direction >= currentCategoriesData.length) return; let item1 = currentCategoriesData[index]; let item2 = currentCategoriesData[index + direction]; let order1 = item1.order || item1.timestamp; let order2 = item2.order || item2.timestamp; if(order1 === order2) { if(direction === -1) order2++; else order2--; } db.ref('ui_categories/' + item1.id).update({ order: order2 }); db.ref('ui_categories/' + item2.id).update({ order: order1 }); }
+        function openEditCatModal(id) { currentEditCatId = id; const c = currentCategoriesData.find(x => x.id === id); document.getElementById('eCatName').value = c.name; document.getElementById('eCatIcon').value = ''; document.getElementById('editCatModal').style.display = 'flex'; }
         function closeEditCatModal() { document.getElementById('editCatModal').style.display = 'none'; currentEditCatId = null; }
         
-        // 🔥 FUNGSI EDIT KATEGORI (JALUR MUTANT) 🔥
         async function saveEditedCategory() {
-            if(!currentEditCatId) return;
-            const newName = document.getElementById('eCatName').value.trim(); const file = document.getElementById('eCatIcon').files[0];
-            if(!newName) return alert("Nama kategori tidak boleh kosong!");
-            let updates = { name: newName };
-            
-            if(file) {
-                document.querySelector('#editCatModal .btn-action').innerText = "UPLOADING... ⏳";
-                try {
-                    let compressedImg = await compressImage(file, 300, 0.8);
-                    updates.icon = await uploadToImgBB(compressedImg);
-                    await db.ref('ui_categories/' + currentEditCatId).update(updates);
-                    closeEditCatModal(); alert("Kategori berhasil diupdate!");
-                } catch(e) {
-                    alert("Gagal upload icon: " + e.message);
-                } finally {
-                    document.querySelector('#editCatModal .btn-action').innerText = "💾 SIMPAN KATEGORI";
-                }
-            } else {
-                await db.ref('ui_categories/' + currentEditCatId).update(updates);
-                closeEditCatModal(); alert("Kategori berhasil diupdate!");
-            }
+            if(!currentEditCatId) return; const newName = document.getElementById('eCatName').value.trim(); const file = document.getElementById('eCatIcon').files[0]; if(!newName) return alert("Nama kategori tidak boleh kosong!"); let updates = { name: newName };
+            if(file) { document.querySelector('#editCatModal .btn-action').innerText = "UPLOADING... ⏳"; try { let compressedImg = await compressImage(file, 300, 0.8); updates.icon = await uploadToImgBB(compressedImg); await db.ref('ui_categories/' + currentEditCatId).update(updates); closeEditCatModal(); alert("Kategori berhasil diupdate!"); } catch(e) { alert("Gagal upload icon: " + e.message); } finally { document.querySelector('#editCatModal .btn-action').innerText = "💾 SIMPAN KATEGORI"; }
+            } else { await db.ref('ui_categories/' + currentEditCatId).update(updates); closeEditCatModal(); alert("Kategori berhasil diupdate!"); }
         }
 
-        // 🔥 FUNGSI UPLOAD KATEGORI (JALUR MUTANT) 🔥
         async function uploadCategoryBubble() { 
-            const name = document.getElementById('catName').value.trim(); const file = document.getElementById('catIcon').files[0];
-            if(!name) return alert("Isi nama kategori!");
-            const baseData = { name: name, timestamp: Date.now(), order: Date.now() };
-            
-            if(file) {
-                const btn = document.querySelector('button[onclick="uploadCategoryBubble()"]');
-                btn.innerText = "UPLOADING... ⏳";
-                try {
-                    let compressedImg = await compressImage(file, 300, 0.8);
-                    baseData.icon = await uploadToImgBB(compressedImg);
-                    await db.ref('ui_categories').push(baseData); 
-                    document.getElementById('catName').value = ''; document.getElementById('catIcon').value = '';
-                } catch(e) {
-                    alert("Gagal upload icon: " + e.message);
-                } finally {
-                    btn.innerText = "Tambah Kategori";
-                }
-            } else { 
-                await db.ref('ui_categories').push(baseData); 
-                document.getElementById('catName').value = ''; document.getElementById('catIcon').value = ''; 
-            }
+            const name = document.getElementById('catName').value.trim(); const file = document.getElementById('catIcon').files[0]; if(!name) return alert("Isi nama kategori!"); const baseData = { name: name, timestamp: Date.now(), order: Date.now() };
+            if(file) { const btn = document.querySelector('button[onclick="uploadCategoryBubble()"]'); btn.innerText = "UPLOADING... ⏳"; try { let compressedImg = await compressImage(file, 300, 0.8); baseData.icon = await uploadToImgBB(compressedImg); await db.ref('ui_categories').push(baseData); document.getElementById('catName').value = ''; document.getElementById('catIcon').value = ''; } catch(e) { alert("Gagal upload icon: " + e.message); } finally { btn.innerText = "Tambah Kategori"; }
+            } else { await db.ref('ui_categories').push(baseData); document.getElementById('catName').value = ''; document.getElementById('catIcon').value = ''; }
         }
 
-        // 🔥 FUNGSI UPLOAD KOTAK UNGGULAN (JALUR MUTANT) 🔥
         async function uploadFeaturedCat() {
-            const title = document.getElementById('fcTitle').value.trim();
-            const checkedTargets = Array.from(document.querySelectorAll('.fcCatCb:checked')).map(cb => cb.value);
-            const file = document.getElementById('fcImage').files[0];
-            
+            const title = document.getElementById('fcTitle').value.trim(); const checkedTargets = Array.from(document.querySelectorAll('.fcCatCb:checked')).map(cb => cb.value); const file = document.getElementById('fcImage').files[0];
             if(!title || checkedTargets.length === 0 || !file) return alert("Isi Judul, Pilih Minimal 1 Target Kategori, dan Pilih Gambar!");
-            document.getElementById('fcStatusMessage').innerHTML = "<span style='color:white;'>Mengompres & Upload ke ImgBB... ⏳</span>";
-            
-            const targetStr = checkedTargets.join(', ');
-            
-            try {
-                let compressedImg = await compressImage(file, 800, 0.8);
-                let proxyUrl = await uploadToImgBB(compressedImg);
-                await db.ref('ui_featured_cats').push({ title: title, target: targetStr, image: proxyUrl, timestamp: Date.now() });
-                document.getElementById('fcTitle').value = ''; document.getElementById('fcImage').value = '';
-                document.querySelectorAll('.fcCatCb').forEach(cb => cb.checked = false);
-                document.getElementById('fcStatusMessage').innerHTML = "<span style='color:#4ade80;'>Berhasil!</span>";
-                setTimeout(() => { document.getElementById('fcStatusMessage').innerHTML = ""; }, 3000);
-            } catch(e) {
-                document.getElementById('fcStatusMessage').innerHTML = "<span style='color:#ef4444;'>Gagal: " + e.message + "</span>";
-            }
+            document.getElementById('fcStatusMessage').innerHTML = "<span style='color:white;'>Mengompres & Upload ke ImgBB... ⏳</span>"; const targetStr = checkedTargets.join(', ');
+            try { let compressedImg = await compressImage(file, 800, 0.8); let proxyUrl = await uploadToImgBB(compressedImg); await db.ref('ui_featured_cats').push({ title: title, target: targetStr, image: proxyUrl, timestamp: Date.now() }); document.getElementById('fcTitle').value = ''; document.getElementById('fcImage').value = ''; document.querySelectorAll('.fcCatCb').forEach(cb => cb.checked = false); document.getElementById('fcStatusMessage').innerHTML = "<span style='color:#4ade80;'>Berhasil!</span>"; setTimeout(() => { document.getElementById('fcStatusMessage').innerHTML = ""; }, 3000); } catch(e) { document.getElementById('fcStatusMessage').innerHTML = "<span style='color:#ef4444;'>Gagal: " + e.message + "</span>"; }
         }
 
         db.ref('ui_featured_cats').on('value', snap => {
             const data = snap.val(); const list = document.getElementById('featuredCatList');
-            if(!data) {
-                currentFeaturedCatsData = {};
-                return list.innerHTML = '<p style="color:#888; font-size:11px;">Belum ada Kotak Unggulan.</p>';
-            }
-            
-            currentFeaturedCatsData = data; 
-            
-            list.innerHTML = Object.keys(data).map(key => {
-                let fc = data[key];
-                return `<div class="list-item-admin">
-                    <div style="display:flex; align-items:center; gap:10px;">
-                        <img src="${fc.image}" style="width:60px; height:40px; border-radius:4px; object-fit:cover;">
-                        <div><b style="font-size:12px;">${fc.title}</b><br><span style="font-size:9px; color:#888;">Target: [${fc.target}]</span></div>
-                    </div>
-                    <div style="display:flex; gap:5px;">
-                        <button onclick="openEditFcModal('${key}')" style="background:#3b82f6; color:white; border:none; cursor:pointer; padding:5px 15px; border-radius:4px;">✏️ Edit</button>
-                        <button onclick="if(confirm('Hapus kotak unggulan ini?')) db.ref('ui_featured_cats/${key}').remove()" style="background:none; border:1px solid #ef4444; color:#ef4444; cursor:pointer; padding:5px 15px; border-radius:4px;">Hapus</button>
-                    </div>
-                </div>`;
-            }).join('');
+            if(!data) { currentFeaturedCatsData = {}; return list.innerHTML = '<p style="color:#888; font-size:11px;">Belum ada Kotak Unggulan.</p>'; } currentFeaturedCatsData = data; 
+            list.innerHTML = Object.keys(data).map(key => { let fc = data[key]; return `<div class="list-item-admin"><div style="display:flex; align-items:center; gap:10px;"><img src="${fc.image}" style="width:60px; height:40px; border-radius:4px; object-fit:cover;"><div><b style="font-size:12px;">${fc.title}</b><br><span style="font-size:9px; color:#888;">Target: [${fc.target}]</span></div></div><div style="display:flex; gap:5px;"><button onclick="openEditFcModal('${key}')" style="background:#3b82f6; color:white; border:none; cursor:pointer; padding:5px 15px; border-radius:4px;">✏️ Edit</button><button onclick="if(confirm('Hapus kotak unggulan ini?')) db.ref('ui_featured_cats/${key}').remove()" style="background:none; border:1px solid #ef4444; color:#ef4444; cursor:pointer; padding:5px 15px; border-radius:4px;">Hapus</button></div></div>`; }).join('');
         });
 
-        function openEditFcModal(id) {
-            currentEditFcId = id;
-            const fc = currentFeaturedCatsData[id];
-            if(!fc) return;
+        function openEditFcModal(id) { currentEditFcId = id; const fc = currentFeaturedCatsData[id]; if(!fc) return; document.getElementById('eFcTitle').value = fc.title || ''; document.getElementById('eFcImage').value = ''; let targets = fc.target ? fc.target.split(',').map(s => s.trim()) : []; document.querySelectorAll('.eFcCatCb').forEach(cb => { cb.checked = targets.includes(cb.value); }); document.getElementById('editFcModal').style.display = 'flex'; }
+        function closeEditFcModal() { document.getElementById('editFcModal').style.display = 'none'; currentEditFcId = null; }
 
-            document.getElementById('eFcTitle').value = fc.title || '';
-            document.getElementById('eFcImage').value = ''; 
-
-            let targets = fc.target ? fc.target.split(',').map(s => s.trim()) : [];
-            document.querySelectorAll('.eFcCatCb').forEach(cb => {
-                cb.checked = targets.includes(cb.value);
-            });
-
-            document.getElementById('editFcModal').style.display = 'flex';
-        }
-
-        function closeEditFcModal() {
-            document.getElementById('editFcModal').style.display = 'none';
-            currentEditFcId = null;
-        }
-
-        // 🔥 FUNGSI EDIT KOTAK UNGGULAN (JALUR MUTANT) 🔥
         async function saveEditedFc() {
-            if(!currentEditFcId) return;
-
-            const title = document.getElementById('eFcTitle').value.trim();
-            const checkedTargets = Array.from(document.querySelectorAll('.eFcCatCb:checked')).map(cb => cb.value);
-            const file = document.getElementById('eFcImage').files[0];
-
-            if(!title || checkedTargets.length === 0) return alert("Isi Judul dan Pilih Minimal 1 Target Kategori!");
-
-            const targetStr = checkedTargets.join(', ');
-            let updates = { title: title, target: targetStr };
-
-            if(file) {
-                document.querySelector('#editFcModal .btn-action').innerText = "UPLOADING... ⏳";
-                try {
-                    let compressedImg = await compressImage(file, 800, 0.8);
-                    updates.image = await uploadToImgBB(compressedImg);
-                    await db.ref('ui_featured_cats/' + currentEditFcId).update(updates);
-                    closeEditFcModal(); alert("Kotak Unggulan Berhasil Diupdate!");
-                } catch(e) {
-                    alert("Gagal upload gambar: " + e.message);
-                } finally {
-                    document.querySelector('#editFcModal .btn-action').innerText = "💾 SIMPAN KOTAK UNGGULAN";
-                }
-            } else {
-                await db.ref('ui_featured_cats/' + currentEditFcId).update(updates);
-                closeEditFcModal(); alert("Kotak Unggulan Berhasil Diupdate!");
-            }
+            if(!currentEditFcId) return; const title = document.getElementById('eFcTitle').value.trim(); const checkedTargets = Array.from(document.querySelectorAll('.eFcCatCb:checked')).map(cb => cb.value); const file = document.getElementById('eFcImage').files[0];
+            if(!title || checkedTargets.length === 0) return alert("Isi Judul dan Pilih Minimal 1 Target Kategori!"); const targetStr = checkedTargets.join(', '); let updates = { title: title, target: targetStr };
+            if(file) { document.querySelector('#editFcModal .btn-action').innerText = "UPLOADING... ⏳"; try { let compressedImg = await compressImage(file, 800, 0.8); updates.image = await uploadToImgBB(compressedImg); await db.ref('ui_featured_cats/' + currentEditFcId).update(updates); closeEditFcModal(); alert("Kotak Unggulan Berhasil Diupdate!"); } catch(e) { alert("Gagal upload gambar: " + e.message); } finally { document.querySelector('#editFcModal .btn-action').innerText = "💾 SIMPAN KOTAK UNGGULAN"; }
+            } else { await db.ref('ui_featured_cats/' + currentEditFcId).update(updates); closeEditFcModal(); alert("Kotak Unggulan Berhasil Diupdate!"); }
         }
 
-        // 🔥 KUNCI API IMGBB JALUR MUTANT 🔥
         const IMGBB_API_KEY = 'd55932c49f47978d2ca69e76142b10be';
 
-        // Mesin Pelempar Foto ke ImgBB + Dibungkus Proxy Anti-Blokir
         async function uploadToImgBB(base64DataUrl) {
-            const res = await fetch(base64DataUrl);
-            const blob = await res.blob();
-            const formData = new FormData();
-            formData.append('image', blob, 'ganketi_product.jpg'); 
-
-            const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, {
-                method: 'POST',
-                body: formData
-            });
-            
+            const res = await fetch(base64DataUrl); const blob = await res.blob(); const formData = new FormData(); formData.append('image', blob, 'ganketi_product.jpg'); 
+            const response = await fetch(`https://api.imgbb.com/1/upload?key=${IMGBB_API_KEY}`, { method: 'POST', body: formData });
             const data = await response.json();
-            if (data.success) {
-                // 🔥 TRIK PROXY CDN ANTI-BLOKIR 🔥
-                let rawUrl = data.data.url; // Contoh: https://i.ibb.co/xyz/baju.jpg
-                let cleanUrl = rawUrl.replace('https://', '').replace('http://', ''); 
-                
-                // Foto nggak bakal diblokir lagi karena ngelewatin server Belanda (wsrv.nl)
-                return `https://wsrv.nl/?url=${cleanUrl}&output=png`; 
-            } else {
-                throw new Error("Gagal ImgBB: " + data.error.message);
-            }
+            if (data.success) { let rawUrl = data.data.url; let cleanUrl = rawUrl.replace('https://', '').replace('http://', ''); return `https://wsrv.nl/?url=${cleanUrl}&output=png`; 
+            } else { throw new Error("Gagal ImgBB: " + data.error.message); }
         }
 
-        // 🔥 1. FUNGSI UPLOAD PRODUK JALUR MUTANT 🔥
+        // 🔥 UPLOAD PRODUK + SIZE GUIDE 🔥
         async function uploadProduct() { 
             const name = document.getElementById('pName').value; 
             const desc = document.getElementById('pDesc').value.trim();
@@ -795,27 +611,41 @@
             const checkedCouriers = Array.from(document.querySelectorAll('.pCourierCb:checked')).map(cb => cb.value).join(', ');
             const checkedCats = Array.from(document.querySelectorAll('.pCatCb:checked')).map(cb => cb.value);
             
+            // Ambil data Size Guide
+            const sizeGuideText = document.getElementById('pSizeText').value.trim();
+            const sizeGuideImgFile = document.getElementById('pSizeImg').files[0];
+            
             if(checkedCats.length === 0) return alert("Pilih minimal 1 kategori!");
             if(!name || !cost || !price || !stock || !origin || !originId || !checkedCouriers || files.length===0) return alert("Lengkapi data yang wajib!");
             
-            document.getElementById('statusMessage').innerHTML = "<span style='color:white;'>Mengirim ke Satelit ImgBB... ⏳</span>";
+            document.getElementById('statusMessage').innerHTML = "<span style='color:white;'>Mengirim data ke Satelit ImgBB... ⏳</span>";
             
             try {
                 let imgUrls = [];
                 for (let i = 0; i < files.length; i++) {
                     let compressedBase64 = await compressImage(files[i], 1000, 0.8);
-                    let proxyUrl = await uploadToImgBB(compressedBase64); // Dapetin link sakti
+                    let proxyUrl = await uploadToImgBB(compressedBase64);
                     imgUrls.push(proxyUrl);
+                }
+
+                let sizeImgUrl = null;
+                if(sizeGuideImgFile) {
+                    let compSize = await compressImage(sizeGuideImgFile, 800, 0.8);
+                    sizeImgUrl = await uploadToImgBB(compSize);
                 }
 
                 const newProductRef = db.ref('products').push();
                 let data = { name, desc, unit, sizes, colors, minOrder: parseInt(minOrder), maxOrder: parseInt(maxOrder), origin, originId, couriers: checkedCouriers, category: checkedCats.join(', '), cost: parseInt(cost), price: parseInt(price), stock: parseInt(stock), images: imgUrls, timestamp: Date.now(), isPopular: false };
-                if(orig) data.originalPrice = parseInt(orig); if(link) data.link = link; 
+                
+                if(orig) data.originalPrice = parseInt(orig); 
+                if(link) data.link = link; 
+                if(sizeGuideText) data.sizeText = sizeGuideText;
+                if(sizeImgUrl) data.sizeImg = sizeImgUrl;
                 
                 await newProductRef.set(data);
                 
-                document.getElementById('statusMessage').innerHTML = "<span style='color:#4ade80;'>✅ Upload Mutant Sukses! Web 1000% Ngebut & Anti Blokir! ⚡</span>"; 
-                ['pName','pDesc','pSizes','pColors','pMinOrder','pMaxOrder','pOrigin','pOriginId','pCost','pPrice','pStock','pOriginalPrice','pLink','pImages'].forEach(id=>document.getElementById(id).value=''); 
+                document.getElementById('statusMessage').innerHTML = "<span style='color:#4ade80;'>✅ Upload Produk & Size Guide Sukses! ⚡</span>"; 
+                ['pName','pDesc','pSizes','pColors','pMinOrder','pMaxOrder','pOrigin','pOriginId','pCost','pPrice','pStock','pOriginalPrice','pLink','pImages','pSizeText','pSizeImg'].forEach(id=>document.getElementById(id).value=''); 
                 document.querySelectorAll('.pCatCb, .pCourierCb').forEach(cb => cb.checked = false); 
                 setTimeout(() => { document.getElementById('statusMessage').innerHTML = ""; }, 3000);
             } catch (error) {
@@ -823,7 +653,7 @@
             }
         }
 
-        // 🔥 2. FUNGSI EDIT PRODUK JALUR MUTANT 🔥
+        // 🔥 EDIT PRODUK + SIZE GUIDE 🔥
         async function saveEditedProduct() {
             const checkedCats = Array.from(document.querySelectorAll('.eCatCb:checked')).map(cb => cb.value);
             const checkedCouriers = Array.from(document.querySelectorAll('.eCourierCb:checked')).map(cb => cb.value);
@@ -840,11 +670,14 @@
                 colors: document.getElementById('eColors').value.trim() || 'Default',
                 minOrder: parseInt(document.getElementById('eMinOrder').value) || 1, maxOrder: parseInt(document.getElementById('eMaxOrder').value) || 9999,
                 origin: originStr, originId: originIdStr, couriers: checkedCouriers.join(', '), category: checkedCats.join(', '), 
-                cost: parseInt(document.getElementById('eCost').value), price: parseInt(document.getElementById('ePrice').value), stock: parseInt(document.getElementById('eStock').value) 
+                cost: parseInt(document.getElementById('eCost').value), price: parseInt(document.getElementById('ePrice').value), stock: parseInt(document.getElementById('eStock').value),
+                sizeText: document.getElementById('eSizeText').value.trim() 
             };
+            
             let o = document.getElementById('eOriginalPrice').value; if(o) u.originalPrice = parseInt(o); else u.originalPrice = null;
             let l = document.getElementById('eLink').value.trim(); if(l) u.link = l; else u.link = null; 
             let files = document.getElementById('eImages').files;
+            let sizeImgFile = document.getElementById('eSizeImg').files[0];
             
             document.getElementById('eStatusMessage').innerHTML = "<span style='color:white;'>Menyimpan Perubahan... ⏳</span>";
 
@@ -858,10 +691,15 @@
                     }
                     u.images = imgUrls; 
                 }
+
+                if(sizeImgFile) {
+                    let compSize = await compressImage(sizeImgFile, 800, 0.8);
+                    u.sizeImg = await uploadToImgBB(compSize);
+                }
                 
                 await db.ref('products/'+currentEditId).update(u);
                 document.getElementById('eStatusMessage').innerHTML = "";
-                closeEditModal(); alert('Tersimpan! Fotonya dijamin kebal internet positif!');
+                closeEditModal(); alert('Tersimpan! Perubahan sudah aktif!');
             } catch (error) {
                 document.getElementById('eStatusMessage').innerHTML = "<span style='color:#ef4444;'>❌ Gagal: " + error.message + "</span>";
             }
@@ -870,314 +708,87 @@
 
         function renderManageProducts() {
             const list = document.getElementById('manageProductsList');
-            if(!adminProductsData || Object.keys(adminProductsData).length === 0) {
-                return list.innerHTML = '<p style="color:#aaa; text-align:center;">Belum ada produk.</p>';
-            }
-
+            if(!adminProductsData || Object.keys(adminProductsData).length === 0) { return list.innerHTML = '<p style="color:#aaa; text-align:center;">Belum ada produk.</p>'; }
             const searchQ = (document.getElementById('searchManage') ? document.getElementById('searchManage').value.toLowerCase() : '');
             const filterCat = (document.getElementById('filterManageCat') ? document.getElementById('filterManageCat').value : 'ALL');
-
             let productsArr = Object.keys(adminProductsData).map(k => ({id: k, ...adminProductsData[k]}));
-
             let filtered = productsArr.filter(p => {
                 let matchSearch = p.name ? p.name.toLowerCase().includes(searchQ) : false;
-                let matchCat = true;
-                if(filterCat !== 'ALL') {
-                    matchCat = p.category && p.category.includes(filterCat);
-                }
-                return matchSearch && matchCat;
+                let matchCat = true; if(filterCat !== 'ALL') { matchCat = p.category && p.category.includes(filterCat); } return matchSearch && matchCat;
             });
-
             if(filtered.length === 0) return list.innerHTML = '<p style="color:#aaa; text-align:center; margin-top:15px;">Produk tidak ditemukan.</p>';
-
             list.innerHTML = filtered.sort((a,b)=>b.timestamp - a.timestamp).map(p => {
                 let linkSupplierHtml = p.link ? `<a href="${p.link}" target="_blank" style="display:inline-block; margin-top:5px; font-size:10px; background:#4285F4; color:white; padding:3px 8px; border-radius:4px; text-decoration:none;">🔗 Cek Supplier</a>` : '';
                 let originHtml = p.origin ? `<span style="font-size:9px; color:#f59e0b;">📍 ${p.origin} | 🚚 ${p.couriers || '-'}</span><br>` : '';
                 let stockInfo = `<span style="font-size:10px; color:#aaa;">Stok: ${p.stock} ${p.unit || 'pcs'}</span>`;
-
                 return `<div style="background:#1a1a1a; padding:15px; border:1px solid #333; margin-bottom:10px; border-radius:6px; display:flex; justify-content:space-between;">
                     <div style="display:flex; gap:15px;">
                         <img src="${p.images?p.images[0]:p.image}" style="width:50px; height:50px; object-fit:cover; border-radius:4px;">
-                        <div>
-                            <b>${p.name}</b><br>
-                            <span style="color:#888; font-size:10px;">[${p.category}]</span><br>
-                            ${originHtml}
-                            <span style="color:#4ade80; font-size:12px; font-weight:bold;">Rp ${p.price.toLocaleString('id-ID')}</span> <br>${stockInfo}<br>
-                            ${linkSupplierHtml}
-                        </div>
+                        <div><b>${p.name}</b><br><span style="color:#888; font-size:10px;">[${p.category}]</span><br>${originHtml}<span style="color:#4ade80; font-size:12px; font-weight:bold;">Rp ${p.price.toLocaleString('id-ID')}</span> <br>${stockInfo}<br>${linkSupplierHtml}</div>
                     </div>
                     <div style="display:flex; flex-direction:column; gap:5px; min-width:80px;">
                         <button onclick="db.ref('products/${p.id}').update({isPopular: ${!p.isPopular}})" style="background:${p.isPopular?'#f59e0b':'#333'}; color:white; border:none; padding:5px; border-radius:4px; font-size:10px; width:100%;">${p.isPopular?'⭐ HAPUS POPULER':'⭐ SET POPULER'}</button>
-                        <div style="display:flex; gap:5px; width:100%;">
-                            <button onclick="openEditModal('${p.id}')" style="background:#3b82f6; color:white; border:none; padding:5px; border-radius:4px; font-size:10px; flex:1;">✏️ EDIT</button>
-                            <button onclick="if(confirm('Hapus produk ini?')) db.ref('products/${p.id}').remove()" style="background:transparent; color:#ef4444; border:1px solid #ef4444; padding:5px; border-radius:4px; font-size:10px; flex:1;">🗑️</button>
-                        </div>
+                        <div style="display:flex; gap:5px; width:100%;"><button onclick="openEditModal('${p.id}')" style="background:#3b82f6; color:white; border:none; padding:5px; border-radius:4px; font-size:10px; flex:1;">✏️ EDIT</button><button onclick="if(confirm('Hapus produk ini?')) db.ref('products/${p.id}').remove()" style="background:transparent; color:#ef4444; border:1px solid #ef4444; padding:5px; border-radius:4px; font-size:10px; flex:1;">🗑️</button></div>
                     </div>
                 </div>`;
             }).join('');
         }
 
-        db.ref('products').on('value', snap => {
-            adminProductsData = snap.val() || {}; 
-            renderManageProducts();
-        });
-
+        db.ref('products').on('value', snap => { adminProductsData = snap.val() || {}; renderManageProducts(); });
 
         function openEditModal(id) { 
             currentEditId = id; let p = adminProductsData[id]; 
-            
-            document.getElementById('eName').value = p.name || '';
-            document.getElementById('eDesc').value = p.desc || '';
-            document.getElementById('eUnit').value = p.unit || 'pcs';
-            document.getElementById('eSizes').value = p.sizes || 'All Size';
-            document.getElementById('eColors').value = p.colors || ''; 
-            document.getElementById('eMinOrder').value = p.minOrder || '';
-            document.getElementById('eMaxOrder').value = p.maxOrder || '';
-            document.getElementById('eCost').value = p.cost || '';
-            document.getElementById('ePrice').value = p.price || '';
-            document.getElementById('eStock').value = p.stock || '';
-            document.getElementById('eOriginalPrice').value = p.originalPrice || '';
-            document.getElementById('eOrigin').value = p.origin || '';
-            document.getElementById('eOriginId').value = p.originId || '';
-            document.getElementById('eLink').value = p.link || '';
-            
+            document.getElementById('eName').value = p.name || ''; document.getElementById('eDesc').value = p.desc || ''; document.getElementById('eUnit').value = p.unit || 'pcs'; document.getElementById('eSizes').value = p.sizes || 'All Size'; document.getElementById('eColors').value = p.colors || ''; document.getElementById('eMinOrder').value = p.minOrder || ''; document.getElementById('eMaxOrder').value = p.maxOrder || ''; document.getElementById('eCost').value = p.cost || ''; document.getElementById('ePrice').value = p.price || ''; document.getElementById('eStock').value = p.stock || ''; document.getElementById('eOriginalPrice').value = p.originalPrice || ''; document.getElementById('eOrigin').value = p.origin || ''; document.getElementById('eOriginId').value = p.originId || ''; document.getElementById('eLink').value = p.link || '';
+            document.getElementById('eSizeText').value = p.sizeText || ''; document.getElementById('eSizeImg').value = '';
             document.querySelectorAll('.eCatCb').forEach(cb => { cb.checked = p.category ? p.category.includes(cb.value) : false; });
-            
-            document.querySelectorAll('.eCourierCb').forEach(cb => { 
-                let courArr = p.couriers ? p.couriers.toLowerCase().split(',').map(s=>s.trim()) : [];
-                cb.checked = courArr.includes(cb.value.toLowerCase()); 
-            });
-            
+            document.querySelectorAll('.eCourierCb').forEach(cb => { let courArr = p.couriers ? p.couriers.toLowerCase().split(',').map(s=>s.trim()) : []; cb.checked = courArr.includes(cb.value.toLowerCase()); });
             document.getElementById('editModal').style.display='flex'; 
         }
 
         function closeEditModal() { document.getElementById('editModal').style.display='none'; currentEditId=null; }
         
-        // 🔥 FUNGSI UPLOAD BANNER (JALUR MUTANT) 🔥
         async function uploadBanners() { 
-            const files = document.getElementById('promoBanners').files;
-            if(files.length === 0) return alert("Pilih gambar banner dulu!");
-            document.getElementById('bStatusMessage').innerHTML = "<span style='color:white;'>Mengompres & Upload Banner... ⏳</span>";
-
-            try {
-                for(let file of files) {
-                    let compressedImg = await compressImage(file, 1200, 0.8);
-                    let proxyUrl = await uploadToImgBB(compressedImg);
-                    await db.ref('ui_banners').push({ image: proxyUrl, timestamp: Date.now() });
-                }
-                document.getElementById('promoBanners').value = ''; 
-                document.getElementById('bStatusMessage').innerHTML = "<span style='color:#4ade80;'>Banner berhasil diupload!</span>";
-                setTimeout(() => { document.getElementById('bStatusMessage').innerHTML = ""; }, 3000);
-            } catch(e) {
-                document.getElementById('bStatusMessage').innerHTML = "<span style='color:#ef4444;'>Gagal: " + e.message + "</span>";
-            }
+            const files = document.getElementById('promoBanners').files; if(files.length === 0) return alert("Pilih gambar banner dulu!"); document.getElementById('bStatusMessage').innerHTML = "<span style='color:white;'>Mengompres & Upload Banner... ⏳</span>";
+            try { for(let file of files) { let compressedImg = await compressImage(file, 1200, 0.8); let proxyUrl = await uploadToImgBB(compressedImg); await db.ref('ui_banners').push({ image: proxyUrl, timestamp: Date.now() }); } document.getElementById('promoBanners').value = ''; document.getElementById('bStatusMessage').innerHTML = "<span style='color:#4ade80;'>Banner berhasil diupload!</span>"; setTimeout(() => { document.getElementById('bStatusMessage').innerHTML = ""; }, 3000); } catch(e) { document.getElementById('bStatusMessage').innerHTML = "<span style='color:#ef4444;'>Gagal: " + e.message + "</span>"; }
         }
         
-        db.ref('ui_banners').on('value', snap => {
-            const data = snap.val(); const list = document.getElementById('bannerList');
-            if(!data) return list.innerHTML = '<p style="color:#888; font-size:11px;">Belum ada banner.</p>';
-            list.innerHTML = Object.keys(data).map(key => `<div class="list-item-admin"><img src="${data[key].image}" style="height:40px; border-radius:4px;"> <button onclick="if(confirm('Hapus banner ini?')) db.ref('ui_banners/${key}').remove()" style="background:none; border:1px solid #ef4444; color:#ef4444; cursor:pointer; padding:5px; border-radius:4px;">Hapus</button></div>`).join('');
-        });
+        db.ref('ui_banners').on('value', snap => { const data = snap.val(); const list = document.getElementById('bannerList'); if(!data) return list.innerHTML = '<p style="color:#888; font-size:11px;">Belum ada banner.</p>'; list.innerHTML = Object.keys(data).map(key => `<div class="list-item-admin"><img src="${data[key].image}" style="height:40px; border-radius:4px;"> <button onclick="if(confirm('Hapus banner ini?')) db.ref('ui_banners/${key}').remove()" style="background:none; border:1px solid #ef4444; color:#ef4444; cursor:pointer; padding:5px; border-radius:4px;">Hapus</button></div>`).join(''); });
 
-        function fetchDataSuper() {
-            db.ref('orders').on('value', snap => {
-                allOrdersData = snap.val() ? Object.keys(snap.val()).map(k => ({id:k, ...snap.val()[k]})) : [];
-                renderOrdersTab(); loadFinanceReport();
-            });
-            db.ref('expenses').on('value', snap => {
-                allExpensesData = snap.val() ? Object.keys(snap.val()).map(k => ({id:k, ...snap.val()[k]})) : [];
-                loadFinanceReport();
-            });
-        }
+        function fetchDataSuper() { db.ref('orders').on('value', snap => { allOrdersData = snap.val() ? Object.keys(snap.val()).map(k => ({id:k, ...snap.val()[k]})) : []; renderOrdersTab(); loadFinanceReport(); }); db.ref('expenses').on('value', snap => { allExpensesData = snap.val() ? Object.keys(snap.val()).map(k => ({id:k, ...snap.val()[k]})) : []; loadFinanceReport(); }); }
 
         function renderOrdersTab() {
-            const list = document.getElementById('ordersList');
-            if(allOrdersData.length === 0) return list.innerHTML = '<p style="color:#aaa; text-align:center;">Belum ada pesanan.</p>';
-
-            const searchQuery = (document.getElementById('searchOrder') ? document.getElementById('searchOrder').value.toLowerCase() : '');
-            const statusFilter = (document.getElementById('filterOrderStatus') ? document.getElementById('filterOrderStatus').value : 'ALL');
-
+            const list = document.getElementById('ordersList'); if(allOrdersData.length === 0) return list.innerHTML = '<p style="color:#aaa; text-align:center;">Belum ada pesanan.</p>';
+            const searchQuery = (document.getElementById('searchOrder') ? document.getElementById('searchOrder').value.toLowerCase() : ''); const statusFilter = (document.getElementById('filterOrderStatus') ? document.getElementById('filterOrderStatus').value : 'ALL');
             let validPaidOrders = allOrdersData.filter(o => o.status === 'PAID' || o.status === 'SHIPPED');
-
-            let filteredOrders = validPaidOrders.filter(o => {
-                let matchStatus = (statusFilter === 'ALL') || (o.status === statusFilter);
-                let matchSearch = true;
-                if(searchQuery) {
-                    let inv = (o.invoice_no || '').toLowerCase();
-                    let custName = (o.customer && o.customer.name ? o.customer.name : '').toLowerCase();
-                    matchSearch = inv.includes(searchQuery) || custName.includes(searchQuery);
-                }
-                return matchStatus && matchSearch;
-            });
-
-            if(filteredOrders.length === 0) {
-                return list.innerHTML = '<p style="color:#aaa; text-align:center; padding-top:20px;">Pesanan Lunas tidak ditemukan.</p>';
-            }
-
+            let filteredOrders = validPaidOrders.filter(o => { let matchStatus = (statusFilter === 'ALL') || (o.status === statusFilter); let matchSearch = true; if(searchQuery) { let inv = (o.invoice_no || '').toLowerCase(); let custName = (o.customer && o.customer.name ? o.customer.name : '').toLowerCase(); matchSearch = inv.includes(searchQuery) || custName.includes(searchQuery); } return matchStatus && matchSearch; });
+            if(filteredOrders.length === 0) { return list.innerHTML = '<p style="color:#aaa; text-align:center; padding-top:20px;">Pesanan Lunas tidak ditemukan.</p>'; }
             list.innerHTML = filteredOrders.sort((a,b)=>b.timestamp-a.timestamp).map(o => {
                 let itemsArray = o.items || [];
-                let itemsHtml = itemsArray.map(i => {
-                    let imgUrl = i.images ? i.images[0] : (i.image ? i.image : 'https://via.placeholder.com/45');
-                    let supplierLinkHtml = i.link ? `<a href="${i.link}" target="_blank" style="display:inline-block; margin-top:3px; font-size:9px; background:#4ade80; color:black; padding:3px 6px; border-radius:4px; text-decoration:none; font-weight:bold;">🛒 Checkout di Supplier</a>` : '';
-                    let kurirInfo = i.origin ? `<br><span style="color:#f59e0b; font-size:10px;">(Asal: ${i.origin})</span>` : '';
-                    let price = i.price || 0; let qty = i.qty || 1;
-
-                    return `
-                    <div class="item-row">
-                        <img src="${imgUrl}" class="item-img">
-                        <div style="flex:1;">
-                            <div style="font-size:12px; font-weight:bold; color:#fff;">${i.name || 'Produk'} ${kurirInfo}</div>
-                            <div style="font-size:10px; color:#888;">${qty}x @ Rp ${price.toLocaleString('id-ID')} <br> ${supplierLinkHtml}</div>
-                        </div>
-                        <div style="font-size:12px; font-weight:bold; color:#4ade80;">Rp ${(price * qty).toLocaleString('id-ID')}</div>
-                    </div>`;
-                }).join('');
-
-                let shipCost = o.shippingCost || 0;
-                let ongkirHtml = shipCost ? `<div style="display:flex; justify-content:space-between; padding:8px 12px; background:#111; border-top:1px dashed #333; align-items:center;"><span style="font-size:11px; color:#888;">Ongkos Kirim (${o.courier || '-'})</span><b style="color:#fff; font-size:13px;">Rp ${shipCost.toLocaleString('id-ID')}</b></div>` : '';
-
-                let custName = o.customer && o.customer.name ? o.customer.name : 'Data Kosong/Test';
-                let custPhone = o.customer && o.customer.phone ? o.customer.phone : '-';
-                let custEmail = o.customer && o.customer.email ? o.customer.email : '-';
-                let custAddress = o.customer && o.customer.address ? o.customer.address : '-';
-                let totalStr = (o.total || 0).toLocaleString('id-ID');
-
-                return `
-                <div class="order-card">
-                    <div class="order-header">
-                        <div>
-                            <span style="color:#3b82f6; font-size:14px;">${o.invoice_no || 'INV-XXX'}</span><br>
-                            <span style="font-size:10px; color:#888; font-weight:normal;">📅 ${o.date || '-'}</span>
-                        </div>
-                        <div><span class="badge-status status-${o.status || 'UNPAID'}">${o.status || 'UNPAID'}</span></div>
-                    </div>
-                    
-                    <div style="margin-bottom:15px; color:#ccc; font-size:12px; line-height:1.6;">
-                        <b style="color:white;">Penerima:</b> ${custName} (WA: ${custPhone})<br>
-                        <b style="color:white;">Email:</b> ${custEmail}<br>
-                        <b style="color:white;">Alamat:</b> ${custAddress}
-                    </div>
-                    
-                    <div style="background:#0a0a0a; border-radius:8px; border: 1px solid #222; overflow:hidden; margin-bottom:15px;">
-                        <div style="background:#111; padding:8px 12px; font-size:10px; color:#888; text-transform:uppercase; border-bottom:1px solid #222;">Rincian Produk</div>
-                        ${itemsHtml}
-                        ${ongkirHtml}
-                        <div style="display:flex; justify-content:space-between; padding:12px; background:#111; border-top:1px dashed #333; align-items:center;">
-                            <span style="font-size:11px; color:#888;">Grand Total</span>
-                            <b style="color:#4ade80; font-size:15px;">Rp ${totalStr}</b>
-                        </div>
-                    </div>
-                    
-                    <div style="text-align:right; display:flex; justify-content:flex-end; align-items:center; gap:10px;">
-                        ${o.status === 'UNPAID' ? `<button class="btn-status" style="background:#f59e0b; border:none; color:black;" onclick="updateStatus('${o.id}', 'PAID')">✅ LUNAS (Lanjut Kemas)</button>` : ''} 
-                        
-                        ${o.status === 'PAID' ? `
-                            <input type="text" id="resi-${o.id}" placeholder="Input Nomor Resi..." style="padding:8px; font-size:11px; border-radius:6px; border:1px solid #444; background:#111; color:white; width:160px;">
-                            <button class="btn-status" style="background:#4ade80; border:none; color:black; padding:9px 15px;" onclick="kirimPesanan('${o.id}')">📦 KIRIM</button>
-                        ` : ''}
-                        
-                        ${o.status === 'SHIPPED' ? `<div style="color:#4ade80; font-size:12px; font-weight:bold;">No. Resi: <span style="color:white;">${o.resi || '-'}</span></div>` : ''}
-                    </div>
-                </div>`;
+                let itemsHtml = itemsArray.map(i => { let imgUrl = i.images ? i.images[0] : (i.image ? i.image : 'https://via.placeholder.com/45'); let supplierLinkHtml = i.link ? `<a href="${i.link}" target="_blank" style="display:inline-block; margin-top:3px; font-size:9px; background:#4ade80; color:black; padding:3px 6px; border-radius:4px; text-decoration:none; font-weight:bold;">🛒 Checkout di Supplier</a>` : ''; let kurirInfo = i.origin ? `<br><span style="color:#f59e0b; font-size:10px;">(Asal: ${i.origin})</span>` : ''; let price = i.price || 0; let qty = i.qty || 1; return `<div class="item-row"><img src="${imgUrl}" class="item-img"><div style="flex:1;"><div style="font-size:12px; font-weight:bold; color:#fff;">${i.name || 'Produk'} ${kurirInfo}</div><div style="font-size:10px; color:#888;">${qty}x @ Rp ${price.toLocaleString('id-ID')} <br> ${supplierLinkHtml}</div></div><div style="font-size:12px; font-weight:bold; color:#4ade80;">Rp ${(price * qty).toLocaleString('id-ID')}</div></div>`; }).join('');
+                let shipCost = o.shippingCost || 0; let ongkirHtml = shipCost ? `<div style="display:flex; justify-content:space-between; padding:8px 12px; background:#111; border-top:1px dashed #333; align-items:center;"><span style="font-size:11px; color:#888;">Ongkos Kirim (${o.courier || '-'})</span><b style="color:#fff; font-size:13px;">Rp ${shipCost.toLocaleString('id-ID')}</b></div>` : '';
+                let custName = o.customer && o.customer.name ? o.customer.name : 'Data Kosong/Test'; let custPhone = o.customer && o.customer.phone ? o.customer.phone : '-'; let custEmail = o.customer && o.customer.email ? o.customer.email : '-'; let custAddress = o.customer && o.customer.address ? o.customer.address : '-'; let totalStr = (o.total || 0).toLocaleString('id-ID');
+                return `<div class="order-card"><div class="order-header"><div><span style="color:#3b82f6; font-size:14px;">${o.invoice_no || 'INV-XXX'}</span><br><span style="font-size:10px; color:#888; font-weight:normal;">📅 ${o.date || '-'}</span></div><div><span class="badge-status status-${o.status || 'UNPAID'}">${o.status || 'UNPAID'}</span></div></div><div style="margin-bottom:15px; color:#ccc; font-size:12px; line-height:1.6;"><b style="color:white;">Penerima:</b> ${custName} (WA: ${custPhone})<br><b style="color:white;">Email:</b> ${custEmail}<br><b style="color:white;">Alamat:</b> ${custAddress}</div><div style="background:#0a0a0a; border-radius:8px; border: 1px solid #222; overflow:hidden; margin-bottom:15px;"><div style="background:#111; padding:8px 12px; font-size:10px; color:#888; text-transform:uppercase; border-bottom:1px solid #222;">Rincian Produk</div>${itemsHtml}${ongkirHtml}<div style="display:flex; justify-content:space-between; padding:12px; background:#111; border-top:1px dashed #333; align-items:center;"><span style="font-size:11px; color:#888;">Grand Total</span><b style="color:#4ade80; font-size:15px;">Rp ${totalStr}</b></div></div><div style="text-align:right; display:flex; justify-content:flex-end; align-items:center; gap:10px;">${o.status === 'UNPAID' ? `<button class="btn-status" style="background:#f59e0b; border:none; color:black;" onclick="updateStatus('${o.id}', 'PAID')">✅ LUNAS (Lanjut Kemas)</button>` : ''} ${o.status === 'PAID' ? `<input type="text" id="resi-${o.id}" placeholder="Input Nomor Resi..." style="padding:8px; font-size:11px; border-radius:6px; border:1px solid #444; background:#111; color:white; width:160px;"><button class="btn-status" style="background:#4ade80; border:none; color:black; padding:9px 15px;" onclick="kirimPesanan('${o.id}')">📦 KIRIM</button>` : ''}${o.status === 'SHIPPED' ? `<div style="color:#4ade80; font-size:12px; font-weight:bold;">No. Resi: <span style="color:white;">${o.resi || '-'}</span></div>` : ''}</div></div>`;
             }).join('');
         }
 
-        function kirimPesanan(orderId) {
-            const resiVal = document.getElementById('resi-' + orderId).value.trim();
-            if(!resiVal) return alert("Wajib masukkan Nomor Resi sebelum mengirim pesanan!");
-            db.ref('orders/' + orderId).update({ status: 'SHIPPED', resi: resiVal }).then(() => alert('Pesanan Berhasil Dikirim dengan Resi: ' + resiVal));
-        }
+        function kirimPesanan(orderId) { const resiVal = document.getElementById('resi-' + orderId).value.trim(); if(!resiVal) return alert("Wajib masukkan Nomor Resi sebelum mengirim pesanan!"); db.ref('orders/' + orderId).update({ status: 'SHIPPED', resi: resiVal }).then(() => alert('Pesanan Berhasil Dikirim dengan Resi: ' + resiVal)); }
 
-        function setFinanceFilter(type) {
-            currentFinFilter = type;
-            ['hari','bulan','tahun','semua'].forEach(t => document.getElementById('f-'+t).className = (t === type) ? 'btn-filter active' : 'btn-filter');
-            if(type === 'custom') {
-                customFinDate = document.getElementById('f-custom').value;
-                document.querySelectorAll('.btn-filter').forEach(el => el.classList.remove('active'));
-            } else { document.getElementById('f-custom').value = ''; }
-            let labelText = { 'hari': 'Hari Ini', 'bulan': 'Bulan Ini', 'tahun': 'Tahun Ini', 'semua': 'Semua Waktu', 'custom': customFinDate }[type];
-            document.getElementById('docPeriodeText').innerText = labelText.toUpperCase();
-            loadFinanceReport();
-        }
-
-        function matchDateLogic(timestamp) {
-            if(currentFinFilter === 'semua') return true;
-            let d = new Date(timestamp); let now = new Date();
-            if(currentFinFilter === 'hari') return d.getDate()===now.getDate() && d.getMonth()===now.getMonth() && d.getFullYear()===now.getFullYear();
-            if(currentFinFilter === 'bulan') return d.getMonth()===now.getMonth() && d.getFullYear()===now.getFullYear();
-            if(currentFinFilter === 'tahun') return d.getFullYear()===now.getFullYear();
-            if(currentFinFilter === 'custom') { let [y,m,day] = customFinDate.split('-'); return d.getDate()===parseInt(day) && d.getMonth()+1===parseInt(m) && d.getFullYear()===parseInt(y); }
-            return true;
-        }
+        function setFinanceFilter(type) { currentFinFilter = type; ['hari','bulan','tahun','semua'].forEach(t => document.getElementById('f-'+t).className = (t === type) ? 'btn-filter active' : 'btn-filter'); if(type === 'custom') { customFinDate = document.getElementById('f-custom').value; document.querySelectorAll('.btn-filter').forEach(el => el.classList.remove('active')); } else { document.getElementById('f-custom').value = ''; } let labelText = { 'hari': 'Hari Ini', 'bulan': 'Bulan Ini', 'tahun': 'Tahun Ini', 'semua': 'Semua Waktu', 'custom': customFinDate }[type]; document.getElementById('docPeriodeText').innerText = labelText.toUpperCase(); loadFinanceReport(); }
+        function matchDateLogic(timestamp) { if(currentFinFilter === 'semua') return true; let d = new Date(timestamp); let now = new Date(); if(currentFinFilter === 'hari') return d.getDate()===now.getDate() && d.getMonth()===now.getMonth() && d.getFullYear()===now.getFullYear(); if(currentFinFilter === 'bulan') return d.getMonth()===now.getMonth() && d.getFullYear()===now.getFullYear(); if(currentFinFilter === 'tahun') return d.getFullYear()===now.getFullYear(); if(currentFinFilter === 'custom') { let [y,m,day] = customFinDate.split('-'); return d.getDate()===parseInt(day) && d.getMonth()+1===parseInt(m) && d.getFullYear()===parseInt(y); } return true; }
 
         function loadFinanceReport() {
-            const validOrders = allOrdersData.filter(o => matchDateLogic(o.timestamp) && (o.status === 'PAID' || o.status === 'SHIPPED'));
-            const validExpenses = allExpensesData.filter(e => matchDateLogic(e.timestamp));
-            let tOmzet = 0, tHPP = 0, tExpense = 0;
-            let itemAnalytics = {}; let chartData = {}; let docSalesHTML = '';
-
-            validOrders.forEach(o => {
-                tOmzet += o.total;
-                let dStr = new Date(o.timestamp).toLocaleString('id-ID', {day:'2-digit', month:'short'});
-                let tStr = new Date(o.timestamp).toLocaleString('id-ID', {hour:'2-digit', minute:'2-digit'});
-                let key = (currentFinFilter === 'hari' || currentFinFilter === 'custom') ? tStr : dStr;
-                chartData[key] = (chartData[key] || 0) + o.total;
-
-                let hppOrder = 0;
-                o.items.forEach(i => {
-                    let cost = i.cost || 0; hppOrder += (cost * i.qty);
-                    itemAnalytics[i.name] = itemAnalytics[i.name] || { qty:0, total:0 };
-                    itemAnalytics[i.name].qty += i.qty; itemAnalytics[i.name].total += (i.price * i.qty);
-                });
-                tHPP += hppOrder;
-                docSalesHTML += `<tr><td>${dStr} ${tStr}</td><td><b>${o.invoice_no}</b></td><td style="text-align:center;">${o.items.length} Item</td><td style="text-align:right;">${hppOrder.toLocaleString('id-ID')}</td><td style="text-align:right; font-weight:bold;">${o.total.toLocaleString('id-ID')}</td></tr>`;
-            });
-
-            let expUIHtml = '', docExpHtml = '';
-            validExpenses.forEach(e => {
-                tExpense += e.amount; let t = new Date(e.timestamp).toLocaleString('id-ID');
-                expUIHtml += `<tr><td>${e.desc}</td><td style="text-align:right; color:#ef4444;">Rp ${e.amount.toLocaleString('id-ID')}</td></tr>`;
-                docExpHtml += `<tr><td>${t}</td><td>${e.desc}</td><td style="text-align:right;">Rp ${e.amount.toLocaleString('id-ID')}</td></tr>`;
-            });
-
+            const validOrders = allOrdersData.filter(o => matchDateLogic(o.timestamp) && (o.status === 'PAID' || o.status === 'SHIPPED')); const validExpenses = allExpensesData.filter(e => matchDateLogic(e.timestamp));
+            let tOmzet = 0, tHPP = 0, tExpense = 0; let itemAnalytics = {}; let chartData = {}; let docSalesHTML = '';
+            validOrders.forEach(o => { tOmzet += o.total; let dStr = new Date(o.timestamp).toLocaleString('id-ID', {day:'2-digit', month:'short'}); let tStr = new Date(o.timestamp).toLocaleString('id-ID', {hour:'2-digit', minute:'2-digit'}); let key = (currentFinFilter === 'hari' || currentFinFilter === 'custom') ? tStr : dStr; chartData[key] = (chartData[key] || 0) + o.total; let hppOrder = 0; o.items.forEach(i => { let cost = i.cost || 0; hppOrder += (cost * i.qty); itemAnalytics[i.name] = itemAnalytics[i.name] || { qty:0, total:0 }; itemAnalytics[i.name].qty += i.qty; itemAnalytics[i.name].total += (i.price * i.qty); }); tHPP += hppOrder; docSalesHTML += `<tr><td>${dStr} ${tStr}</td><td><b>${o.invoice_no}</b></td><td style="text-align:center;">${o.items.length} Item</td><td style="text-align:right;">${hppOrder.toLocaleString('id-ID')}</td><td style="text-align:right; font-weight:bold;">${o.total.toLocaleString('id-ID')}</td></tr>`; });
+            let expUIHtml = '', docExpHtml = ''; validExpenses.forEach(e => { tExpense += e.amount; let t = new Date(e.timestamp).toLocaleString('id-ID'); expUIHtml += `<tr><td>${e.desc}</td><td style="text-align:right; color:#ef4444;">Rp ${e.amount.toLocaleString('id-ID')}</td></tr>`; docExpHtml += `<tr><td>${t}</td><td>${e.desc}</td><td style="text-align:right;">Rp ${e.amount.toLocaleString('id-ID')}</td></tr>`; });
             let tMargin = tOmzet - tHPP; let tNet = tMargin - tExpense;
-
-            document.getElementById('uiOmzet').innerText = `Rp ${tOmzet.toLocaleString('id-ID')}`;
-            document.getElementById('uiMargin').innerText = `Rp ${tMargin.toLocaleString('id-ID')}`;
-            document.getElementById('uiExpense').innerText = `Rp ${tExpense.toLocaleString('id-ID')}`;
-            document.getElementById('uiNet').innerText = `Rp ${tNet.toLocaleString('id-ID')}`;
-
-            let sortedItems = Object.keys(itemAnalytics).map(k => ({name:k, ...itemAnalytics[k]})).sort((a,b) => b.qty - a.qty);
-            document.getElementById('uiTopItems').innerHTML = sortedItems.length ? sortedItems.map(i => `<tr><td><b>${i.name}</b></td><td style="text-align:center;">${i.qty}</td><td style="text-align:right; color:#4ade80;">Rp ${i.total.toLocaleString('id-ID')}</td></tr>`).join('') : `<tr><td colspan="3" style="text-align:center;">Belum ada penjualan Lunas.</td></tr>`;
-            document.getElementById('uiExpenseList').innerHTML = expUIHtml || `<tr><td colspan="2" style="text-align:center;">Tidak ada pengeluaran.</td></tr>`;
-
-            document.getElementById('docOmzet').innerText = `Rp ${tOmzet.toLocaleString('id-ID')}`;
-            document.getElementById('docHPP').innerText = `(Rp ${tHPP.toLocaleString('id-ID')})`;
-            document.getElementById('docMargin').innerText = `Rp ${tMargin.toLocaleString('id-ID')}`;
-            document.getElementById('docExpense').innerText = `(Rp ${tExpense.toLocaleString('id-ID')})`;
-            document.getElementById('docNet').innerText = `Rp ${tNet.toLocaleString('id-ID')}`;
-            document.getElementById('docSalesLog').innerHTML = docSalesHTML || `<tr><td colspan="5" style="text-align:center;">Tidak ada transaksi.</td></tr>`;
-            document.getElementById('docExpenseLog').innerHTML = docExpHtml || `<tr><td colspan="3" style="text-align:center;">Tidak ada pengeluaran.</td></tr>`;
-
-            const ctx = document.getElementById('salesChart').getContext('2d');
-            if(finChart) finChart.destroy(); 
-            finChart = new Chart(ctx, {
-                type: 'line', 
-                data: {
-                    labels: Object.keys(chartData).length ? Object.keys(chartData) : ['00:00'],
-                    datasets: [{ label: 'Omzet', data: Object.keys(chartData).length ? Object.values(chartData) : [0], backgroundColor: 'rgba(59, 130, 246, 0.2)', borderColor: '#3b82f6', borderWidth: 2, pointBackgroundColor: '#fff', fill: true, tension: 0.4 }]
-                },
-                options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: {color: '#888'} }, y: { ticks: {color: '#888', callback: v => 'Rp '+(v/1000)+'k'} } } }
-            });
+            document.getElementById('uiOmzet').innerText = `Rp ${tOmzet.toLocaleString('id-ID')}`; document.getElementById('uiMargin').innerText = `Rp ${tMargin.toLocaleString('id-ID')}`; document.getElementById('uiExpense').innerText = `Rp ${tExpense.toLocaleString('id-ID')}`; document.getElementById('uiNet').innerText = `Rp ${tNet.toLocaleString('id-ID')}`;
+            let sortedItems = Object.keys(itemAnalytics).map(k => ({name:k, ...itemAnalytics[k]})).sort((a,b) => b.qty - a.qty); document.getElementById('uiTopItems').innerHTML = sortedItems.length ? sortedItems.map(i => `<tr><td><b>${i.name}</b></td><td style="text-align:center;">${i.qty}</td><td style="text-align:right; color:#4ade80;">Rp ${i.total.toLocaleString('id-ID')}</td></tr>`).join('') : `<tr><td colspan="3" style="text-align:center;">Belum ada penjualan Lunas.</td></tr>`; document.getElementById('uiExpenseList').innerHTML = expUIHtml || `<tr><td colspan="2" style="text-align:center;">Tidak ada pengeluaran.</td></tr>`;
+            document.getElementById('docOmzet').innerText = `Rp ${tOmzet.toLocaleString('id-ID')}`; document.getElementById('docHPP').innerText = `(Rp ${tHPP.toLocaleString('id-ID')})`; document.getElementById('docMargin').innerText = `Rp ${tMargin.toLocaleString('id-ID')}`; document.getElementById('docExpense').innerText = `(Rp ${tExpense.toLocaleString('id-ID')})`; document.getElementById('docNet').innerText = `Rp ${tNet.toLocaleString('id-ID')}`; document.getElementById('docSalesLog').innerHTML = docSalesHTML || `<tr><td colspan="5" style="text-align:center;">Tidak ada transaksi.</td></tr>`; document.getElementById('docExpenseLog').innerHTML = docExpHtml || `<tr><td colspan="3" style="text-align:center;">Tidak ada pengeluaran.</td></tr>`;
+            const ctx = document.getElementById('salesChart').getContext('2d'); if(finChart) finChart.destroy(); finChart = new Chart(ctx, { type: 'line', data: { labels: Object.keys(chartData).length ? Object.keys(chartData) : ['00:00'], datasets: [{ label: 'Omzet', data: Object.keys(chartData).length ? Object.values(chartData) : [0], backgroundColor: 'rgba(59, 130, 246, 0.2)', borderColor: '#3b82f6', borderWidth: 2, pointBackgroundColor: '#fff', fill: true, tension: 0.4 }] }, options: { responsive: true, maintainAspectRatio: false, plugins: { legend: { display: false } }, scales: { x: { ticks: {color: '#888'} }, y: { ticks: {color: '#888', callback: v => 'Rp '+(v/1000)+'k'} } } } });
         }
 
-        function addExpense() {
-            let desc = document.getElementById('expDesc').value.trim(); let amount = parseFloat(document.getElementById('expAmount').value);
-            if(!desc || isNaN(amount)) return alert("Isi keterangan dan nominal!");
-            db.ref('expenses').push({ desc: desc, amount: amount, timestamp: Date.now() }).then(() => {
-                document.getElementById('expDesc').value = ''; document.getElementById('expAmount').value = '';
-            });
-        }
+        function addExpense() { let desc = document.getElementById('expDesc').value.trim(); let amount = parseFloat(document.getElementById('expAmount').value); if(!desc || isNaN(amount)) return alert("Isi keterangan dan nominal!"); db.ref('expenses').push({ desc: desc, amount: amount, timestamp: Date.now() }).then(() => { document.getElementById('expDesc').value = ''; document.getElementById('expAmount').value = ''; }); }
         function exportLaporanPDF() { document.getElementById('docPrintDate').innerText = new Date().toLocaleString('id-ID'); window.print(); }
     </script>
 </body>
