@@ -20,14 +20,16 @@
         .breadcrumb span { color: var(--primary); font-weight: bold; }
 
         .product-container { display: flex; flex-wrap: wrap; max-width: 1200px; margin: 0 auto; padding: 0 20px 50px 20px; gap: 40px;}
-        .gallery-col { flex: 1; min-width: 300px; }
+        .gallery-col { flex: 1; min-width: 300px; position: relative; }
         .info-col { flex: 1; min-width: 300px; }
 
-        .main-img { width: 100%; aspect-ratio: 4/5; object-fit: cover; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 10px; background: #111; cursor: zoom-in;}
-        .thumb-row { display: flex; gap: 10px; overflow-x: auto; scrollbar-width: none; }
-        .thumb-row::-webkit-scrollbar { display: none; }
-        .thumb-img { width: 70px; height: 70px; object-fit: cover; border-radius: 6px; border: 2px solid transparent; cursor: pointer; opacity: 0.6; transition: 0.3s; background: #111;}
-        .thumb-img.active, .thumb-img:hover { opacity: 1; border-color: var(--primary); }
+        /* 🔥 FITUR SLIDE GAMBAR (TOUCH SWIPE) 🔥 */
+        .slider-container { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 15px; background: #111; }
+        .slider-container::-webkit-scrollbar { display: none; }
+        .slider-img { width: 100%; aspect-ratio: 4/5; object-fit: cover; flex-shrink: 0; scroll-snap-align: start; }
+        .slider-dots { display: flex; justify-content: center; gap: 6px; margin-bottom: 15px; }
+        .s-dot { width: 6px; height: 6px; border-radius: 50%; background: #333; transition: 0.3s; cursor: pointer; }
+        .s-dot.active { background: var(--primary); width: 18px; border-radius: 4px; }
 
         .p-title { font-family: 'Oswald', sans-serif; font-size: 28px; line-height: 1.2; text-transform: uppercase; margin-bottom: 10px; }
         .p-price { font-size: 22px; font-weight: 700; color: var(--primary); margin-bottom: 15px; }
@@ -42,37 +44,43 @@
         .form-group select:focus, .form-group input:focus { border-color: var(--primary); }
 
         .action-row { display: flex; gap: 10px; margin-bottom: 30px; margin-top: 10px;}
-        .btn-add { flex: 1; background: var(--primary); color: var(--bg); border: none; padding: 15px; border-radius: 6px; font-weight: 700; text-transform: uppercase; font-size: 14px; cursor: pointer; transition: 0.3s;}
-        .btn-add:hover { opacity: 0.8; }
-        .btn-add:disabled { background: #333; color: #666; cursor: not-allowed; }
+        .btn-add { flex: 1; background: var(--surface); color: var(--primary); border: 1px solid var(--border); padding: 15px; border-radius: 6px; font-weight: 700; text-transform: uppercase; font-size: 13px; cursor: pointer; transition: 0.3s;}
+        .btn-buy { flex: 1; background: var(--primary); color: var(--bg); border: none; padding: 15px; border-radius: 6px; font-weight: 700; text-transform: uppercase; font-size: 13px; cursor: pointer; transition: 0.3s;}
+        .btn-buy:hover, .btn-add:hover { opacity: 0.8; }
+        .btn-add:disabled, .btn-buy:disabled { background: #333; color: #666; border-color:#333; cursor: not-allowed; }
         .btn-wishlist { background: #111; border: 1px solid #333; color: white; width: 50px; border-radius: 6px; font-size: 20px; cursor: pointer; display: flex; align-items: center; justify-content: center; transition: 0.3s;}
         .btn-wishlist:hover, .btn-wishlist.saved { border-color: #ef4444; color: #ef4444; }
 
-        /* Accordion Details */
         .accordion { border-top: 1px solid #333; }
         .acc-item { border-bottom: 1px solid #333; }
         .acc-btn { width: 100%; text-align: left; background: transparent; border: none; color: white; padding: 15px 0; font-weight: 600; font-size: 12px; text-transform: uppercase; display: flex; justify-content: space-between; cursor: pointer; }
         .acc-content { display: none; padding-bottom: 15px; font-size: 13px; color: #aaa; line-height: 1.6; }
 
-        /* Review Section */
         .review-section { max-width: 1200px; margin: 40px auto; padding: 0 20px; border-top: 1px solid #222; padding-top: 40px;}
         .r-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;}
         .r-header h2 { font-family: 'Oswald', sans-serif; font-size: 20px; text-transform: uppercase; }
         .btn-write-review { background: transparent; border: 1px solid var(--primary); color: white; padding: 8px 15px; border-radius: 4px; font-size: 11px; font-weight: bold; cursor: pointer;}
-        
         .review-card { background: #0a0a0a; border: 1px solid #222; padding: 20px; border-radius: 8px; margin-bottom: 15px;}
         .r-stars { color: #f59e0b; margin-bottom: 8px; font-size: 14px;}
         .r-user { font-weight: bold; font-size: 13px; margin-bottom: 4px; color: white;}
         .r-date { font-size: 10px; color: #666; margin-bottom: 10px;}
         .r-text { font-size: 13px; color: #ccc; line-height: 1.5;}
 
-        /* Review Modal */
+        /* CSS Kartu Rekomendasi Produk */
+        .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; }
+        .card { background: var(--surface); border-radius: 8px; overflow: hidden; border: 1px solid var(--border); cursor: pointer; transition: 0.3s; display: flex; flex-direction: column; }
+        .img-box { width: 100%; aspect-ratio: 1 / 1; background: #1a1a1a; position: relative; overflow: hidden; }
+        .img-box img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
+        .card:hover .img-box img { transform: scale(1.05); }
+        .info { padding: 15px; display: flex; flex-direction: column; flex-grow: 1; }
+        .name { font-size: 13px; font-weight: 600; margin-bottom: 10px; line-height: 1.4; color: var(--primary); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .price { font-family: 'Oswald', sans-serif; font-weight: 500; font-size: 15px; margin-top: auto; color: var(--primary); }
+
         .modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(5px);}
         .modal-box { background: var(--surface); padding: 25px; border-radius: 12px; width: 90%; max-width: 400px; border: 1px solid var(--border);}
         .star-input { display: flex; gap: 10px; font-size: 24px; color: #444; cursor: pointer; justify-content: center; margin-bottom: 20px;}
         .star-input span.active { color: #f59e0b; }
 
-        /* Toast */
         .toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 99999; display: flex; flex-direction: column; gap: 10px; pointer-events: none;}
         .modern-toast { background: var(--surface); border: 1px solid var(--border); color: white; padding: 16px 20px; border-radius: 12px; font-size: 13px; font-weight: bold; box-shadow: 0 10px 40px rgba(0,0,0,0.8); animation: toastSlideDown 0.4s forwards;}
         @keyframes toastSlideDown { from { transform: translateY(-50px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
@@ -97,8 +105,8 @@
 
     <div class="product-container" id="productContent" style="display:none;">
         <div class="gallery-col">
-            <img src="https://via.placeholder.com/800" id="mainImage" class="main-img">
-            <div class="thumb-row" id="thumbGallery"></div>
+            <div class="slider-container" id="mainSlider" onscroll="updateSliderDots()"></div>
+            <div class="slider-dots" id="sliderDots"></div>
         </div>
 
         <div class="info-col">
@@ -113,7 +121,8 @@
             <div class="form-group"><label>QUANTITY</label><input type="number" id="pQty" value="1" min="1"></div>
 
             <div class="action-row">
-                <button class="btn-add" id="btnAddToCart" onclick="addToCart()">ADD TO CART</button>
+                <button class="btn-add" id="btnAddToCart" onclick="addToCart(false)">ADD TO CART</button>
+                <button class="btn-buy" id="btnBuyNow" onclick="addToCart(true)">BUY NOW</button>
                 <button class="btn-wishlist" id="btnWishlist" onclick="toggleWishlist()">♡</button>
             </div>
 
@@ -124,15 +133,7 @@
                 </div>
                 <div class="acc-item">
                     <button class="acc-btn" onclick="toggleAcc('sizeAcc')">SIZE GUIDE <span>+</span></button>
-                    <div class="acc-content" id="sizeAcc">
-                        <p>Measurements are in Centimeters (cm):<br><br>
-                        <b>S:</b> Chest 48 - Length 68<br>
-                        <b>M:</b> Chest 50 - Length 70<br>
-                        <b>L:</b> Chest 52 - Length 72<br>
-                        <b>XL:</b> Chest 54 - Length 74<br>
-                        <b>XXL:</b> Chest 56 - Length 76<br><br>
-                        <i>*Please allow 1-2 cm margin of error due to manual measurement.</i></p>
-                    </div>
+                    <div class="acc-content" id="sizeAcc"></div>
                 </div>
                 <div class="acc-item">
                     <button class="acc-btn" onclick="toggleAcc('shipAcc')">SHIPPING & RETURNS <span>+</span></button>
@@ -155,6 +156,11 @@
         </div>
     </div>
 
+    <div class="review-section" style="border-top: none; padding-top: 0; margin-top: 20px;">
+        <h2 style="font-family: 'Oswald'; font-size: 20px; margin-bottom: 20px; text-transform: uppercase; text-align: center;">YOU MAY ALSO LIKE</h2>
+        <div class="grid" id="recommendationGrid"></div>
+    </div>
+
     <div class="modal" id="reviewModal">
         <div class="modal-box">
             <h3 style="margin-bottom:15px; text-transform:uppercase; font-family:'Oswald'; border-bottom:1px solid #333; padding-bottom:10px;">Nilai Produk Ini</h3>
@@ -164,8 +170,8 @@
             <div class="form-group"><label>Nama Anda</label><input type="text" id="rName" placeholder="Cth: Dika"></div>
             <div class="form-group"><label>Ulasan / Komentar</label><textarea id="rText" style="width:100%; padding:15px; background:#111; border:1px solid #333; color:white; border-radius:6px; outline:none; resize:none;" rows="3" placeholder="Gimana bahan dan ukurannya?"></textarea></div>
             <div style="display:flex; gap:10px;">
-                <button class="btn-add" style="background:#333; color:white;" onclick="document.getElementById('reviewModal').style.display='none'">BATAL</button>
-                <button class="btn-add" style="background:#f59e0b; color:black;" onclick="submitReview()">KIRIM ULASAN</button>
+                <button class="btn-buy" style="background:#333; color:white;" onclick="document.getElementById('reviewModal').style.display='none'">BATAL</button>
+                <button class="btn-buy" style="background:#f59e0b; color:black;" onclick="submitReview()">KIRIM ULASAN</button>
             </div>
         </div>
     </div>
@@ -188,7 +194,6 @@
         let wishlist = JSON.parse(localStorage.getItem('ganketiWishlist') || '[]');
         let selectedRating = 5;
 
-        // Ambil ID Produk dari URL (contoh: product.html?id=-OnZxyz...)
         const urlParams = new URLSearchParams(window.location.search);
         const productId = urlParams.get('id');
 
@@ -197,24 +202,20 @@
         if(!productId) {
             window.location.href = 'index.html';
         } else {
-            // Ambil Data Produk
             db.ref('products/' + productId).once('value').then(snap => {
                 currentProduct = snap.val();
                 if(!currentProduct) return window.location.href = 'index.html';
                 currentProduct.id = productId;
                 renderProductPage();
                 loadReviews();
+                loadRecommendations();
             });
         }
 
         function renderProductPage() {
             document.getElementById('productContent').style.display = 'flex';
-            
-            // Breadcrumb
             document.getElementById('bcCategory').innerText = currentProduct.category ? currentProduct.category.split(',')[0] : 'SHOP';
             document.getElementById('bcName').innerText = currentProduct.name;
-            
-            // Text Info
             document.getElementById('pName').innerText = currentProduct.name;
             
             let isHabis = (!currentProduct.stock || currentProduct.stock <= 0);
@@ -227,15 +228,24 @@
                 document.getElementById('pStockAlert').style.background = "rgba(239,68,68,0.1)";
                 document.getElementById('btnAddToCart').innerText = "STOK HABIS";
                 document.getElementById('btnAddToCart').disabled = true;
+                document.getElementById('btnBuyNow').disabled = true;
             } else {
                 document.getElementById('pStockAlert').innerText = `🔥 Sisa ${currentProduct.stock} di gudang!`;
             }
 
-            // Desc
             if(currentProduct.desc) document.getElementById('descAcc').innerHTML = currentProduct.desc.replace(/\n/g, '<br>');
             else document.getElementById('descAcc').innerHTML = "Tidak ada deskripsi spesifik.";
 
-            // Min Max Qty
+            // 🔥 LOGIKA RENDER SIZE GUIDE DINAMIS 🔥
+            if(currentProduct.sizeText || currentProduct.sizeImg) {
+                let sHtml = '';
+                if(currentProduct.sizeText) sHtml += `<p>${currentProduct.sizeText.replace(/\n/g, '<br>')}</p>`;
+                if(currentProduct.sizeImg) sHtml += `<img src="${currentProduct.sizeImg}" style="width:100%; border-radius:6px; margin-top:15px; border:1px solid #333;">`;
+                document.getElementById('sizeAcc').innerHTML = sHtml;
+            } else {
+                document.getElementById('sizeAcc').innerHTML = `<p>Tidak ada panduan ukuran spesifik untuk produk ini.</p>`;
+            }
+
             let minQ = currentProduct.minOrder || 1;
             let maxQ = currentProduct.maxOrder && currentProduct.maxOrder < 9999 ? currentProduct.maxOrder : currentProduct.stock;
             if(maxQ > currentProduct.stock) maxQ = currentProduct.stock;
@@ -243,7 +253,6 @@
             document.getElementById('pQty').max = maxQ;
             document.getElementById('pQty').value = minQ;
 
-            // Variasi Warna & Size
             let sizesArr = currentProduct.sizes ? currentProduct.sizes.split(',').map(s => s.trim()) : ['All Size'];
             document.getElementById('pSize').innerHTML = sizesArr.map(s => `<option value="${s}">${s}</option>`).join('');
 
@@ -254,26 +263,33 @@
                 document.getElementById('colorContainer').innerHTML = `<input type="hidden" id="pColor" value="Default">`;
             }
 
-            // Gallery
+            // 🔥 LOGIKA SLIDE GAMBAR 🔥
             let imgArr = currentProduct.images || [currentProduct.image];
-            document.getElementById('mainImage').src = imgArr[0];
-            if(isHabis) document.getElementById('mainImage').style.filter = "grayscale(100%) opacity(0.5)";
-
+            document.getElementById('mainSlider').innerHTML = imgArr.map(img => `<img src="${img}" class="slider-img" style="${isHabis ? 'filter: grayscale(100%); opacity: 0.5;' : ''}">`).join('');
+            
             if(imgArr.length > 1) {
-                document.getElementById('thumbGallery').innerHTML = imgArr.map((img, idx) => `<img src="${img}" class="thumb-img ${idx===0?'active':''}" onclick="changeImg('${img}', this)">`).join('');
+                document.getElementById('sliderDots').innerHTML = imgArr.map((img, idx) => `<div class="s-dot ${idx===0?'active':''}" onclick="scrollToSlide(${idx})"></div>`).join('');
             }
 
-            // Cek Wishlist
             if(wishlist.includes(productId)) {
                 document.getElementById('btnWishlist').classList.add('saved');
                 document.getElementById('btnWishlist').innerText = '❤️';
             }
         }
 
-        function changeImg(url, el) {
-            document.getElementById('mainImage').src = url;
-            document.querySelectorAll('.thumb-img').forEach(t => t.classList.remove('active'));
-            el.classList.add('active');
+        // 🔥 FUNGSI GESER GAMBAR 🔥
+        function updateSliderDots() {
+            let slider = document.getElementById('mainSlider');
+            let index = Math.round(slider.scrollLeft / slider.clientWidth);
+            let dots = document.getElementById('sliderDots').children;
+            for(let i=0; i<dots.length; i++) {
+                dots[i].className = i === index ? 's-dot active' : 's-dot';
+            }
+        }
+
+        function scrollToSlide(index) {
+            let slider = document.getElementById('mainSlider');
+            slider.scrollTo({left: slider.clientWidth * index, behavior: 'smooth'});
         }
 
         function toggleAcc(id) {
@@ -301,7 +317,8 @@
             localStorage.setItem('ganketiWishlist', JSON.stringify(wishlist));
         }
 
-        function addToCart() {
+        // 🔥 FUNGSI ADD TO CART / BUY NOW 🔥
+        function addToCart(isBuyNow = false) {
             const selectedSize = document.getElementById('pSize').value; 
             const selectedColor = document.getElementById('pColor') ? document.getElementById('pColor').value : 'Default';
             const inputQty = parseInt(document.getElementById('pQty').value);
@@ -320,22 +337,48 @@
                 existing.qty += inputQty; 
             } else { 
                 let dName = selectedColor === 'Default' ? `${currentProduct.name} (${selectedSize})` : `${currentProduct.name} (${selectedColor} - ${selectedSize})`;
-                cart.push({ ...currentProduct, cartItemId: cartItemId, name: dName, qty: inputQty, color: selectedColor }); 
+                cart.push({ ...currentProduct, cartItemId: cartItemId, name: dName, qty: inputQty, color: selectedColor, origin: currentProduct.origin, originId: currentProduct.originId, couriers: currentProduct.couriers }); 
             }
             
             localStorage.setItem('ganketiCart', JSON.stringify(cart)); 
-            document.getElementById('cartCount').innerText = cart.reduce((sum, item) => sum + item.qty, 0);
-            showToast("Berhasil ditambahkan ke Keranjang! 🛒");
+            
+            if(isBuyNow) {
+                // Langsung lempar ke index.html dan paksa buka Modal Checkout
+                window.location.href = 'index.html?checkout=true';
+            } else {
+                document.getElementById('cartCount').innerText = cart.reduce((sum, item) => sum + item.qty, 0);
+                showToast("Berhasil ditambahkan ke Keranjang! 🛒");
+            }
         }
 
-        // --- SISTEM RATING & REVIEW ---
-        function openReviewModal() { setRating(5); document.getElementById('reviewModal').style.display='flex'; }
-        
-        function setRating(val) {
-            selectedRating = val;
-            const stars = document.getElementById('starInput').children;
-            for(let i=0; i<5; i++) { if(i<val) stars[i].classList.add('active'); else stars[i].classList.remove('active'); }
+        // 🔥 FUNGSI RANDOM RECOMMENDATION 🔥
+        function loadRecommendations() {
+            db.ref('products').once('value').then(snap => {
+                let data = snap.val(); if(!data) return;
+                let allProducts = Object.keys(data).map(k => ({id:k, ...data[k]}));
+                
+                // Singkirin produk yang lagi dibuka sekarang
+                allProducts = allProducts.filter(p => p.id !== productId);
+                
+                // Acak urutan dan ambil 4 produk
+                allProducts = allProducts.sort(() => 0.5 - Math.random()).slice(0, 4);
+                
+                let grid = document.getElementById('recommendationGrid');
+                if(allProducts.length === 0) {
+                    grid.innerHTML = '<p style="color:#888; text-align:center; width:100%;">Tidak ada rekomendasi lainnya.</p>';
+                    return;
+                }
+
+                grid.innerHTML = allProducts.map(p => {
+                    let img = p.images ? p.images[0] : (p.image || 'https://via.placeholder.com/300');
+                    let priceHtml = p.originalPrice ? `<span style="font-size:11px; text-decoration:line-through; color:#ef4444;">Rp ${p.originalPrice.toLocaleString('id-ID')}</span> <br>Rp ${p.price.toLocaleString('id-ID')}` : `Rp ${p.price.toLocaleString('id-ID')}`;
+                    return `<div class="card" onclick="window.location.href='product.html?id=${p.id}'"><div class="img-box"><img src="${img}"></div><div class="info"><div class="name">${p.name}</div><div class="price">${priceHtml}</div></div></div>`;
+                }).join('');
+            });
         }
+
+        function openReviewModal() { setRating(5); document.getElementById('reviewModal').style.display='flex'; }
+        function setRating(val) { selectedRating = val; const stars = document.getElementById('starInput').children; for(let i=0; i<5; i++) { if(i<val) stars[i].classList.add('active'); else stars[i].classList.remove('active'); } }
 
         function submitReview() {
             let nama = document.getElementById('rName').value.trim() || 'Guest';
@@ -360,11 +403,9 @@
                 let totalBintang = revs.reduce((sum, r) => sum + r.rating, 0);
                 let rataRata = (totalBintang / revs.length).toFixed(1);
                 
-                // Update Top Summary
                 let starDisplay = '★'.repeat(Math.round(rataRata)) + '☆'.repeat(5 - Math.round(rataRata));
                 document.getElementById('topRatingSummary').innerHTML = `${starDisplay} <span>(${rataRata} / 5 dari ${revs.length} ulasan)</span>`;
 
-                // Update List
                 list.innerHTML = revs.map(r => {
                     let rStars = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
                     let d = new Date(r.timestamp).toLocaleDateString('id-ID');
