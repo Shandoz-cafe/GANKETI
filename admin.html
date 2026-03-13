@@ -719,7 +719,27 @@
         }
 
 
-        function uploadProduct() { 
+                // 🔥 KUNCI API IMGBB JALUR NINJA 🔥
+        const IMGBB_API_KEY = 'd55932c49f47978d2ca69e76142b10be';
+
+        // Mesin Pelempar Foto ke ImgBB
+        async function uploadToImgBB(base64DataUrl) {
+            const base64Image = base64DataUrl.split(',')[1]; // Buang teks depan biar diterima server
+            const formData = new FormData();
+            formData.append('key', IMGBB_API_KEY);
+            formData.append('image', base64Image);
+
+            const response = await fetch('https://api.imgbb.com/1/upload', {
+                method: 'POST',
+                body: formData
+            });
+            const data = await response.json();
+            if (data.success) return data.data.url; // Balikin Link Pendeknya
+            else throw new Error(data.error.message);
+        }
+
+        // 🔥 1. FUNGSI UPLOAD PRODUK BARU JALUR NINJA 🔥
+        async function uploadProduct() { 
             const name = document.getElementById('pName').value; 
             const desc = document.getElementById('pDesc').value.trim();
             const unit = document.getElementById('pUnit').value;
@@ -737,23 +757,78 @@
             if(checkedCats.length === 0) return alert("Pilih minimal 1 kategori!");
             if(!name || !cost || !price || !stock || !origin || !originId || !checkedCouriers || files.length===0) return alert("Lengkapi data yang wajib!");
             
-            document.getElementById('statusMessage').innerHTML = "<span style='color:white;'>Mengompres Foto & Uploading... ⏳</span>";
+            document.getElementById('statusMessage').innerHTML = "<span style='color:white;'>Mengompres & Kirim ke Gudang ImgBB... ⏳</span>";
             
-            // Proses Kompres Semua Foto Produk (Maks 1000px, Kualitas 80%)
-            const readFiles = Array.from(files).map(file => compressImage(file, 1000, 0.8));
-            
-            Promise.all(readFiles).then(imgs => {
-                let data = { name, desc, unit, sizes, colors, minOrder: parseInt(minOrder), maxOrder: parseInt(maxOrder), origin, originId, couriers: checkedCouriers, category: checkedCats.join(', '), cost: parseInt(cost), price: parseInt(price), stock: parseInt(stock), images: imgs, timestamp: Date.now(), isPopular: false };
+            try {
+                let imgUrls = [];
+                // Proses Upload Foto ke ImgBB satu per satu
+                for (let i = 0; i < files.length; i++) {
+                    let compressedBase64 = await compressImage(files[i], 1000, 0.8);
+                    let imgUrl = await uploadToImgBB(compressedBase64); // Lempar ke ImgBB
+                    imgUrls.push(imgUrl); // Kumpulin Link Pendeknya
+                }
+
+                // Kirim data teks & Link Gambar Pendek ke Database Firebase
+                const newProductRef = db.ref('products').push();
+                let data = { name, desc, unit, sizes, colors, minOrder: parseInt(minOrder), maxOrder: parseInt(maxOrder), origin, originId, couriers: checkedCouriers, category: checkedCats.join(', '), cost: parseInt(cost), price: parseInt(price), stock: parseInt(stock), images: imgUrls, timestamp: Date.now(), isPopular: false };
                 if(orig) data.originalPrice = parseInt(orig); if(link) data.link = link; 
                 
-                db.ref('products').push(data).then(() => { 
-                    document.getElementById('statusMessage').innerHTML = "<span style='color:#4ade80;'>✅ Upload sukses! Fotonya ringan!</span>"; 
-                    ['pName','pDesc','pSizes','pColors','pMinOrder','pMaxOrder','pOrigin','pOriginId','pCost','pPrice','pStock','pOriginalPrice','pLink','pImages'].forEach(id=>document.getElementById(id).value=''); 
-                    document.querySelectorAll('.pCatCb, .pCourierCb').forEach(cb => cb.checked = false); 
-                    setTimeout(() => { document.getElementById('statusMessage').innerHTML = ""; }, 3000);
-                });
-            });
+                await newProductRef.set(data);
+                
+                document.getElementById('statusMessage').innerHTML = "<span style='color:#4ade80;'>✅ Sukses! Web dijamin super ngebut! ⚡</span>"; 
+                ['pName','pDesc','pSizes','pColors','pMinOrder','pMaxOrder','pOrigin','pOriginId','pCost','pPrice','pStock','pOriginalPrice','pLink','pImages'].forEach(id=>document.getElementById(id).value=''); 
+                document.querySelectorAll('.pCatCb, .pCourierCb').forEach(cb => cb.checked = false); 
+                setTimeout(() => { document.getElementById('statusMessage').innerHTML = ""; }, 3000);
+            } catch (error) {
+                document.getElementById('statusMessage').innerHTML = "<span style='color:#ef4444;'>❌ Gagal: " + error.message + "</span>";
+            }
         }
+
+        // 🔥 2. FUNGSI EDIT PRODUK JALUR NINJA 🔥
+        async function saveEditedProduct() {
+            const checkedCats = Array.from(document.querySelectorAll('.eCatCb:checked')).map(cb => cb.value);
+            const checkedCouriers = Array.from(document.querySelectorAll('.eCourierCb:checked')).map(cb => cb.value);
+            if(checkedCats.length === 0) return alert("Pilih minimal 1 kategori!");
+            if(checkedCouriers.length === 0) return alert("Pilih minimal 1 kurir!");
+            
+            const originStr = document.getElementById('eOrigin').value.trim();
+            const originIdStr = document.getElementById('eOriginId').value.trim();
+            if(!originStr || !originIdStr) return alert("Pilih Kota Asal dari dropdown pencarian!");
+
+            let u = { 
+                name: document.getElementById('eName').value, desc: document.getElementById('eDesc').value.trim(), 
+                unit: document.getElementById('eUnit').value, sizes: document.getElementById('eSizes').value.trim() || 'All Size',
+                colors: document.getElementById('eColors').value.trim() || 'Default',
+                minOrder: parseInt(document.getElementById('eMinOrder').value) || 1, maxOrder: parseInt(document.getElementById('eMaxOrder').value) || 9999,
+                origin: originStr, originId: originIdStr, couriers: checkedCouriers.join(', '), category: checkedCats.join(', '), 
+                cost: parseInt(document.getElementById('eCost').value), price: parseInt(document.getElementById('ePrice').value), stock: parseInt(document.getElementById('eStock').value) 
+            };
+            let o = document.getElementById('eOriginalPrice').value; if(o) u.originalPrice = parseInt(o); else u.originalPrice = null;
+            let l = document.getElementById('eLink').value.trim(); if(l) u.link = l; else u.link = null; 
+            let files = document.getElementById('eImages').files;
+            
+            document.getElementById('eStatusMessage').innerHTML = "<span style='color:white;'>Menyimpan Perubahan... ⏳</span>";
+
+            try {
+                // Kalau Admin nge-upload foto baru saat Edit
+                if(files.length > 0) { 
+                    let imgUrls = [];
+                    for (let i = 0; i < files.length; i++) {
+                        let compressedBase64 = await compressImage(files[i], 1000, 0.8);
+                        let imgUrl = await uploadToImgBB(compressedBase64);
+                        imgUrls.push(imgUrl);
+                    }
+                    u.images = imgUrls; // Ganti foto lama jadi link pendek ImgBB
+                }
+                
+                await db.ref('products/'+currentEditId).update(u);
+                document.getElementById('eStatusMessage').innerHTML = "";
+                closeEditModal(); alert('Tersimpan! Database makin enteng!');
+            } catch (error) {
+                document.getElementById('eStatusMessage').innerHTML = "<span style='color:#ef4444;'>❌ Gagal: " + error.message + "</span>";
+            }
+        }
+
 
         function renderManageProducts() {
             const list = document.getElementById('manageProductsList');
@@ -840,57 +915,7 @@
 
         function closeEditModal() { document.getElementById('editModal').style.display='none'; currentEditId=null; }
         
-        function saveEditedProduct() {
-            const checkedCats = Array.from(document.querySelectorAll('.eCatCb:checked')).map(cb => cb.value);
-            const checkedCouriers = Array.from(document.querySelectorAll('.eCourierCb:checked')).map(cb => cb.value);
-            if(checkedCats.length === 0) return alert("Pilih minimal 1 kategori!");
-            if(checkedCouriers.length === 0) return alert("Pilih minimal 1 kurir!");
-            
-            const categoryString = checkedCats.join(', ');
-            const courierString = checkedCouriers.join(', ');
-            
-            const originStr = document.getElementById('eOrigin').value.trim();
-            const originIdStr = document.getElementById('eOriginId').value.trim();
-            if(!originStr || !originIdStr) return alert("Pastikan Anda memilih Kota Asal dari dropdown pencarian Biteship!");
-
-            let u = { 
-                name: document.getElementById('eName').value, 
-                desc: document.getElementById('eDesc').value.trim(), 
-                unit: document.getElementById('eUnit').value,
-                sizes: document.getElementById('eSizes').value.trim() || 'All Size',
-                colors: document.getElementById('eColors').value.trim() || 'Default',
-                minOrder: parseInt(document.getElementById('eMinOrder').value) || 1,
-                maxOrder: parseInt(document.getElementById('eMaxOrder').value) || 9999,
-                origin: originStr, 
-                originId: originIdStr, 
-                couriers: courierString, 
-                category: categoryString, 
-                cost: parseInt(document.getElementById('eCost').value), 
-                price: parseInt(document.getElementById('ePrice').value), 
-                stock: parseInt(document.getElementById('eStock').value) 
-            };
-            let o = document.getElementById('eOriginalPrice').value; if(o) u.originalPrice = parseInt(o); else u.originalPrice = null;
-            let l = document.getElementById('eLink').value.trim(); if(l) u.link = l; else u.link = null; 
-            let files = document.getElementById('eImages').files;
-            
-            document.getElementById('eStatusMessage').innerHTML = "<span style='color:white;'>Menyimpan & Mengompres...</span>";
-
-            if(files.length>0) { 
-                Promise.all(Array.from(files).map(file => compressImage(file, 1000, 0.8))).then(imgs => { 
-                    u.images = imgs; 
-                    db.ref('products/'+currentEditId).update(u).then(()=>{
-                        document.getElementById('eStatusMessage').innerHTML = "";
-                        closeEditModal(); alert('Tersimpan!');
-                    }); 
-                }); 
-            } 
-            else { 
-                db.ref('products/'+currentEditId).update(u).then(()=>{
-                    document.getElementById('eStatusMessage').innerHTML = "";
-                    closeEditModal(); alert('Tersimpan!');
-                }); 
-            }
-        }
+    
 
         function uploadBanners() { 
             const files = document.getElementById('promoBanners').files;
