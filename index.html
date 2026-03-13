@@ -98,7 +98,6 @@
         .img-box img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
         .card:hover .img-box img { transform: scale(1.05); }
         
-        /* 🔥 EFEK HOVER GAMBAR KEDUA ALA WEB BRAND MAHAL 🔥 */
         .img-hover { position: absolute; top: 0; left: 0; opacity: 0; transition: opacity 0.5s ease; z-index: 2; width: 100%; height: 100%; object-fit: cover; }
         .card:hover .img-hover { opacity: 1; }
 
@@ -203,7 +202,6 @@
         .trust-track img:hover { filter: grayscale(0%) brightness(100%) opacity(1); transform: scale(1.1); }
         @keyframes marqueeScroll { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
 
-        /* 🔥 SKELETON LOADING 🔥 */
         .skeleton-card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; overflow: hidden; display: flex; flex-direction: column; animation: pulseSkel 1.5s infinite; aspect-ratio: auto; }
         .skel-img { width: 100%; aspect-ratio: 1/1; background: #1a1a1a; }
         .skel-info { padding: 15px; display: flex; flex-direction: column; gap: 10px; flex-grow: 1; }
@@ -341,8 +339,6 @@
             <img src="https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/9/97/Logo_BRI.png/512px-Logo_BRI.png" alt="BRI">
         </div>
     </div>
-
-
 
     <footer>
         <div class="footer-grid">
@@ -507,30 +503,7 @@
             </div>
 
             <div id="paymentArea" style="display:none;">
-                <p style="font-size: 12px; color: #4ade80; margin-bottom: 15px; text-align:center;">🔒 Secured by Midtrans</p>
-                <div style="text-align:center; margin-bottom:20px;">
-                    <span style="font-size:12px; color:#888;">Total Pembayaran</span><br>
-                    <b style="font-size:24px; color:var(--primary);" id="payTotalDisplay">Rp 0</b>
                 </div>
-
-                <h3 style="font-size: 14px; margin-bottom: 15px; color: #fff; border-bottom:1px solid #333; padding-bottom:5px;">Pilih Metode Pembayaran</h3>
-                
-                <div class="payment-method-card" onclick="selectPaymentMethod(this)">
-                    <div><b style="font-size:13px; color:#fff;">QRIS</b><br><span style="font-size:11px; color:#888;">Gopay, ShopeePay, Dana, LinkAja</span></div>
-                    <span style="font-size:16px;">📱</span>
-                </div>
-                <div class="payment-method-card" onclick="selectPaymentMethod(this)">
-                    <div><b style="font-size:13px; color:#fff;">Virtual Account</b><br><span style="font-size:11px; color:#888;">BCA, Mandiri, BRI, BNI</span></div>
-                    <span style="font-size:16px;">🏦</span>
-                </div>
-                <div class="payment-method-card" onclick="selectPaymentMethod(this)">
-                    <div><b style="font-size:13px; color:#fff;">Minimarket</b><br><span style="font-size:11px; color:#888;">Alfamart, Indomaret</span></div>
-                    <span style="font-size:16px;">🏪</span>
-                </div>
-                
-                <button class="btn-main" onclick="processPaymentMidtrans()" style="margin-top: 20px; background:#3b82f6; color:#fff;">BAYAR SEKARANG ➔</button>
-
-            </div>
 
             <div id="textInfoArea" style="display:none;" class="info-content"></div>
 
@@ -768,14 +741,12 @@
             globalProducts = Object.keys(data).map(key => ({ id: key, ...data[key] }));
             renderProducts();
 
-            // 🔥 LINK DARI HALAMAN PRODUK KALAU KLIK KERANJANG BAKAL NGEBUKA MODAL DI SINI 🔥
             const urlParams = new URLSearchParams(window.location.search);
             const openCartQuery = urlParams.get('cart');
             if(openCartQuery === 'true') {
                 setTimeout(() => { openCart(); }, 500); 
             }
             
-            // 🔥 LINK DARI HALAMAN PRODUK KALAU KLIK BUY NOW BAKAL LANGSUNG CHECKOUT 🔥
             const checkoutQuery = urlParams.get('checkout');
             if(checkoutQuery === 'true') {
                 setTimeout(() => { goToShipping(); }, 500); 
@@ -804,7 +775,6 @@
             renderProducts();
         }
 
-        // 🔥 FUNGSI KARTU PRODUK UDAH DIGANTI JADI ADA HOVER & KLIK KE HALAMAN BARU 🔥
         function createProductCard(p) {
             let imgThumb = p.images && p.images.length > 0 ? p.images[0] : (p.image || 'https://via.placeholder.com/300');
             let hoverHtml = p.images && p.images.length > 1 ? `<img src="${p.images[1]}" class="img-hover" style="${(!p.stock || p.stock <= 0) ? 'filter: grayscale(100%);' : ''}">` : '';
@@ -1174,20 +1144,48 @@
             pendingOrderData.total = grandTotal;
         }
 
+        // 🔥 FUNGSI PEMBAYARAN DIROMBAK JADI INVOICE SUMMARY 🔥
         function goToPayment() {
             if(!pendingOrderData.shippingCost) return alert("Pilih jasa pengiriman dulu!");
             hideAllAreas();
-            document.getElementById('modalTitle').innerText = "PAYMENT";
-            document.getElementById('payTotalDisplay').innerText = `Rp ${pendingOrderData.total.toLocaleString('id-ID')}`;
+            document.getElementById('modalTitle').innerText = "RINCIAN TAGIHAN";
+
+            // Susun HTML buat rincian item
+            let itemsHtml = pendingOrderData.items.map(i => {
+                return `<div style="display:flex; justify-content:space-between; font-size:12px; border-bottom:1px dashed #333; padding:8px 0;">
+                            <div style="flex:1;"><b>${i.name}</b><br><span style="color:#888;">${i.qty} x Rp ${i.price.toLocaleString('id-ID')}</span></div>
+                            <div style="font-weight:bold; color:white;">Rp ${(i.price * i.qty).toLocaleString('id-ID')}</div>
+                        </div>`;
+            }).join('');
+
+            // Suntik HTML Rincian Pesanan ke dalam paymentArea
+            document.getElementById('paymentArea').innerHTML = `
+                <p style="font-size: 12px; color: #4ade80; margin-bottom: 15px; text-align:center;">🔒 Secured by Midtrans</p>
+                
+                <div style="background:#111; border:1px solid #333; border-radius:8px; padding:15px; margin-bottom:20px;">
+                    <h4 style="font-size:12px; color:#aaa; margin-bottom:10px; text-transform:uppercase; border-bottom:1px solid #333; padding-bottom:5px;">Rincian Pesanan</h4>
+                    ${itemsHtml}
+                    <div style="display:flex; justify-content:space-between; font-size:12px; padding:8px 0; border-bottom:1px solid #333; margin-top:5px;">
+                        <span style="color:#aaa;">Subtotal Produk:</span>
+                        <b style="color:white;">Rp ${pendingOrderData.subTotal.toLocaleString('id-ID')}</b>
+                    </div>
+                    <div style="display:flex; justify-content:space-between; font-size:12px; padding:8px 0;">
+                        <span style="color:#aaa;">Ongkos Kirim (${pendingOrderData.courier}):</span>
+                        <b style="color:#ef4444;">Rp ${pendingOrderData.shippingCost.toLocaleString('id-ID')}</b>
+                    </div>
+                </div>
+
+                <div style="text-align:center; margin-bottom:20px;">
+                    <span style="font-size:12px; color:#888;">Total yang harus dibayar:</span><br>
+                    <b style="font-size:24px; color:var(--primary);">Rp ${pendingOrderData.total.toLocaleString('id-ID')}</b>
+                </div>
+
+                <button class="btn-main" onclick="processPaymentMidtrans()" style="background:#3b82f6; color:#fff; width:100%; padding:15px; font-weight:bold; border-radius:8px; border:none; font-size:14px; cursor:pointer;">LANJUT KE PEMBAYARAN ➔</button>
+            `;
+            
             document.getElementById('paymentArea').style.display = 'block';
         }
 
-        function selectPaymentMethod(el) {
-            document.querySelectorAll('.payment-method-card').forEach(card => card.style.borderColor = '#333');
-            el.style.borderColor = '#4ade80';
-        }
-
-        // 🔥 LOGIKA BAYAR: SIMPAN TOKEN MIDTRANS KE FIREBASE BIAR BISA DIBUKA LAGI 🔥
         async function processPaymentMidtrans() {
             if(!pendingOrderData) { alert("Data pesanan kosong, silakan ulangi!"); return; }
             const btn = document.querySelector('button[onclick="processPaymentMidtrans()"]');
@@ -1227,7 +1225,7 @@
                         courier: pendingOrderData.courier,           
                         total: pendingOrderData.total, 
                         status: "UNPAID", 
-                        payment_token: midtransData.token, // 🔥 INI KUNCI BIAR BISA RESUME BAYAR
+                        payment_token: midtransData.token,
                         timestamp: Date.now() 
                     });
 
@@ -1241,35 +1239,34 @@
                         },
                         onPending: function(result){
                             showToast("Menunggu Pembayaran (Pending) ⏳", "info");
-                            openMyOrders('UNPAID'); // Lempar ke menu Menunggu Pembayaran
+                            openMyOrders('UNPAID');
                         },
                         onError: function(result){
                             showToast("Pembayaran Gagal ❌", "error");
-                            if(btn) { btn.disabled = false; btn.innerText = "BAYAR SEKARANG ➔"; }
+                            if(btn) { btn.disabled = false; btn.innerText = "LANJUT KE PEMBAYARAN ➔"; }
                         },
                         onClose: function(){
                             showToast("Pembayaran ditunda. Cek di Track Order.", "warning");
-                            openMyOrders('UNPAID'); // Lempar ke menu Menunggu Pembayaran
+                            openMyOrders('UNPAID');
                         }
                     });
 
                 } else {
                     alert("Gagal dari Midtrans: " + JSON.stringify(midtransData));
-                    if(btn) { btn.disabled = false; btn.innerText = "BAYAR SEKARANG ➔"; }
+                    if(btn) { btn.disabled = false; btn.innerText = "LANJUT KE PEMBAYARAN ➔"; }
                 }
             } catch(e) {
                 alert("Gagal konek ke server: " + e.message);
-                if(btn) { btn.disabled = false; btn.innerText = "BAYAR SEKARANG ➔"; }
+                if(btn) { btn.disabled = false; btn.innerText = "LANJUT KE PEMBAYARAN ➔"; }
             }
         }
 
-        // 🔥 MENU TRACK ORDER DENGAN SISTEM TABS SEPERTI SHOPEE/TOKOPEDIA 🔥
+        // 🔥 MENU TRACK ORDER 🔥
         function openMyOrders(initialTab = 'ALL') {
             if(!currentUser) { showToast("Please Sign In first!", 'warning'); setTimeout(() => handleAuth(), 1500); return; }
             hideAllAreas(); document.getElementById('modalTitle').innerText = "TRACK ORDER";
             document.getElementById('historyArea').style.display = 'block'; document.getElementById('mainModal').style.display = 'flex';
             
-            // Pilih Tab Otomatis
             let tabs = document.querySelectorAll('.h-tab-btn');
             tabs.forEach(t => t.classList.remove('active'));
             if(initialTab === 'UNPAID') tabs[0].classList.add('active');
@@ -1319,22 +1316,23 @@
 
                 let actionButtons = '';
                 
-                // 1. TAMPILAN KALAU BELUM BAYAR (Bisa Lanjut / Batal)
+                // 🔥 TAMBAHAN TOMBOL UNDUH TAGIHAN DI STATUS UNPAID 🔥
                 if(order.status === 'UNPAID') {
                     actionButtons = `
-                    <div style="margin-top:15px; display:flex; gap:10px; border-top:1px dashed #333; padding-top:15px;">
-                        <button onclick="cancelOrder('${order.id}')" style="flex:1; background:transparent; border:1px solid #ef4444; color:#ef4444; padding:8px 0; border-radius:4px; font-size:11px; font-weight:bold; cursor:pointer;">BATALKAN</button>
-                        <button onclick="resumePayment('${order.payment_token}', '${order.id}')" style="flex:2; background:#3b82f6; border:none; color:#fff; padding:8px 0; border-radius:4px; font-size:11px; font-weight:bold; cursor:pointer;">LANJUT BAYAR ➔</button>
+                    <div style="margin-top:15px; display:flex; flex-direction:column; gap:10px; border-top:1px dashed #333; padding-top:15px;">
+                        <button onclick="downloadInvoice('${order.invoice_no}')" style="width:100%; background:transparent; border:1px solid #aaa; color:#aaa; padding:8px 0; border-radius:4px; font-size:11px; font-weight:bold; cursor:pointer;">📄 UNDUH TAGIHAN (INVOICE)</button>
+                        <div style="display:flex; gap:10px;">
+                            <button onclick="cancelOrder('${order.id}')" style="flex:1; background:transparent; border:1px solid #ef4444; color:#ef4444; padding:8px 0; border-radius:4px; font-size:11px; font-weight:bold; cursor:pointer;">BATALKAN</button>
+                            <button onclick="resumePayment('${order.payment_token}', '${order.id}')" style="flex:2; background:#3b82f6; border:none; color:#fff; padding:8px 0; border-radius:4px; font-size:11px; font-weight:bold; cursor:pointer;">LANJUT BAYAR ➔</button>
+                        </div>
                     </div>`;
                 } 
-                // 2. TAMPILAN KALAU UDAH LUNAS / DIPROSES (Bisa Unduh Invoice)
                 else if(order.status === 'PAID') {
                     actionButtons = `
                     <div style="margin-top:15px; text-align:right; border-top:1px dashed #333; padding-top:15px;">
                         <button onclick="downloadInvoice('${order.invoice_no}')" style="background:transparent; border:1px solid #fff; color:#fff; padding:8px 15px; border-radius:4px; font-size:10px; font-weight:bold; letter-spacing:1px; cursor:pointer;">📄 INVOICE</button>
                     </div>`;
                 }
-                // 3. TAMPILAN KALAU DIKIRIM (Bisa Cek Resi, Selesaikan, & Unduh Invoice)
                 else if(order.status === 'SHIPPED') {
                     actionButtons = `
                     <div style="margin-top:12px; padding:10px; background:#111; border-radius:6px; border:1px solid #333;">
@@ -1352,7 +1350,6 @@
                         <button onclick="completeOrder('${order.id}')" style="background:#4ade80; border:none; color:#000; padding:8px 15px; border-radius:4px; font-size:11px; font-weight:bold; cursor:pointer;">PESANAN DITERIMA ✅</button>
                     </div>`;
                 }
-                // 4. TAMPILAN KALAU SELESAI
                 else if(order.status === 'SELESAI') {
                     actionButtons = `
                     <div style="margin-top:15px; text-align:right; border-top:1px dashed #333; padding-top:15px;">
@@ -1384,7 +1381,6 @@
             list.innerHTML = historyHtml;
         }
 
-        // 🔥 FUNGSI LANJUT BAYAR DARI POPUP YANG KETUTUP 🔥
         function resumePayment(token, orderId) {
             if(!token) return showToast("Token kadaluarsa, silakan buat pesanan baru.", "error");
             window.snap.pay(token, {
@@ -1400,7 +1396,6 @@
             });
         }
 
-        // 🔥 FUNGSI BATALKAN PESANAN (Cuma bisa kalau belum lunas) 🔥
         function cancelOrder(orderId) {
             if(confirm("Yakin ingin membatalkan pesanan ini?")) {
                 db.ref('orders/' + orderId).update({ status: 'CANCELED' }).then(() => {
@@ -1410,7 +1405,6 @@
             }
         }
 
-        // 🔥 FUNGSI KONFIRMASI PESANAN DITERIMA 🔥
         function completeOrder(orderId) {
             if(confirm("Apakah paket sudah Anda terima dengan baik?")) {
                 db.ref('orders/' + orderId).update({ status: 'SELESAI' }).then(() => {
@@ -1420,24 +1414,29 @@
             }
         }
 
-                // 🔥 FUNGSI CETAK PDF ANTI-BLANK (BISA BACA DATA LAMA & BARU) 🔥
+        // 🔥 FUNGSI CETAK PDF UDAH BISA NGENALIN STATUS BELUM LUNAS 🔥
         function downloadInvoice(invNo) {
             const order = globalUserOrders.find(o => o.invoice_no === invNo);
             if(!order) return showToast("Data pesanan tidak ditemukan", "error");
 
-            showToast("Menyiapkan file Invoice... ⏳", "info");
+            showToast("Menyiapkan file Tagihan... ⏳", "info");
 
-            // Antisipasi pesanan lama yang belum ada ongkir/kurir
             let shipCost = order.shippingCost || 0;
             let courierName = order.courier || '-';
             let subtotal = order.total - shipCost;
-            let statusLabel = order.status === 'PAID' ? 'LUNAS (DIPROSES)' : (order.status === 'SHIPPED' ? 'LUNAS (DIKIRIM)' : order.status);
+            
+            // Logic Status Tagihan
+            let statusLabel = order.status === 'PAID' ? 'LUNAS (DIPROSES)' : 
+                              (order.status === 'SHIPPED' ? 'LUNAS (DIKIRIM)' : 
+                              (order.status === 'UNPAID' ? 'BELUM LUNAS / TAGIHAN' : order.status));
+            
+            // Warna Status Biar Keren (Merah kalau belum bayar, hitam kalau lunas)
+            let statusBgColor = order.status === 'UNPAID' ? '#ef4444' : '#000';
 
             let custName = order.customer && order.customer.name ? order.customer.name : '-';
             let custPhone = order.customer && order.customer.phone ? order.customer.phone : '-';
             let custAddress = order.customer && order.customer.address ? order.customer.address : '-';
 
-            // Susun baris barang belanjaan
             let itemsHtml = order.items.map(i => `
                 <tr>
                     <td style="border-bottom: 1px solid #eee; padding: 15px 0;"><b>${i.name || 'Produk'}</b><br><span style="color:#888; font-size:11px;">Size: ${i.sizes || 'All Size'} | Color: ${i.color || 'Default'}</span></td>
@@ -1447,12 +1446,11 @@
                 </tr>
             `).join('');
 
-            // Rakit Desain Struk secara "Virtual" (Nggak nyicil di layar)
             const invoiceHTML = `
                 <div style="background: #fff; color: #000; padding: 40px; font-family: 'Inter', sans-serif; width: 100%;">
                     <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #000; padding-bottom: 20px; margin-bottom: 20px;">
                         <div style="font-family: 'Oswald', sans-serif; font-size: 32px; font-weight: bold; letter-spacing: 2px;">GANKETI</div>
-                        <div style="font-size: 24px; font-weight: bold; color: #888; letter-spacing: 4px;">INVOICE LUNAS</div>
+                        <div style="font-size: 24px; font-weight: bold; color: #888; letter-spacing: 4px;">INVOICE</div>
                     </div>
                     <div style="display: flex; justify-content: space-between; margin-bottom: 30px; font-size: 13px; line-height: 1.6;">
                         <div>
@@ -1463,7 +1461,7 @@
                             <b style="color:#000;">DETAIL PESANAN:</b><br><br>
                             <b>No. Invoice:</b> ${order.invoice_no}<br>
                             <b>Tanggal:</b> ${order.date}<br>
-                            <b>Status:</b> <span style="display: inline-block; padding: 5px 15px; background: #000; color: #fff; font-weight: bold; letter-spacing: 2px; font-size: 12px; border-radius: 4px;">${statusLabel}</span>
+                            <b>Status:</b> <span style="display: inline-block; padding: 5px 15px; background: ${statusBgColor}; color: #fff; font-weight: bold; letter-spacing: 2px; font-size: 12px; border-radius: 4px;">${statusLabel}</span>
                         </div>
                     </div>
                     <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px; font-size: 13px;">
@@ -1495,7 +1493,6 @@
                 </div>
             `;
 
-            // Proses convert ke PDF pakai metode string (Paling stabil buat HP)
             var opt = {
               margin:       [15, 15, 15, 15],
               filename:     `${order.invoice_no}.pdf`,
@@ -1505,7 +1502,7 @@
             };
 
             html2pdf().set(opt).from(invoiceHTML).save().then(() => {
-                showToast("Invoice berhasil diunduh! ✅", "success");
+                showToast("Tagihan berhasil diunduh! ✅", "success");
             });
         }
 
