@@ -774,6 +774,12 @@
             if(openCartQuery === 'true') {
                 setTimeout(() => { openCart(); }, 500); 
             }
+            
+            // 🔥 LINK DARI HALAMAN PRODUK KALAU KLIK BUY NOW BAKAL LANGSUNG CHECKOUT 🔥
+            const checkoutQuery = urlParams.get('checkout');
+            if(checkoutQuery === 'true') {
+                setTimeout(() => { goToShipping(); }, 500); 
+            }
         });
 
         function filterCategory(cat) { 
