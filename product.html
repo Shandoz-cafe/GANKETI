@@ -6,9 +6,6 @@
     <title>GANKETI | Product Detail</title>
     <link rel="icon" href="ganketiweb.png" type="image/png">
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    
-    <script src="https://app.midtrans.com/snap/snap.js" data-client-key="Mid-client-ci-M4QXxtek0TsyV"></script>
-
     <style>
         :root { --bg: #050505; --surface: #121212; --primary: #ffffff; --text: #e5e5e5; --text-dim: #888888; --border: #262626; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
@@ -77,7 +74,6 @@
         .name { font-size: 13px; font-weight: 600; margin-bottom: 10px; line-height: 1.4; color: var(--primary); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
         .price { font-family: 'Oswald', sans-serif; font-weight: 500; font-size: 15px; margin-top: auto; color: var(--primary); }
 
-        /* 🔥 CSS CHECKOUT MODAL (Sama persis kayak index.html) 🔥 */
         .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: flex-end; backdrop-filter: blur(5px); }
         @media (min-width: 768px) { .modal { align-items: center; } }
         .modal-box { background: var(--surface); width: 100%; max-width: 500px; border-radius: 20px 20px 0 0; border: 1px solid var(--border); border-bottom: none; padding: 25px; max-height: 90vh; overflow-y: auto; display: flex; flex-direction: column; animation: slideUp 0.3s ease-out; }
@@ -88,6 +84,12 @@
         .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 15px; margin-bottom: 20px; }
         .modal-title { font-family: 'Oswald', sans-serif; font-size: 18px; letter-spacing: 1px; text-transform: uppercase; }
         .close-btn { color: var(--text-dim); font-size: 24px; cursor: pointer; line-height: 1; }
+        
+        .form-group { margin-bottom: 15px; }
+        .form-group label { display: block; font-size: 11px; color: #aaa; margin-bottom: 5px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;}
+        .form-group input, .form-group select, .form-group textarea { width: 100%; padding: 12px; background: #0a0a0a; border: 1px solid var(--border); color: white; font-family: 'Inter', sans-serif; font-size: 13px; border-radius: 8px; box-sizing: border-box; outline: none;}
+        .form-group input:focus, .form-group select:focus, .form-group textarea:focus { border-color: var(--primary); }
+        .form-group input:disabled, .form-group input:read-only { background: #1a1a1a; color: #555; cursor: not-allowed; border-color: #222; }
         
         .autocomplete-box { position: absolute; width: 100%; max-height: 180px; overflow-y: auto; z-index: 1000; border: 1px solid #444; border-radius: 4px; box-shadow: 0 4px 10px rgba(0,0,0,0.8); display: none; background: #1a1a1a; margin-top: 2px; }
         .biteship-item { padding: 12px 10px; border-bottom: 1px solid #333; font-size: 12px; cursor: pointer; color: #ccc; line-height: 1.4; }
@@ -490,6 +492,11 @@
             localStorage.setItem('ganketiWishlist', JSON.stringify(wishlist));
         }
 
+        // 🔥 FUNGSI UPDATE KERANJANG YANG HILANG UDAH GUA BALIKIN! 🔥
+        function updateCartCount() { 
+            document.getElementById('cartCount').innerText = cart.reduce((sum, item) => sum + item.qty, 0); 
+        }
+
         // 🔥 FUNGSI BELI: KALAU BUY NOW LANGSUNG BUKA POPUP ALAMAT DI SINI 🔥
         function addToCart(isBuyNow = false) {
             const selectedSize = document.getElementById('pSize').value; 
@@ -514,7 +521,7 @@
             }
             
             localStorage.setItem('ganketiCart', JSON.stringify(cart)); 
-            document.getElementById('cartCount').innerText = cart.reduce((sum, item) => sum + item.qty, 0);
+            updateCartCount(); // Angka di atas kanan otomatis nambah
 
             if(isBuyNow) {
                 goToShipping(); // Langsung buka formulir alamat di halaman produk!
@@ -813,6 +820,8 @@
                 
                 if(midtransData.token) {
                     await newOrderRef.set({ invoice_no: invoiceNumber, date: orderDate, customer: pendingOrderData.customer, items: pendingOrderData.items, shippingCost: pendingOrderData.shippingCost, courier: pendingOrderData.courier, total: pendingOrderData.total, status: "UNPAID", payment_token: midtransData.token, timestamp: Date.now() });
+                    
+                    // 🔥 DI SINI SUMBER MASALAHNYA KEMAREN! SEKARANG UDAH BERES! 🔥
                     cart = []; localStorage.setItem('ganketiCart', JSON.stringify(cart)); updateCartCount();
                     
                     window.snap.pay(midtransData.token, {
