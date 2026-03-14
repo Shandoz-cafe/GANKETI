@@ -7,6 +7,12 @@
     <link rel="icon" href="ganketipreview.png" type="image/png">
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://ganketi.store/">
+    <meta property="og:title" content="GANKETI | Authentic Streetwear">
+    <meta property="og:description" content="GANKETI represents modern elegance, authentic fashion, and timeless style">
+    <meta property="og:image" content="https://ganketi.store/ganketipreview.png">
+
     <script src="https://app.midtrans.com/snap/snap.js" data-client-key="Mid-client-ci-M4QXxtek0TsyV"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
 
@@ -120,7 +126,6 @@
         .history-tabs::-webkit-scrollbar { display: none; }
         .h-tab-btn { background: transparent; color: #888; border: none; font-size: 12px; font-weight: bold; text-transform: uppercase; padding: 8px 12px; cursor: pointer; white-space: nowrap; border-radius: 4px;}
         .h-tab-btn.active { background: #222; color: var(--primary); }
-
     </style>
 </head>
 <body>
@@ -343,14 +348,10 @@
         let searchDestTimeout;
         const BITESHIP_KEY = 'biteship_live.eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiR2Fua2V0aSIsInVzZXJJZCI6IjY5YWVlODYzM2NjODBhMWUzMjE3ZGJkYyIsImlhdCI6MTc3MzA3OTg3MX0.ot-KA-1HmE0xMsc7OhHeQBaDGo7KrDKU1tuS4bk5fCo';
 
-        function updateCartCount() { 
-            document.getElementById('cartCount').innerText = cart.reduce((sum, item) => sum + item.qty, 0); 
-        }
+        function updateCartCount() { document.getElementById('cartCount').innerText = cart.reduce((sum, item) => sum + item.qty, 0); }
         updateCartCount();
 
-        auth.onAuthStateChanged(user => {
-            currentUser = user;
-        });
+        auth.onAuthStateChanged(user => { currentUser = user; });
 
         const urlParams = new URLSearchParams(window.location.search);
         const productId = urlParams.get('id');
@@ -368,23 +369,12 @@
             });
         }
 
-        // 🔥 FUNGSI SHARE PRODUK 🔥
         function shareProduct() {
             if(!currentProduct) return;
             const shareUrl = window.location.href; 
             const shareText = `GANKETI | ${currentProduct.name}\nHarga: Rp ${currentProduct.price.toLocaleString('id-ID')}\n\nCek selengkapnya di sini: `;
-
-            if (navigator.share) {
-                navigator.share({
-                    title: currentProduct.name,
-                    text: shareText,
-                    url: shareUrl
-                }).catch(console.error);
-            } else {
-                navigator.clipboard.writeText(shareText + shareUrl).then(() => {
-                    showToast("Link produk berhasil disalin! 📋");
-                });
-            }
+            if (navigator.share) { navigator.share({ title: currentProduct.name, text: shareText, url: shareUrl }).catch(console.error); } 
+            else { navigator.clipboard.writeText(shareText + shareUrl).then(() => { showToast("Link produk berhasil disalin! 📋"); }); }
         }
 
         function renderProductPage() {
@@ -454,9 +444,7 @@
             let slider = document.getElementById('mainSlider');
             let index = Math.round(slider.scrollLeft / slider.clientWidth);
             let dots = document.getElementById('sliderDots').children;
-            for(let i=0; i<dots.length; i++) {
-                dots[i].className = i === index ? 's-dot active' : 's-dot';
-            }
+            for(let i=0; i<dots.length; i++) { dots[i].className = i === index ? 's-dot active' : 's-dot'; }
         }
 
         function scrollToSlide(index) {
@@ -514,11 +502,7 @@
             localStorage.setItem('ganketiCart', JSON.stringify(cart)); 
             updateCartCount();
 
-            if(isBuyNow) {
-                goToShipping(); 
-            } else {
-                showToast("Berhasil ditambahkan ke Keranjang! 🛒");
-            }
+            if(isBuyNow) { goToShipping(); } else { showToast("Berhasil ditambahkan ke Keranjang! 🛒"); }
         }
 
         function loadRecommendations() {
@@ -530,10 +514,7 @@
                 allProducts = allProducts.sort(() => 0.5 - Math.random()).slice(0, 4);
                 
                 let grid = document.getElementById('recommendationGrid');
-                if(allProducts.length === 0) {
-                    grid.innerHTML = '<p style="color:#888; text-align:center; width:100%;">Tidak ada rekomendasi lainnya.</p>';
-                    return;
-                }
+                if(allProducts.length === 0) { grid.innerHTML = '<p style="color:#888; text-align:center; width:100%;">Tidak ada rekomendasi lainnya.</p>'; return; }
 
                 grid.innerHTML = allProducts.map(p => {
                     let img = p.images ? p.images[0] : (p.image || 'https://via.placeholder.com/300');
@@ -595,30 +576,21 @@
             if(!email || !pass) return showToast("Isi email dan password!");
             document.querySelector('#formLogin .btn-main').innerText = "LOADING...";
             auth.signInWithEmailAndPassword(email, pass).then(res => {
-                document.querySelector('#formLogin .btn-main').innerText = "LOGIN";
-                closeModal(); showToast(`Welcome back!`);
+                document.querySelector('#formLogin .btn-main').innerText = "LOGIN"; closeModal(); showToast(`Welcome back!`);
                 if(isCheckoutPending) { isCheckoutPending = false; goToShipping(); }
-            }).catch(err => {
-                document.querySelector('#formLogin .btn-main').innerText = "LOGIN";
-                showToast("Login gagal: " + err.message);
-            });
+            }).catch(err => { document.querySelector('#formLogin .btn-main').innerText = "LOGIN"; showToast("Login gagal: " + err.message); });
         }
 
         function registerWithEmail() {
             let name = document.getElementById('authRegName').value.trim(); let email = document.getElementById('authRegEmail').value.trim(); let pass = document.getElementById('authRegPass').value;
-            if(!name || !email || !pass) return showToast("Lengkapi semua data!");
-            if(pass.length < 6) return showToast("Password minimal 6 karakter!");
+            if(!name || !email || !pass) return showToast("Lengkapi semua data!"); if(pass.length < 6) return showToast("Password minimal 6 karakter!");
             document.querySelector('#formRegister .btn-main').innerText = "LOADING...";
             auth.createUserWithEmailAndPassword(email, pass).then(res => {
                 res.user.updateProfile({displayName: name}).then(() => {
-                    document.querySelector('#formRegister .btn-main').innerText = "BUAT AKUN";
-                    closeModal(); showToast(`Akun berhasil dibuat!`);
+                    document.querySelector('#formRegister .btn-main').innerText = "BUAT AKUN"; closeModal(); showToast(`Akun berhasil dibuat!`);
                     if(isCheckoutPending) { isCheckoutPending = false; goToShipping(); }
                 });
-            }).catch(err => {
-                document.querySelector('#formRegister .btn-main').innerText = "BUAT AKUN";
-                showToast("Register gagal: " + err.message);
-            });
+            }).catch(err => { document.querySelector('#formRegister .btn-main').innerText = "BUAT AKUN"; showToast("Register gagal: " + err.message); });
         }
 
         function loginWithGoogle() {
@@ -629,56 +601,34 @@
             }).catch(err => { showToast("Login Failed: " + err.message); });
         }
 
+        function executeLogout() { auth.signOut().then(() => { closeModal(); showToast("Signed out successfully."); }); }
+
         function goToShipping() { 
             if(cart.length === 0) { showToast("Keranjang kosong!"); return; }
-            if(!currentUser) { 
-                isCheckoutPending = true;
-                showToast("Silakan Login atau Daftar dulu untuk Checkout!"); 
-                openAuthModal(); return; 
-            }
+            if(!currentUser) { isCheckoutPending = true; showToast("Silakan Login atau Daftar dulu untuk Checkout!"); openAuthModal(); return; }
             hideAllAreas(); document.getElementById('modalTitle').innerText = "SHIPPING INFO"; 
-            document.getElementById('cEmail').value = currentUser.email;
-            renderSavedAddresses();
+            document.getElementById('cEmail').value = currentUser.email; renderSavedAddresses();
             if(document.getElementById('cName').value === "") document.getElementById('cName').value = currentUser.displayName || '';
-            document.getElementById('shippingArea').style.display = 'block'; 
-            document.getElementById('mainModal').style.display = 'flex';
+            document.getElementById('shippingArea').style.display = 'block'; document.getElementById('mainModal').style.display = 'flex';
         }
 
-                let searchDestTimeout;
         function searchBiteshipDest(query) {
             const resultBox = document.getElementById('cDestResults');
             if(query.length < 3) { resultBox.style.display = 'none'; return; }
-            
-            // 🔥 FIX: Nggak usah digabung sama provinsi/kota lagi, langsung pake apa yang diketik user! 🔥
             let fullQuery = query.trim(); 
-            
             clearTimeout(searchDestTimeout);
             searchDestTimeout = setTimeout(async () => {
                 resultBox.innerHTML = '<div style="padding:10px; font-size:11px; color:#aaa;">Mencari di sistem Kurir...</div>';
                 resultBox.style.display = 'block';
                 try {
-                    const res = await fetch(`https://api.biteship.com/v1/maps/areas?countries=ID&input=${encodeURIComponent(fullQuery)}&type=single`, {
-                        method: 'GET',
-                        headers: { 
-                            'Authorization': BITESHIP_KEY
-                        }
-                    });
-                    
+                    const res = await fetch(`https://api.biteship.com/v1/maps/areas?countries=ID&input=${encodeURIComponent(fullQuery)}&type=single`, { method: 'GET', headers: { 'Authorization': BITESHIP_KEY } });
                     const data = await res.json();
                     if(data.success && data.areas && data.areas.length > 0) {
-                        resultBox.innerHTML = data.areas.map(a => {
-                            return `<div class="biteship-item" onclick="selectBiteshipDest('${a.id}', '${a.name.replace(/'/g, "\\'")}', '${a.postal_code}')">${a.name}</div>`;
-                        }).join('');
-                    } else {
-                        let errorMsg = data.error || data.message || "Kecamatan/Kota tidak ditemukan. Coba ketik lebih spesifik.";
-                        resultBox.innerHTML = `<div style="padding:10px; font-size:11px; color:#ef4444;">Pesan Server: ${errorMsg}</div>`;
-                    }
-                } catch(e) {
-                    resultBox.innerHTML = '<div style="padding:10px; font-size:11px; color:#ef4444;">Gagal menghubungi server ongkir.</div>';
-                }
+                        resultBox.innerHTML = data.areas.map(a => { return `<div class="biteship-item" onclick="selectBiteshipDest('${a.id}', '${a.name.replace(/'/g, "\\'")}', '${a.postal_code}')">${a.name}</div>`; }).join('');
+                    } else { resultBox.innerHTML = `<div style="padding:10px; font-size:11px; color:#ef4444;">Pesan Server: ${data.error || "Kecamatan tidak ditemukan. Ketik lebih spesifik."}</div>`; }
+                } catch(e) { resultBox.innerHTML = '<div style="padding:10px; font-size:11px; color:#ef4444;">Gagal menghubungi server ongkir.</div>'; }
             }, 600);
         }
-
 
         function selectBiteshipDest(id, fullName, zip) {
             let shortName = fullName.split(',')[0].trim(); document.getElementById('cDestSearch').value = shortName; 
@@ -842,55 +792,25 @@
                     cart = []; localStorage.setItem('ganketiCart', JSON.stringify(cart)); updateCartCount();
                     
                     window.snap.pay(midtransData.token, {
-                        onSuccess: function(result){
-                            db.ref('orders/' + firebaseOrderId).update({ status: 'PAID' });
-                            showToast("Pembayaran Berhasil! ✅");
-                            setTimeout(() => { window.location.href = 'index.html'; }, 1500); 
-                        },
-                        onPending: function(result){
-                            showToast("Menunggu Pembayaran (Pending) ⏳");
-                            setTimeout(() => { window.location.href = 'index.html'; }, 1500); 
-                        },
-                        onError: function(result){
-                            showToast("Pembayaran Gagal ❌");
-                            if(btn) { btn.disabled = false; btn.innerText = "LANJUT KE PEMBAYARAN ➔"; }
-                        },
-                        onClose: function(){
-                            showToast("Pembayaran ditunda. Cek di Track Order.");
-                            setTimeout(() => { window.location.href = 'index.html'; }, 1500);
-                        }
+                        onSuccess: function(result){ db.ref('orders/' + firebaseOrderId).update({ status: 'PAID' }); showToast("Pembayaran Berhasil! ✅"); setTimeout(() => { window.location.href = 'index.html'; }, 1500); },
+                        onPending: function(result){ showToast("Menunggu Pembayaran (Pending) ⏳"); setTimeout(() => { window.location.href = 'index.html'; }, 1500); },
+                        onError: function(result){ showToast("Pembayaran Gagal ❌"); if(btn) { btn.disabled = false; btn.innerText = "LANJUT KE PEMBAYARAN ➔"; } },
+                        onClose: function(){ showToast("Pembayaran ditunda. Cek di Track Order."); setTimeout(() => { window.location.href = 'index.html'; }, 1500); }
                     });
-                } else {
-                    alert("Gagal dari Midtrans: " + JSON.stringify(midtransData));
-                    if(btn) { btn.disabled = false; btn.innerText = "LANJUT KE PEMBAYARAN ➔"; }
-                }
-            } catch(e) {
-                alert("Gagal konek ke server: " + e.message);
-                if(btn) { btn.disabled = false; btn.innerText = "LANJUT KE PEMBAYARAN ➔"; }
-            }
+                } else { alert("Gagal dari Midtrans: " + JSON.stringify(midtransData)); if(btn) { btn.disabled = false; btn.innerText = "LANJUT KE PEMBAYARAN ➔"; } }
+            } catch(e) { alert("Gagal konek ke server: " + e.message); if(btn) { btn.disabled = false; btn.innerText = "LANJUT KE PEMBAYARAN ➔"; } }
         }
 
         async function openReviewModal() { 
-            if(!currentUser) {
-                showToast("Silakan Login terlebih dahulu di halaman Home (Menu Kiri Atas) untuk memberi ulasan.");
-                return;
-            }
-
-            const btn = document.querySelector('.btn-write-review');
-            let originalText = btn.innerText;
-            btn.innerText = "MENGECEK DATA... ⏳";
-            btn.disabled = true;
+            if(!currentUser) { showToast("Silakan Login terlebih dahulu di halaman Home (Menu Kiri Atas) untuk memberi ulasan."); return; }
+            const btn = document.querySelector('.btn-write-review'); let originalText = btn.innerText;
+            btn.innerText = "MENGECEK DATA... ⏳"; btn.disabled = true;
 
             try {
                 const revSnap = await db.ref('reviews/' + productId).once('value');
                 if (revSnap.exists()) {
-                    const revs = revSnap.val();
-                    let alreadyReviewed = Object.values(revs).some(r => r.email === currentUser.email);
-                    if (alreadyReviewed) {
-                        btn.innerText = originalText;
-                        btn.disabled = false;
-                        return showToast("❌ Anda sudah pernah memberikan ulasan untuk produk ini.");
-                    }
+                    let alreadyReviewed = Object.values(revSnap.val()).some(r => r.email === currentUser.email);
+                    if (alreadyReviewed) { btn.innerText = originalText; btn.disabled = false; return showToast("❌ Anda sudah pernah memberikan ulasan untuk produk ini."); }
                 }
 
                 const ordSnap = await db.ref('orders').orderByChild('customer/email').equalTo(currentUser.email).once('value');
@@ -902,65 +822,34 @@
                         let o = orders[key];
                         if (o.status === 'SELESAI') {
                             let boughtItem = o.items.find(i => i.id === productId);
-                            if (boughtItem) {
-                                hasPurchased = true;
-                                break;
-                            }
+                            if (boughtItem) { hasPurchased = true; break; }
                         }
                     }
                 }
 
-                btn.innerText = originalText;
-                btn.disabled = false;
+                btn.innerText = originalText; btn.disabled = false;
+                if (!hasPurchased) return showToast("❌ Ulasan hanya bisa diberikan oleh pembeli yang telah menyelesaikan pesanan ini.");
 
-                if (!hasPurchased) {
-                    return showToast("❌ Ulasan hanya bisa diberikan oleh pembeli yang telah menyelesaikan pesanan ini.");
-                }
-
-                setRating(5); 
-                document.getElementById('rName').value = currentUser.displayName || currentUser.email.split('@')[0];
+                setRating(5); document.getElementById('rName').value = currentUser.displayName || currentUser.email.split('@')[0];
                 document.getElementById('reviewModal').style.display='flex'; 
-            } catch (e) {
-                btn.innerText = originalText;
-                btn.disabled = false;
-                showToast("Terjadi kesalahan sistem: " + e.message);
-            }
+            } catch (e) { btn.innerText = originalText; btn.disabled = false; showToast("Terjadi kesalahan sistem: " + e.message); }
         }
 
         function setRating(val) { 
-            selectedRating = val; 
-            const stars = document.getElementById('starInput').children; 
+            selectedRating = val; const stars = document.getElementById('starInput').children; 
             for(let i=0; i<5; i++) { if(i<val) stars[i].classList.add('active'); else stars[i].classList.remove('active'); } 
         }
 
         function submitReview() {
             if(!currentUser) return showToast("Sesi login berakhir, silakan muat ulang halaman.");
-            
-            let nama = document.getElementById('rName').value.trim();
-            let teks = document.getElementById('rText').value.trim();
+            let nama = document.getElementById('rName').value.trim(); let teks = document.getElementById('rText').value.trim();
             if(!teks) return alert("Komentar ulasan tidak boleh kosong!");
-            
-            const btnSub = document.getElementById('btnSubmitReview');
-            btnSub.innerText = "MENGIRIM... ⏳";
-            btnSub.disabled = true;
+            const btnSub = document.getElementById('btnSubmitReview'); btnSub.innerText = "MENGIRIM... ⏳"; btnSub.disabled = true;
 
-            db.ref('reviews/' + productId).push({
-                name: nama, 
-                email: currentUser.email,
-                rating: selectedRating, 
-                text: teks, 
-                timestamp: Date.now()
-            }).then(() => {
-                document.getElementById('reviewModal').style.display='none';
-                showToast("Terima kasih atas ulasannya! ⭐");
-                btnSub.innerText = "KIRIM ULASAN";
-                btnSub.disabled = false;
-                loadReviews();
-            }).catch(e => {
-                showToast("Gagal mengirim: " + e.message);
-                btnSub.innerText = "KIRIM ULASAN";
-                btnSub.disabled = false;
-            });
+            db.ref('reviews/' + productId).push({ name: nama, email: currentUser.email, rating: selectedRating, text: teks, timestamp: Date.now() }).then(() => {
+                document.getElementById('reviewModal').style.display='none'; showToast("Terima kasih atas ulasannya! ⭐");
+                btnSub.innerText = "KIRIM ULASAN"; btnSub.disabled = false; loadReviews();
+            }).catch(e => { showToast("Gagal mengirim: " + e.message); btnSub.innerText = "KIRIM ULASAN"; btnSub.disabled = false; });
         }
 
         function loadReviews() {
@@ -969,25 +858,215 @@
                 if(!data) return;
                 
                 let revs = Object.keys(data).map(k => data[k]).sort((a,b) => b.timestamp - a.timestamp);
-                let totalBintang = revs.reduce((sum, r) => sum + r.rating, 0);
-                let rataRata = (totalBintang / revs.length).toFixed(1);
-                
+                let totalBintang = revs.reduce((sum, r) => sum + r.rating, 0); let rataRata = (totalBintang / revs.length).toFixed(1);
                 let starDisplay = '★'.repeat(Math.round(rataRata)) + '☆'.repeat(5 - Math.round(rataRata));
                 document.getElementById('topRatingSummary').innerHTML = `${starDisplay} <span>(${rataRata} / 5 dari ${revs.length} ulasan)</span>`;
 
                 list.innerHTML = revs.map(r => {
-                    let rStars = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
-                    let d = new Date(r.timestamp).toLocaleDateString('id-ID');
+                    let rStars = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating); let d = new Date(r.timestamp).toLocaleDateString('id-ID');
                     return `<div class="review-card"><div class="r-stars">${rStars}</div><div class="r-user">${r.name} <span style="font-size:9px; color:#4ade80; font-weight:normal; border:1px solid #4ade80; padding:2px 4px; border-radius:3px; margin-left:5px;">✓ Pembeli Terverifikasi</span></div><div class="r-date">${d}</div><div class="r-text">${r.text}</div></div>`;
                 }).join('');
             });
         }
-                // 🔥 RADAR TOMBOL BACK HP: Paksa lari ke Home (index.html) 🔥
-        window.history.replaceState(null, null, 'index.html');
-        window.history.pushState(null, null, window.location.href);
-        window.addEventListener('popstate', function () {
-            window.location.replace('index.html');
-        });
+
+        // 🔥 FUNGSI DOWNLOAD INVOICE (ANTI BLANK 100%) 🔥
+        function downloadInvoice(invNo) {
+            const order = globalUserOrders.find(o => o.invoice_no === invNo);
+            if(!order) return showToast("Data pesanan tidak ditemukan", "error");
+
+            showToast("Menyiapkan file Tagihan... ⏳", "info");
+
+            let shipCost = order.shippingCost || 0;
+            let courierName = order.courier || '-';
+            let subtotal = order.total - shipCost;
+            
+            let statusLabel = order.status === 'PAID' ? 'LUNAS (DIPROSES)' : 
+                              (order.status === 'SHIPPED' ? 'LUNAS (DIKIRIM)' : 
+                              (order.status === 'UNPAID' ? 'BELUM LUNAS / TAGIHAN' : order.status));
+            
+            let statusBgColor = order.status === 'UNPAID' ? '#ef4444' : '#000';
+
+            let custName = order.customer && order.customer.name ? order.customer.name : '-';
+            let custPhone = order.customer && order.customer.phone ? order.customer.phone : '-';
+            let custAddress = order.customer && order.customer.address ? order.customer.address : '-';
+
+            let itemsHtml = order.items.map(i => `
+                <tr>
+                    <td style="border-bottom: 1px solid #ddd; padding: 12px 5px; vertical-align: middle;"><b>${i.name || 'Produk'}</b><br><span style="color:#666; font-size:11px;">Size: ${i.sizes || 'All Size'} | Color: ${i.color || 'Default'}</span></td>
+                    <td style="border-bottom: 1px solid #ddd; padding: 12px 5px; text-align:center; vertical-align: middle;">${i.qty || 1}</td>
+                    <td style="border-bottom: 1px solid #ddd; padding: 12px 5px; text-align:right; vertical-align: middle;">Rp ${(i.price || 0).toLocaleString('id-ID')}</td>
+                    <td style="border-bottom: 1px solid #ddd; padding: 12px 5px; text-align:right; font-weight:bold; vertical-align: middle;">Rp ${((i.price || 0) * (i.qty || 1)).toLocaleString('id-ID')}</td>
+                </tr>
+            `).join('');
+
+            const invoiceHTML = `
+                <div style="background: #fff; color: #000; padding: 30px; font-family: Helvetica, Arial, sans-serif; width: 750px; box-sizing: border-box;">
+                    
+                    <table style="width: 100%; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px;">
+                        <tr>
+                            <td style="text-align: left; vertical-align: middle;">
+                                <span style="font-family: 'Oswald', sans-serif; font-size: 32px; font-weight: bold; letter-spacing: 2px;">GANKETI</span>
+                            </td>
+                            <td style="text-align: right; vertical-align: middle;">
+                                <span style="font-size: 24px; font-weight: bold; color: #888; letter-spacing: 4px;">INVOICE</span>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <table style="width: 100%; margin-bottom: 30px; font-size: 13px; line-height: 1.6;">
+                        <tr>
+                            <td style="vertical-align: top; width: 50%; padding-right: 20px;">
+                                <b style="color:#000;">DITERBITKAN UNTUK:</b><br><br>
+                                <b style="font-size:14px;">${custName}</b><br>${custPhone}<br>${custAddress}
+                            </td>
+                            <td style="vertical-align: top; width: 50%; text-align: right;">
+                                <b style="color:#000;">DETAIL PESANAN:</b><br><br>
+                                <b>No. Invoice:</b> ${order.invoice_no}<br>
+                                <b>Tanggal:</b> ${order.date}<br><br>
+                                <span style="display: inline-block; padding: 5px 15px; background: ${statusBgColor}; color: #fff; font-weight: bold; letter-spacing: 2px; font-size: 12px; border-radius: 4px;">${statusLabel}</span>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px; font-size: 13px;">
+                        <thead>
+                            <tr style="background-color: #f9f9f9;">
+                                <th style="border-bottom: 2px solid #000; padding: 10px 5px; text-align: left; font-weight: bold; text-transform: uppercase;">Deskripsi Produk</th>
+                                <th style="border-bottom: 2px solid #000; padding: 10px 5px; text-align: center; font-weight: bold; text-transform: uppercase;">Qty</th>
+                                <th style="border-bottom: 2px solid #000; padding: 10px 5px; text-align: right; font-weight: bold; text-transform: uppercase;">Harga</th>
+                                <th style="border-bottom: 2px solid #000; padding: 10px 5px; text-align: right; font-weight: bold; text-transform: uppercase;">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>${itemsHtml}</tbody>
+                    </table>
+
+                    <table style="width: 100%; font-size: 14px;">
+                        <tr>
+                            <td style="width: 50%;"></td>
+                            <td style="width: 50%;">
+                                <table style="width: 100%; border-collapse: collapse;">
+                                    <tr>
+                                        <td style="padding: 6px 0; text-align: left;">Subtotal Produk</td>
+                                        <td style="padding: 6px 0; text-align: right;">Rp ${subtotal.toLocaleString('id-ID')}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 6px 0; text-align: left;">Ongkos Kirim (${courierName})</td>
+                                        <td style="padding: 6px 0; text-align: right;">Rp ${shipCost.toLocaleString('id-ID')}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 12px 0 0 0; text-align: left; font-size: 16px; font-weight: bold; border-top: 2px solid #000; margin-top: 5px;">TOTAL TAGIHAN</td>
+                                        <td style="padding: 12px 0 0 0; text-align: right; font-size: 16px; font-weight: bold; border-top: 2px solid #000; margin-top: 5px;">Rp ${order.total.toLocaleString('id-ID')}</td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            `;
+
+            var opt = {
+              margin:       10,
+              filename:     `${order.invoice_no}.pdf`,
+              image:        { type: 'jpeg', quality: 0.98 },
+              html2canvas:  { scale: 2, useCORS: true, windowWidth: 800 },
+              jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
+            };
+
+            let printContainer = document.createElement('div');
+            printContainer.style.position = 'absolute';
+            printContainer.style.left = '-9999px';
+            printContainer.style.top = '-9999px';
+            printContainer.innerHTML = invoiceHTML;
+            document.body.appendChild(printContainer);
+
+            html2pdf().set(opt).from(printContainer).save().then(() => {
+                showToast("Tagihan berhasil diunduh! ✅");
+                document.body.removeChild(printContainer);
+            });
+        }
+
+        function openMyOrders(initialTab = 'ALL') {
+            if(!currentUser) { showToast("Please Sign In first!"); setTimeout(() => handleAuth(), 1500); return; }
+            hideAllAreas(); document.getElementById('modalTitle').innerText = "TRACK ORDER";
+            document.getElementById('historyArea').style.display = 'block'; document.getElementById('mainModal').style.display = 'flex';
+            
+            let tabs = document.querySelectorAll('.h-tab-btn');
+            tabs.forEach(t => t.classList.remove('active'));
+            if(initialTab === 'UNPAID') tabs[0].classList.add('active'); else if(initialTab === 'PAID') tabs[1].classList.add('active'); else if(initialTab === 'SHIPPED') tabs[2].classList.add('active'); else if(initialTab === 'SELESAI') tabs[3].classList.add('active');
+            
+            document.getElementById('historyList').innerHTML = `<p style="text-align:center; color:var(--text-dim); padding:20px;">Loading data...</p>`;
+            
+            db.ref('orders').orderByChild('customer/email').equalTo(currentUser.email).once('value').then(snapshot => {
+                const data = snapshot.val();
+                if(!data) { document.getElementById('historyList').innerHTML = `<p style="text-align:center; color:var(--text-dim); padding:40px 20px;">Belum ada pesanan.</p>`; return; }
+                globalUserOrders = Object.keys(data).map(k => ({id: k, ...data[k]})).sort((a,b) => b.timestamp - a.timestamp);
+                renderHistoryItems(initialTab);
+            });
+        }
+
+        function renderHistoryItems(filterStatus, btnEl = null) {
+            if(btnEl) { document.querySelectorAll('.h-tab-btn').forEach(t => t.classList.remove('active')); btnEl.classList.add('active'); }
+            const list = document.getElementById('historyList'); let filteredOrders = globalUserOrders;
+            if(filterStatus !== 'ALL') { filteredOrders = globalUserOrders.filter(o => o.status === filterStatus); }
+            if(filteredOrders.length === 0) { list.innerHTML = `<p style="text-align:center; color:var(--text-dim); padding:40px 20px;">Tidak ada pesanan di kategori ini.</p>`; return; }
+
+            let historyHtml = ''; 
+            filteredOrders.forEach(order => { 
+                let itemsHtml = order.items.map(i => {
+                    let imgUrl = i.images ? i.images[0] : (i.image ? i.image : 'https://via.placeholder.com/50');
+                    return `<div class="item-row"><img src="${imgUrl}" class="item-img"><div style="flex:1;"><div style="font-size:12px; font-weight:bold; color:#fff;">${i.name}</div><div style="font-size:10px; color:#888;">${i.qty}x @ Rp ${i.price.toLocaleString('id-ID')}</div></div><div style="font-size:12px; font-weight:bold; color:var(--primary);">Rp ${(i.price * i.qty).toLocaleString('id-ID')}</div></div>`;
+                }).join('');
+
+                let statusLabel = order.status; if(statusLabel === 'UNPAID') statusLabel = 'MENUNGGU PEMBAYARAN'; if(statusLabel === 'PAID') statusLabel = 'DIPROSES';
+                let actionButtons = '';
+                
+                if(order.status === 'UNPAID') {
+                    actionButtons = `
+                    <div style="margin-top:15px; display:flex; flex-direction:column; gap:10px; border-top:1px dashed #333; padding-top:15px;">
+                        <button onclick="downloadInvoice('${order.invoice_no}')" style="width:100%; background:transparent; border:1px solid #aaa; color:#aaa; padding:8px 0; border-radius:4px; font-size:11px; font-weight:bold; cursor:pointer;">📄 UNDUH TAGIHAN (INVOICE)</button>
+                        <div style="display:flex; gap:10px;">
+                            <button onclick="cancelOrder('${order.id}')" style="flex:1; background:transparent; border:1px solid #ef4444; color:#ef4444; padding:8px 0; border-radius:4px; font-size:11px; font-weight:bold; cursor:pointer;">BATALKAN</button>
+                            <button onclick="resumePayment('${order.payment_token}', '${order.id}')" style="flex:2; background:#3b82f6; border:none; color:#fff; padding:8px 0; border-radius:4px; font-size:11px; font-weight:bold; cursor:pointer;">LANJUT BAYAR ➔</button>
+                        </div>
+                    </div>`;
+                } 
+                else if(order.status === 'PAID') {
+                    actionButtons = `<div style="margin-top:15px; text-align:right; border-top:1px dashed #333; padding-top:15px;"><button onclick="downloadInvoice('${order.invoice_no}')" style="background:transparent; border:1px solid #fff; color:#fff; padding:8px 15px; border-radius:4px; font-size:10px; font-weight:bold; letter-spacing:1px; cursor:pointer;">📄 INVOICE</button></div>`;
+                }
+                else if(order.status === 'SHIPPED') {
+                    actionButtons = `<div style="margin-top:12px; padding:10px; background:#111; border-radius:6px; border:1px solid #333;"><span style="font-size:10px; color:#888;">No. Resi:</span><br><div style="display:flex; justify-content:space-between; align-items:center; margin-top:5px;"><b style="color:#4ade80; font-size:14px;">${order.resi}</b><div style="display:flex; gap:5px;"><button onclick="navigator.clipboard.writeText('${order.resi}'); showToast('Resi disalin!');" style="background:#333; color:white; border:none; padding:6px 10px; border-radius:4px; font-size:10px; cursor:pointer;">COPY</button><a href="https://cekresi.com/?noresi=${order.resi}" target="_blank" style="background:#f59e0b; color:black; border:none; padding:6px 10px; border-radius:4px; font-size:10px; text-decoration:none; text-align:center; font-weight:bold;">LACAK</a></div></div></div>
+                    <div style="margin-top:15px; display:flex; justify-content:space-between; border-top:1px dashed #333; padding-top:15px;"><button onclick="downloadInvoice('${order.invoice_no}')" style="background:transparent; border:1px solid #888; color:#888; padding:8px 15px; border-radius:4px; font-size:10px; font-weight:bold; cursor:pointer;">📄 INVOICE</button><button onclick="completeOrder('${order.id}')" style="background:#4ade80; border:none; color:#000; padding:8px 15px; border-radius:4px; font-size:11px; font-weight:bold; cursor:pointer;">PESANAN DITERIMA ✅</button></div>`;
+                }
+                else if(order.status === 'SELESAI') {
+                    actionButtons = `<div style="margin-top:15px; text-align:right; border-top:1px dashed #333; padding-top:15px;"><button onclick="downloadInvoice('${order.invoice_no}')" style="background:transparent; border:1px solid #4ade80; color:#4ade80; padding:8px 15px; border-radius:4px; font-size:10px; font-weight:bold; cursor:pointer;">📄 UNDUH INVOICE FINAL</button></div>`;
+                }
+
+                historyHtml += `<div class="invoice-card"><div style="display:flex; justify-content:space-between; margin-bottom:10px; border-bottom:1px dashed var(--border); padding-bottom:10px;"><div><b style="color:#3b82f6; font-size:13px;">${order.invoice_no}</b><br><span style="font-size:10px; color:#888;">📅 ${order.date}</span></div><div><span class="status-badge status-${order.status}">${statusLabel}</span></div></div><div style="background:#0a0a0a; padding:10px; border-radius:8px; border:1px solid #222; margin-bottom:10px;">${itemsHtml}</div><div style="display:flex; justify-content:space-between; align-items:center; font-size:12px; color:var(--text-dim); line-height:1.5;"><div>Penerima: <b style="color:#ccc;">${order.customer.name}</b></div><div style="text-align:right;">Total Tagihan:<br><b style="color:#f59e0b; font-size:15px;">Rp ${order.total.toLocaleString('id-ID')}</b></div></div>${actionButtons}</div>`; 
+            });
+            list.innerHTML = historyHtml;
+        }
+
+        function resumePayment(token, orderId) {
+            if(!token) return showToast("Token kadaluarsa, silakan buat pesanan baru.");
+            window.snap.pay(token, {
+                onSuccess: function(result){ db.ref('orders/' + orderId).update({ status: 'PAID' }).then(() => { showToast("Pembayaran Berhasil! ✅"); openMyOrders('PAID'); }); },
+                onPending: function(result){ showToast("Menunggu Pembayaran (Pending)"); },
+                onError: function(result){ showToast("Pembayaran Gagal"); },
+                onClose: function(){ showToast("Anda menutup halaman pembayaran"); }
+            });
+        }
+        function cancelOrder(orderId) { if(confirm("Yakin ingin membatalkan pesanan ini?")) { db.ref('orders/' + orderId).update({ status: 'CANCELED' }).then(() => { showToast("Pesanan Dibatalkan."); openMyOrders('ALL'); }); } }
+        function completeOrder(orderId) { if(confirm("Apakah paket sudah Anda terima dengan baik?")) { db.ref('orders/' + orderId).update({ status: 'SELESAI' }).then(() => { showToast("Terima kasih! Pesanan Selesai."); openMyOrders('SELESAI'); }); } }
+
+        // 🔥 RADAR TOMBOL BACK HP YANG BENAR & AMAN 🔥
+        // Hanya memanipulasi history tanpa merusak URL produk saat ini
+        if (window.history && window.history.pushState) {
+            window.history.pushState({ page: "product" }, null, window.location.href);
+            window.addEventListener('popstate', function(e) {
+                // Ketika tombol back bawaan HP ditekan, lempar ke index.html dengan aman
+                window.location.replace('index.html');
+            });
+        }
 
     </script>
 </body>
