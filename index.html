@@ -98,6 +98,7 @@
         .img-box img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
         .card:hover .img-box img { transform: scale(1.05); }
         
+        /* 🔥 EFEK HOVER GAMBAR KEDUA ALA WEB BRAND MAHAL 🔥 */
         .img-hover { position: absolute; top: 0; left: 0; opacity: 0; transition: opacity 0.5s ease; z-index: 2; width: 100%; height: 100%; object-fit: cover; }
         .card:hover .img-hover { opacity: 1; }
 
@@ -212,42 +213,6 @@
         .skel-line.short { width: 40%; }
         .skel-line.medium { width: 70%; }
         @keyframes pulseSkel { 0% { opacity: 0.5; } 50% { opacity: 1; } 100% { opacity: 0.5; } }
-
-        /* 🔥 CSS BAGIAN TRUST AND SECURITY DI SIDEBAR 🔥 */
-        .midtrans-trust-section {
-            border-top: 1px solid var(--border);
-            padding-top: 20px;
-            margin-top: 20px;
-            text-align: center;
-        }
-
-        .midtrans-trust-section p {
-            color: #aaa;
-            font-size: 11px;
-            margin-bottom: 15px;
-            text-transform: uppercase;
-            font-weight: bold;
-            letter-spacing: 0.5px;
-        }
-
-        .trust-grid {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: center;
-            align-items: center;
-            gap: 15px;
-        }
-
-        .trust-grid img {
-            max-height: 35px;
-            width: auto;
-            opacity: 0.8;
-            transition: opacity 0.3s;
-        }
-
-        .trust-grid img:hover {
-            opacity: 1;
-        }
         
     </style>
 </head>
@@ -385,6 +350,8 @@
         </div>
     </div>
 
+
+
     <footer>
         <div class="footer-grid">
             <div>
@@ -427,6 +394,8 @@
     <div class="modal" id="mainModal">
         <div class="modal-box">
             <div class="modal-header"><div class="modal-title" id="modalTitle" style="font-size: 14px; background:#222; padding:5px 10px; border-radius:4px;">MODAL</div><div class="close-btn" onclick="closeModal()">×</div></div>
+            
+            <div id="previewArea" style="display:none;"></div>
             
             <div id="cartArea" style="display:none;">
                 <div id="cartItemsList"></div>
@@ -478,16 +447,48 @@
                 <div style="border-top: 1px solid var(--border); margin: 20px 0; padding-top: 15px;"></div>
                 <h3 style="font-size: 14px; margin-bottom: 15px; color: var(--primary);">Shipping Address</h3>
                 
-                <div class="form-group"><label>Alamat Lengkap *</label><input type="text" id="cStreet" placeholder="Cth: Jl. Sudirman No. 10"></div>
-                <div style="display: flex; gap: 10px;"><div class="form-group" style="flex:1;"><label>RT *</label><input type="number" id="cRT" placeholder="001"></div><div class="form-group" style="flex:1;"><label>RW *</label><input type="number" id="cRW" placeholder="002"></div></div>
-                <div class="form-group"><label>Provinsi *</label><input type="text" id="cProv" placeholder="Cth: Jawa Barat"></div>
-                <div class="form-group"><label>Kota / Kabupaten *</label><input type="text" id="cCity" placeholder="Cth: Kota Bandung"></div>
-                <div class="form-group" style="position:relative;"><label>Kode Pos / Kecamatan *</label><input type="text" id="cDestSearch" placeholder="Ketik Kecamatan / Kode Pos..." oninput="searchBiteshipDest(this.value)" autocomplete="off"><input type="hidden" id="cDestId"><input type="hidden" id="cDestName"><div id="cDestResults" class="autocomplete-box"></div></div>
-                <div class="form-group"><label>Kelurahan / Desa *</label><input type="text" id="cVillage" placeholder="Cth: Gegerkalong"></div>
-                <div class="form-group"><label>Kode Pos *</label><input type="number" id="cZip" placeholder="Terisi otomatis..." readonly style="background: #111; color: #888;"></div>
+                <div class="form-group">
+                    <label>Alamat Lengkap (Nama Jalan, Gedung, No. Rumah) *</label>
+                    <input type="text" id="cStreet" placeholder="Cth: Jl. Sudirman No. 10">
+                </div>
+                
+                <div style="display: flex; gap: 10px;">
+                    <div class="form-group" style="flex:1;"><label>RT *</label><input type="number" id="cRT" placeholder="001"></div>
+                    <div class="form-group" style="flex:1;"><label>RW *</label><input type="number" id="cRW" placeholder="002"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Provinsi *</label>
+                    <input type="text" id="cProv" placeholder="Cth: Jawa Barat">
+                </div>
+
+                <div class="form-group">
+                    <label>Kota / Kabupaten *</label>
+                    <input type="text" id="cCity" placeholder="Cth: Kota Bandung">
+                </div>
+
+                <div class="form-group" style="position:relative;">
+                    <label>Kode Pos / Kecamatan *</label>
+                    <input type="text" id="cDestSearch" placeholder="Ketik Kecamatan / Kode Pos..." oninput="searchBiteshipDest(this.value)" autocomplete="off">
+                    <input type="hidden" id="cDestId">
+                    <input type="hidden" id="cDestName">
+                    <div id="cDestResults" class="autocomplete-box"></div>
+                </div>
+
+                <div class="form-group">
+                    <label>Kelurahan / Desa *</label>
+                    <input type="text" id="cVillage" placeholder="Cth: Gegerkalong">
+                </div>
+
+                <div class="form-group">
+                    <label>Kode Pos *</label>
+                    <input type="number" id="cZip" placeholder="Terisi otomatis..." readonly style="background: #111; color: #888;">
+                </div>
                 
                 <div style="margin-bottom: 20px;">
-                    <label style="display:flex; align-items:center; gap:8px; font-size:12px; color:#ccc; cursor:pointer;"><input type="checkbox" id="saveAddressCheck" checked style="width:16px; height:16px; accent-color:#f59e0b;"> Simpan alamat ini untuk pembelian selanjutnya</label>
+                    <label style="display:flex; align-items:center; gap:8px; font-size:12px; color:#ccc; cursor:pointer;">
+                        <input type="checkbox" id="saveAddressCheck" checked style="width:16px; height:16px; accent-color:#f59e0b;"> Simpan alamat ini untuk pembelian selanjutnya
+                    </label>
                 </div>
 
                 <button class="btn-main" onclick="calculateShipping()" style="margin-top: 10px; background:#f59e0b; color:#000;">PILIH PENGIRIMAN ➔</button>
@@ -496,15 +497,54 @@
             <div id="shippingOptionsArea" style="display:none;">
                 <p style="font-size: 12px; color: #aaa; margin-bottom: 15px; text-align:center;">Pilih Jasa Pengiriman</p>
                 <div id="courierListContainer"></div>
+                
                 <div style="margin-top:20px; padding-top:15px; border-top:1px solid #333;">
-                    <div style="display: flex; justify-content: space-between; font-size: 14px; margin-bottom:10px;"><span style="color:#aaa;">Subtotal Produk:</span><b style="color:#fff;" id="sumSubtotal">Rp 0</b></div>
-                    <div style="display: flex; justify-content: space-between; font-size: 14px; margin-bottom:15px;"><span style="color:#aaa;">Ongkos Kirim:</span><b style="color:#ef4444;" id="sumShipping">Rp 0</b></div>
-                    <div style="display: flex; justify-content: space-between; font-size: 18px; font-weight:bold;"><span style="color:#fff;">Grand Total:</span><b style="color:var(--primary);" id="sumGrandTotal">Rp 0</b></div>
+                    <div style="display: flex; justify-content: space-between; font-size: 14px; margin-bottom:10px;">
+                        <span style="color:#aaa;">Subtotal Produk:</span>
+                        <b style="color:#fff;" id="sumSubtotal">Rp 0</b>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-size: 14px; margin-bottom:15px;">
+                        <span style="color:#aaa;">Ongkos Kirim:</span>
+                        <b style="color:#ef4444;" id="sumShipping">Rp 0</b>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-size: 18px; font-weight:bold;">
+                        <span style="color:#fff;">Grand Total:</span>
+                        <b style="color:var(--primary);" id="sumGrandTotal">Rp 0</b>
+                    </div>
                 </div>
+
                 <button class="btn-main" onclick="goToPayment()" style="margin-top: 20px; background:#f59e0b; color:#000;">LANJUT PEMBAYARAN ➔</button>
             </div>
 
-            <div id="paymentArea" style="display:none;"></div>
+            <div id="paymentArea" style="display:none;">
+                <p style="font-size: 12px; color: #4ade80; margin-bottom: 15px; text-align:center;">🔒 Secured by Midtrans</p>
+                <div style="text-align:center; margin-bottom:20px;">
+                    <span style="font-size:12px; color:#888;">Total Pembayaran</span><br>
+                    <b style="font-size:24px; color:var(--primary);" id="payTotalDisplay">Rp 0</b>
+                </div>
+
+                <h3 style="font-size: 14px; margin-bottom: 15px; color: #fff; border-bottom:1px solid #333; padding-bottom:5px;">Pilih Metode Pembayaran</h3>
+                
+                <div class="payment-method-card" onclick="selectPaymentMethod(this)">
+                    <div><b style="font-size:13px; color:#fff;">QRIS</b><br><span style="font-size:11px; color:#888;">Gopay, ShopeePay, Dana, LinkAja</span></div>
+                    <span style="font-size:16px;">📱</span>
+                </div>
+                <div class="payment-method-card" onclick="selectPaymentMethod(this)">
+                    <div><b style="font-size:13px; color:#fff;">Virtual Account</b><br><span style="font-size:11px; color:#888;">BCA, Mandiri, BRI, BNI</span></div>
+                    <span style="font-size:16px;">🏦</span>
+                </div>
+                <div class="payment-method-card" onclick="selectPaymentMethod(this)">
+                    <div><b style="font-size:13px; color:#fff;">Minimarket</b><br><span style="font-size:11px; color:#888;">Alfamart, Indomaret</span></div>
+                    <span style="font-size:16px;">🏪</span>
+                </div>
+                
+                <button class="btn-main" onclick="processPaymentMidtrans()" style="margin-top: 20px; background:#3b82f6; color:#fff;">BAYAR SEKARANG ➔</button>
+
+            </div>
+
+            <div id="textInfoArea" style="display:none;" class="info-content"></div>
+
+            <div id="invoiceArea" style="display:none;"></div>
             
             <div id="historyArea" style="display:none;">
                 <div class="history-tabs" id="historyTabsContainer">
@@ -514,17 +554,6 @@
                     <button class="h-tab-btn" onclick="renderHistoryItems('SELESAI', this)">Selesai</button>
                 </div>
                 <div id="historyList"></div>
-            </div>
-
-            <div class="midtrans-trust-section">
-                <p>Dilindungi standar keamanan transaksi oleh Midtrans:</p>
-                <div class="trust-grid">
-                    <img src="https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/1/10/Otoritas_Jasa_Keuangan_Logo.png/512px-Otoritas_Jasa_Keuangan_Logo.png" alt="OJK">
-                    <img src="https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/c/cd/PCI_DSS_Logo.svg/512px-PCI_DSS_Logo.svg.png" alt="PCI DSS">
-                    <img src="https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/8/87/SSL_Secured.svg/512px-SSL_Secured.svg.png" alt="SSL Secure">
-                    <img src="https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/3/3c/Verified_by_Visa_logo.svg/512px-Verified_by_Visa_logo.svg.png" alt="Verified by Visa">
-                    <img src="https://wsrv.nl/?url=upload.wikimedia.org/wikipedia/commons/thumb/f/fb/Mastercard_SecureCode_logo.svg/512px-Mastercard_SecureCode_logo.svg.png" alt="Mastercard SecureCode">
-                </div>
             </div>
 
             <div id="logoutConfirmArea" style="display:none; text-align:center;"><h3 style="font-size: 16px; margin-bottom: 10px;">Sign Out of Account?</h3><div style="display:flex; gap:10px;"><button class="btn-main" style="background:#333; color:white;" onclick="closeModal()">CANCEL</button><button class="btn-main" style="background:#ef4444;" onclick="executeLogout()">YES, SIGN OUT</button></div></div>
@@ -686,6 +715,7 @@
             sec.style.display = 'block';
             let features = Object.keys(data).map(k => data[k]).sort((a,b) => a.timestamp - b.timestamp).slice(0, 3);
             
+            // 🔥 RADAR AUTO-SCROLL PAS KLIK BANNER PROMO 🔥
             container.innerHTML = features.map(f => `<div class="f-card" onclick="filterCategory('${f.target}')"><img src="${f.image}"><div class="f-overlay"><span class="f-title">${f.title}</span></div></div>`).join('');
         });
 
@@ -756,11 +786,13 @@
                 setTimeout(() => { openCart(); }, 500); 
             }
             
+            // 🔥 RADAR CHECKOUT DARI PRODUCT.HTML 🔥
             const checkoutQuery = urlParams.get('checkout');
             if(checkoutQuery === 'true') {
                 setTimeout(() => { goToShipping(); }, 500); 
             }
 
+            // 🔥 RADAR URL SHARE PRODUK (biar pas dishare di WA, tetep bisa ngebuka bajunya) 🔥
             const itemId = urlParams.get('item');
             if(itemId && !isSharedItemOpened) {
                 isSharedItemOpened = true; 
@@ -768,6 +800,7 @@
             }
         });
 
+        // 🔥 FITUR BARU: AUTO-SCROLL PAS KLIK KATEGORI 🔥
         function filterCategory(cat) { 
             activeCategory = cat; 
             let titleText = cat === 'ALL' ? 'LATEST DROP' : cat;
@@ -782,6 +815,7 @@
             });
             renderProducts(); 
             
+            // Mulus meluncur ke bawah
             setTimeout(() => {
                 const el = document.querySelector('.sort-bar');
                 if (el) {
@@ -791,14 +825,16 @@
             }, 100);
         }
 
+        // 🔥 FITUR BARU: AUTO-SCROLL PAS KETIK LALU PENCET ENTER 🔥
         function searchProducts(event) {
             const keyword = document.getElementById('searchInput').value.toLowerCase(); activeCategory = 'ALL'; 
             document.querySelectorAll('.icon-item').forEach(el => el.classList.remove('active')); 
             if(document.querySelector('.icon-item')) document.querySelector('.icon-item').classList.add('active'); 
             renderProducts();
             
+            // Deteksi Enter dari Keyboard HP
             if (event && event.key === 'Enter') {
-                document.getElementById('searchInput').blur(); 
+                document.getElementById('searchInput').blur(); // Nutup keyboard otomatis
                 setTimeout(() => {
                     const el = document.querySelector('.sort-bar');
                     if (el) {
@@ -809,6 +845,7 @@
             }
         }
 
+        // 🔥 FIX KLIK BAJU: GAK PAKE POPUP LAGI, TAPI PINDAH KE PRODUCT.HTML 🔥
         function createProductCard(p) {
             let imgThumb = p.images && p.images.length > 0 ? p.images[0] : (p.image || 'https://via.placeholder.com/300');
             let hoverHtml = p.images && p.images.length > 1 ? `<img src="${p.images[1]}" class="img-hover" style="${(!p.stock || p.stock <= 0) ? 'filter: grayscale(100%);' : ''}">` : '';
@@ -816,6 +853,7 @@
             let priceHtml = p.originalPrice ? `<span class="price-strike">Rp ${p.originalPrice.toLocaleString('id-ID')}</span>Rp ${p.price.toLocaleString('id-ID')}` : `Rp ${p.price.toLocaleString('id-ID')}`;
             let displayCat = p.category ? p.category.split(',')[0] : '';
             
+            // Perhatikan tag <a> di bawah, ini kunci biar bisa pindah halaman dengan sempurna!
             return `<a href="product.html?id=${p.id}" class="card" style="text-decoration:none;"><div class="img-box"><div class="badge" style="background: ${isHabis ? '#ef4444' : 'var(--primary)'}; color: ${isHabis ? 'white' : 'black'}; z-index: 3;">${isHabis ? 'SOLD OUT' : 'ORIGINAL'}</div><img src="${imgThumb}" style="${isHabis ? 'filter: grayscale(100%); opacity: 0.5;' : ''}">${hoverHtml}</div><div class="info"><div class="cat">${displayCat}</div><div class="name">${p.name}</div><div class="price">${priceHtml}</div></div></a>`;
         }
 
@@ -856,7 +894,7 @@
             window.history.replaceState({}, '', window.location.pathname); 
         }
 
-        function hideAllAreas() { ['cartArea', 'shippingArea', 'shippingOptionsArea', 'paymentArea', 'invoiceArea', 'historyArea', 'logoutConfirmArea', 'textInfoArea', 'authArea'].forEach(id => document.getElementById(id).style.display = 'none'); }
+        function hideAllAreas() { ['previewArea', 'cartArea', 'shippingArea', 'shippingOptionsArea', 'paymentArea', 'invoiceArea', 'historyArea', 'logoutConfirmArea', 'textInfoArea', 'authArea'].forEach(id => document.getElementById(id).style.display = 'none'); }
 
         function openInfoModal(type) {
             hideAllAreas();
@@ -884,6 +922,11 @@
             infoBox.innerHTML = content;
             infoBox.style.display = 'block';
             document.getElementById('mainModal').style.display = 'flex';
+        }
+
+        // FUNGSI INI DIBIARKAN KOSONG TAPI TETEP ADA BIAR KODE LAMA LU NGGAK ERROR
+        function openPreview(id) {
+            // Sudah diganti pakai link href di createProductCard
         }
 
         function updateCartCount() { document.getElementById('cartCount').innerText = cart.reduce((sum, item) => sum + item.qty, 0); }
@@ -1441,7 +1484,7 @@
             }
         }
 
-        function downloadInvoice(invNo) {
+                function downloadInvoice(invNo) {
             const order = globalUserOrders.find(o => o.invoice_no === invNo);
             if(!order) return showToast("Data pesanan tidak ditemukan", "error");
 
@@ -1558,118 +1601,7 @@
             });
         }
 
-        async function openReviewModal() { 
-            if(!currentUser) {
-                showToast("Silakan Login terlebih dahulu di halaman Home (Menu Kiri Atas) untuk memberi ulasan.", "error");
-                return;
-            }
 
-            const btn = document.querySelector('.btn-write-review');
-            let originalText = btn.innerText;
-            btn.innerText = "MENGECEK DATA... ⏳";
-            btn.disabled = true;
-
-            try {
-                const revSnap = await db.ref('reviews/' + productId).once('value');
-                if (revSnap.exists()) {
-                    const revs = revSnap.val();
-                    let alreadyReviewed = Object.values(revs).some(r => r.email === currentUser.email);
-                    if (alreadyReviewed) {
-                        btn.innerText = originalText;
-                        btn.disabled = false;
-                        return showToast("❌ Anda sudah pernah memberikan ulasan untuk produk ini.", "warning");
-                    }
-                }
-
-                const ordSnap = await db.ref('orders').orderByChild('customer/email').equalTo(currentUser.email).once('value');
-                let hasPurchased = false;
-                
-                if (ordSnap.exists()) {
-                    const orders = ordSnap.val();
-                    for (let key in orders) {
-                        let o = orders[key];
-                        if (o.status === 'SELESAI') {
-                            let boughtItem = o.items.find(i => i.id === productId);
-                            if (boughtItem) {
-                                hasPurchased = true;
-                                break;
-                            }
-                        }
-                    }
-                }
-
-                btn.innerText = originalText;
-                btn.disabled = false;
-
-                if (!hasPurchased) {
-                    return showToast("❌ Ulasan hanya bisa diberikan oleh pembeli yang telah menyelesaikan pesanan ini.", "error");
-                }
-
-                setRating(5); 
-                document.getElementById('rName').value = currentUser.displayName || currentUser.email.split('@')[0];
-                document.getElementById('reviewModal').style.display='flex'; 
-            } catch (e) {
-                btn.innerText = originalText;
-                btn.disabled = false;
-                showToast("Terjadi kesalahan sistem: " + e.message, "error");
-            }
-        }
-
-        function setRating(val) { 
-            selectedRating = val; 
-            const stars = document.getElementById('starInput').children; 
-            for(let i=0; i<5; i++) { if(i<val) stars[i].classList.add('active'); else stars[i].classList.remove('active'); } 
-        }
-
-        function submitReview() {
-            if(!currentUser) return showToast("Sesi login berakhir, silakan muat ulang halaman.", "error");
-            
-            let nama = document.getElementById('rName').value.trim();
-            let teks = document.getElementById('rText').value.trim();
-            if(!teks) return alert("Komentar ulasan tidak boleh kosong!");
-            
-            const btnSub = document.getElementById('btnSubmitReview');
-            btnSub.innerText = "MENGIRIM... ⏳";
-            btnSub.disabled = true;
-
-            db.ref('reviews/' + productId).push({
-                name: nama, 
-                email: currentUser.email,
-                rating: selectedRating, 
-                text: teks, 
-                timestamp: Date.now()
-            }).then(() => {
-                document.getElementById('reviewModal').style.display='none';
-                showToast("Terima kasih atas ulasannya! ⭐", "success");
-                btnSub.innerText = "KIRIM ULASAN";
-                btnSub.disabled = false;
-                loadReviews();
-            }).catch(e => {
-                showToast("Gagal mengirim: " + e.message, "error");
-                btnSub.innerText = "KIRIM ULASAN";
-                btnSub.disabled = false;
-            });
-        }
-
-        function loadReviews() {
-            db.ref('reviews/' + productId).on('value', snap => {
-                const data = snap.val(); const list = document.getElementById('reviewsList');
-                if(!data) return;
-                
-                let revs = Object.keys(data).map(k => data[k]).sort((a,b) => b.timestamp - a.timestamp);
-                let totalBintang = revs.reduce((sum, r) => sum + r.rating, 0);
-                let rataRata = (totalBintang / revs.length).toFixed(1);
-                
-                let starDisplay = '★'.repeat(Math.round(rataRata)) + '☆'.repeat(5 - Math.round(rataRata));
-                document.getElementById('topRatingSummary').innerHTML = `${starDisplay} <span>(${rataRata} / 5 dari ${revs.length} ulasan)</span>`;
-
-                list.innerHTML = revs.map(r => {
-                    let rStars = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
-                    let d = new Date(r.timestamp).toLocaleDateString('id-ID');
-                    return `<div class="review-card"><div class="r-stars">${rStars}</div><div class="r-user">${r.name} <span style="font-size:9px; color:#4ade80; font-weight:normal; border:1px solid #4ade80; padding:2px 4px; border-radius:3px; margin-left:5px;">✓ Pembeli Terverifikasi</span></div><div class="r-date">${d}</div><div class="r-text">${r.text}</div></div>`;
-                }).join('');
-            });
-        }
     </script>
 </body>
 </html>
