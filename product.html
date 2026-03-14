@@ -90,7 +90,7 @@
         .star-input { display: flex; gap: 10px; font-size: 24px; color: #444; cursor: pointer; justify-content: center; margin-bottom: 20px;}
         .star-input span.active { color: #f59e0b; }
 
-        .toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 99999; display: flex; flex-direction: column; gap: 10px; pointer-events: none; width: 90%; max-width: 400px;}
+        .toast-container { position: fixed; top: 20px; left: 50%; transform: translateX(-50%); z-index: 99999; display: flex; flex-direction: column; gap: 10px; pointer-events: none;}
         .modern-toast { background: var(--surface); border: 1px solid var(--border); color: white; padding: 16px 20px; border-radius: 12px; font-size: 13px; font-weight: bold; box-shadow: 0 10px 40px rgba(0,0,0,0.8); animation: toastSlideDown 0.4s forwards;}
         .modern-toast.error { border-left: 4px solid #ef4444; }
         .modern-toast.warning { border-left: 4px solid #f59e0b; }
@@ -146,7 +146,11 @@
         </div>
 
         <div class="info-col">
-            <h1 class="p-title" id="pName">Product Name</h1>
+            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom: 10px;">
+                <h1 class="p-title" id="pName" style="margin-bottom:0;">Product Name</h1>
+                <button onclick="shareProduct()" style="background:#111; border:1px solid #333; color:white; border-radius:50%; width:40px; height:40px; font-size:18px; cursor:pointer; display:flex; justify-content:center; align-items:center; flex-shrink:0; transition:0.3s;" title="Bagikan Produk">📤</button>
+            </div>
+
             <div class="rating-summary" id="topRatingSummary">⭐⭐⭐⭐⭐ <span>(Belum ada ulasan)</span></div>
             <div class="p-price" id="pPriceHtml">Rp 0</div>
             
@@ -255,21 +259,14 @@
                 <div style="display: flex; gap: 10px;"><div class="form-group" style="flex:1;"><label>RT *</label><input type="number" id="cRT" placeholder="001"></div><div class="form-group" style="flex:1;"><label>RW *</label><input type="number" id="cRW" placeholder="002"></div></div>
                 <div class="form-group"><label>Provinsi *</label><input type="text" id="cProv" placeholder="Cth: Jawa Barat"></div>
                 <div class="form-group"><label>Kota / Kabupaten *</label><input type="text" id="cCity" placeholder="Cth: Kota Bandung"></div>
-                <div class="form-group" style="position:relative;">
-                    <label>Kode Pos / Kecamatan *</label>
-                    <input type="text" id="cDestSearch" placeholder="Ketik Kecamatan / Kode Pos..." oninput="searchBiteshipDest(this.value)" autocomplete="off">
-                    <input type="hidden" id="cDestId">
-                    <input type="hidden" id="cDestName">
-                    <div id="cDestResults" class="autocomplete-box"></div>
-                </div>
+                <div class="form-group" style="position:relative;"><label>Kode Pos / Kecamatan *</label><input type="text" id="cDestSearch" placeholder="Ketik Kecamatan / Kode Pos..." oninput="searchBiteshipDest(this.value)" autocomplete="off"><input type="hidden" id="cDestId"><input type="hidden" id="cDestName"><div id="cDestResults" class="autocomplete-box"></div></div>
                 <div class="form-group"><label>Kelurahan / Desa *</label><input type="text" id="cVillage" placeholder="Cth: Gegerkalong"></div>
                 <div class="form-group"><label>Kode Pos *</label><input type="number" id="cZip" placeholder="Terisi otomatis..." readonly style="background: #111; color: #888;"></div>
                 
                 <div style="margin-bottom: 20px;">
-                    <label style="display:flex; align-items:center; gap:8px; font-size:12px; color:#ccc; cursor:pointer;">
-                        <input type="checkbox" id="saveAddressCheck" checked style="width:16px; height:16px; accent-color:#f59e0b;"> Simpan alamat ini
-                    </label>
+                    <label style="display:flex; align-items:center; gap:8px; font-size:12px; color:#ccc; cursor:pointer;"><input type="checkbox" id="saveAddressCheck" checked style="width:16px; height:16px; accent-color:#f59e0b;"> Simpan alamat ini untuk pembelian selanjutnya</label>
                 </div>
+
                 <button class="btn-main" onclick="calculateShipping()" style="margin-top: 10px; background:#f59e0b; color:#000;">PILIH PENGIRIMAN ➔</button>
             </div>
 
@@ -295,6 +292,8 @@
                 </div>
                 <div id="historyList"></div>
             </div>
+
+            <div id="logoutConfirmArea" style="display:none; text-align:center;"><h3 style="font-size: 16px; margin-bottom: 10px;">Sign Out of Account?</h3><div style="display:flex; gap:10px;"><button class="btn-main" style="background:#333; color:white;" onclick="closeModal()">CANCEL</button><button class="btn-main" style="background:#ef4444;" onclick="executeLogout()">YES, SIGN OUT</button></div></div>
         </div>
     </div>
     
@@ -344,7 +343,6 @@
         let searchDestTimeout;
         const BITESHIP_KEY = 'biteship_live.eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiR2Fua2V0aSIsInVzZXJJZCI6IjY5YWVlODYzM2NjODBhMWUzMjE3ZGJkYyIsImlhdCI6MTc3MzA3OTg3MX0.ot-KA-1HmE0xMsc7OhHeQBaDGo7KrDKU1tuS4bk5fCo';
 
-        // 🔥 INI FUNGSI YANG KEMAREN ILANG, SEKARANG UDAH ADA! 🔥
         function updateCartCount() { 
             document.getElementById('cartCount').innerText = cart.reduce((sum, item) => sum + item.qty, 0); 
         }
@@ -368,6 +366,25 @@
                 loadReviews();
                 loadRecommendations();
             });
+        }
+
+        // 🔥 FUNGSI SHARE PRODUK 🔥
+        function shareProduct() {
+            if(!currentProduct) return;
+            const shareUrl = window.location.href; 
+            const shareText = `GANKETI | ${currentProduct.name}\nHarga: Rp ${currentProduct.price.toLocaleString('id-ID')}\n\nCek selengkapnya di sini: `;
+
+            if (navigator.share) {
+                navigator.share({
+                    title: currentProduct.name,
+                    text: shareText,
+                    url: shareUrl
+                }).catch(console.error);
+            } else {
+                navigator.clipboard.writeText(shareText + shareUrl).then(() => {
+                    showToast("Link produk berhasil disalin! 📋");
+                });
+            }
         }
 
         function renderProductPage() {
@@ -454,10 +471,10 @@
             else { content.style.display = 'block'; btnSpan.innerText = '−'; }
         }
 
-        function showToast(msg, type = 'info') {
+        function showToast(msg) {
             const cont = document.getElementById('toast-container');
-            const toast = document.createElement('div'); toast.className = `modern-toast ${type}`; toast.innerText = msg;
-            cont.appendChild(toast); setTimeout(() => { toast.remove(); }, 3500);
+            const toast = document.createElement('div'); toast.className = 'modern-toast'; toast.innerText = msg;
+            cont.appendChild(toast); setTimeout(() => { toast.remove(); }, 3000);
         }
 
         function toggleWishlist() {
@@ -467,7 +484,7 @@
                 btn.classList.remove('saved'); btn.innerText = '♡'; showToast("Dihapus dari Wishlist");
             } else {
                 wishlist.push(productId);
-                btn.classList.add('saved'); btn.innerText = '❤️'; showToast("Disimpan ke Wishlist!", "success");
+                btn.classList.add('saved'); btn.innerText = '❤️'; showToast("Disimpan ke Wishlist!");
             }
             localStorage.setItem('ganketiWishlist', JSON.stringify(wishlist));
         }
@@ -480,14 +497,14 @@
             let minQ = parseInt(document.getElementById('pQty').min);
             let maxQ = parseInt(document.getElementById('pQty').max);
 
-            if (isNaN(inputQty) || inputQty < minQ) return showToast(`Minimal order: ${minQ}`, "warning");
-            if (inputQty > maxQ) return showToast(`Maksimal order/stok: ${maxQ}`, "warning");
+            if (isNaN(inputQty) || inputQty < minQ) return showToast(`Minimal order: ${minQ}`);
+            if (inputQty > maxQ) return showToast(`Maksimal order/stok: ${maxQ}`);
 
             const cartItemId = productId + '-' + selectedColor + '-' + selectedSize;
             const existing = cart.find(c => c.cartItemId === cartItemId);
             
             if(existing) { 
-                if(existing.qty + inputQty > maxQ) return showToast("Melebihi batas stok!", "warning");
+                if(existing.qty + inputQty > maxQ) return showToast("Melebihi batas stok!");
                 existing.qty += inputQty; 
             } else { 
                 let dName = selectedColor === 'Default' ? `${currentProduct.name} (${selectedSize})` : `${currentProduct.name} (${selectedColor} - ${selectedSize})`;
@@ -500,7 +517,7 @@
             if(isBuyNow) {
                 goToShipping(); 
             } else {
-                showToast("Berhasil ditambahkan ke Keranjang! 🛒", "success");
+                showToast("Berhasil ditambahkan ke Keranjang! 🛒");
             }
         }
 
@@ -508,6 +525,7 @@
             db.ref('products').once('value').then(snap => {
                 let data = snap.val(); if(!data) return;
                 let allProducts = Object.keys(data).map(k => ({id:k, ...data[k]}));
+                
                 allProducts = allProducts.filter(p => p.id !== productId);
                 allProducts = allProducts.sort(() => 0.5 - Math.random()).slice(0, 4);
                 
@@ -516,17 +534,15 @@
                     grid.innerHTML = '<p style="color:#888; text-align:center; width:100%;">Tidak ada rekomendasi lainnya.</p>';
                     return;
                 }
+
                 grid.innerHTML = allProducts.map(p => {
                     let img = p.images ? p.images[0] : (p.image || 'https://via.placeholder.com/300');
                     let priceHtml = p.originalPrice ? `<span style="font-size:11px; text-decoration:line-through; color:#ef4444;">Rp ${p.originalPrice.toLocaleString('id-ID')}</span> <br>Rp ${p.price.toLocaleString('id-ID')}` : `Rp ${p.price.toLocaleString('id-ID')}`;
-                    return `<a href="product.html?id=${p.id}" class="card" style="text-decoration:none;"><div class="img-box"><img src="${img}"></div><div class="info"><div class="name">${p.name}</div><div class="price">${priceHtml}</div></div></a>`;
+                    return `<div class="card" onclick="window.location.href='product.html?id=${p.id}'"><div class="img-box"><img src="${img}"></div><div class="info"><div class="name">${p.name}</div><div class="price">${priceHtml}</div></div></div>`;
                 }).join('');
             });
         }
 
-        // ==========================================
-        // 🔥 MESIN KASIR CHECKOUT 🔥
-        // ==========================================
         function closeModal() { document.getElementById('mainModal').style.display = 'none'; }
         
         function hideAllAreas() { 
@@ -576,40 +592,48 @@
 
         function loginWithEmail() {
             let email = document.getElementById('authLogEmail').value.trim(); let pass = document.getElementById('authLogPass').value;
-            if(!email || !pass) return showToast("Isi email dan password!", "error");
+            if(!email || !pass) return showToast("Isi email dan password!");
             document.querySelector('#formLogin .btn-main').innerText = "LOADING...";
             auth.signInWithEmailAndPassword(email, pass).then(res => {
-                document.querySelector('#formLogin .btn-main').innerText = "LOGIN"; showToast(`Welcome back!`, 'success');
-                if(isCheckoutPending) { isCheckoutPending = false; goToShipping(); } else { closeModal(); }
-            }).catch(err => { document.querySelector('#formLogin .btn-main').innerText = "LOGIN"; showToast("Login gagal: " + err.message, "error"); });
+                document.querySelector('#formLogin .btn-main').innerText = "LOGIN";
+                closeModal(); showToast(`Welcome back!`);
+                if(isCheckoutPending) { isCheckoutPending = false; goToShipping(); }
+            }).catch(err => {
+                document.querySelector('#formLogin .btn-main').innerText = "LOGIN";
+                showToast("Login gagal: " + err.message);
+            });
         }
 
         function registerWithEmail() {
             let name = document.getElementById('authRegName').value.trim(); let email = document.getElementById('authRegEmail').value.trim(); let pass = document.getElementById('authRegPass').value;
-            if(!name || !email || !pass) return showToast("Lengkapi semua data!", "error");
-            if(pass.length < 6) return showToast("Password minimal 6 karakter!", "error");
+            if(!name || !email || !pass) return showToast("Lengkapi semua data!");
+            if(pass.length < 6) return showToast("Password minimal 6 karakter!");
             document.querySelector('#formRegister .btn-main').innerText = "LOADING...";
             auth.createUserWithEmailAndPassword(email, pass).then(res => {
                 res.user.updateProfile({displayName: name}).then(() => {
-                    document.querySelector('#formRegister .btn-main').innerText = "BUAT AKUN"; showToast(`Akun berhasil dibuat!`, 'success');
-                    if(isCheckoutPending) { isCheckoutPending = false; goToShipping(); } else { closeModal(); }
+                    document.querySelector('#formRegister .btn-main').innerText = "BUAT AKUN";
+                    closeModal(); showToast(`Akun berhasil dibuat!`);
+                    if(isCheckoutPending) { isCheckoutPending = false; goToShipping(); }
                 });
-            }).catch(err => { document.querySelector('#formRegister .btn-main').innerText = "BUAT AKUN"; showToast("Register gagal: " + err.message, "error"); });
+            }).catch(err => {
+                document.querySelector('#formRegister .btn-main').innerText = "BUAT AKUN";
+                showToast("Register gagal: " + err.message);
+            });
         }
 
         function loginWithGoogle() {
             const provider = new firebase.auth.GoogleAuthProvider(); 
             auth.signInWithPopup(provider).then((result) => { 
-                showToast(`Welcome, ${result.user.displayName}!`, 'success'); 
-                if(isCheckoutPending) { isCheckoutPending = false; goToShipping(); } else { closeModal(); }
-            }).catch(err => { showToast("Login Failed: " + err.message, 'error'); });
+                closeModal(); showToast(`Welcome, ${result.user.displayName}!`); 
+                if(isCheckoutPending) { isCheckoutPending = false; goToShipping(); }
+            }).catch(err => { showToast("Login Failed: " + err.message); });
         }
 
         function goToShipping() { 
-            if(cart.length === 0) { showToast("Keranjang kosong!", 'warning'); return; }
+            if(cart.length === 0) { showToast("Keranjang kosong!"); return; }
             if(!currentUser) { 
                 isCheckoutPending = true;
-                showToast("Silakan Login atau Daftar dulu untuk Checkout!", 'warning'); 
+                showToast("Silakan Login atau Daftar dulu untuk Checkout!"); 
                 openAuthModal(); return; 
             }
             hideAllAreas(); document.getElementById('modalTitle').innerText = "SHIPPING INFO"; 
@@ -668,7 +692,7 @@
             document.getElementById('cProv').value = adr.prov || ''; document.getElementById('cCity').value = adr.city || ''; document.getElementById('cVillage').value = adr.village || '';
             document.getElementById('cDestSearch').value = adr.destSearch || (adr.destName ? adr.destName.split(',')[0].trim() : ''); 
             document.getElementById('cDestId').value = adr.destId || ''; document.getElementById('cDestName').value = adr.destName || ''; document.getElementById('cZip').value = adr.zip || '';
-            showToast("Alamat otomatis terisi!", "success");
+            showToast("Alamat otomatis terisi!");
         }
 
         function clearAddressForm() { ['cName', 'cPhone', 'cStreet', 'cRT', 'cRW', 'cProv', 'cCity', 'cVillage', 'cDestSearch', 'cDestId', 'cDestName', 'cZip'].forEach(id => document.getElementById(id).value = ''); }
@@ -679,7 +703,7 @@
             const cProv = document.getElementById('cProv').value.trim(); const cCity = document.getElementById('cCity').value.trim(); const cVillage = document.getElementById('cVillage').value.trim(); const cZip = document.getElementById('cZip').value.trim();
             const destSearch = document.getElementById('cDestSearch').value.trim(); const destId = document.getElementById('cDestId').value; const destName = document.getElementById('cDestName').value;
 
-            if(!cName || !cPhone || !cStreet || !cRT || !cRW || !cProv || !cCity || !cVillage || !cZip || !destId || !destSearch) { showToast("Lengkapi data alamat dan pilih KECAMATAN dari dropdown!", 'error'); return; }
+            if(!cName || !cPhone || !cStreet || !cRT || !cRW || !cProv || !cCity || !cVillage || !cZip || !destId || !destSearch) { showToast("Lengkapi data alamat dan pilih KECAMATAN dari dropdown!"); return; }
             
             const cAddress = `${cStreet}, RT ${cRT}/RW ${cRW}, Kel. ${cVillage}, Kec. ${destSearch}, ${cCity}, Prov. ${cProv}, ${cZip}`;
             let subTotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
@@ -797,25 +821,24 @@
                 if(midtransData.token) {
                     await newOrderRef.set({ invoice_no: invoiceNumber, date: orderDate, customer: pendingOrderData.customer, items: pendingOrderData.items, shippingCost: pendingOrderData.shippingCost, courier: pendingOrderData.courier, total: pendingOrderData.total, status: "UNPAID", payment_token: midtransData.token, timestamp: Date.now() });
                     
-                    // 🔥 INI FUNGSI YANG BIKIN ERROR TADI, SEKARANG UDAH AMAN! 🔥
-                    cart = []; localStorage.setItem('ganketiCart', JSON.stringify(cart)); updateCartCount(); 
+                    cart = []; localStorage.setItem('ganketiCart', JSON.stringify(cart)); updateCartCount();
                     
                     window.snap.pay(midtransData.token, {
                         onSuccess: function(result){
                             db.ref('orders/' + firebaseOrderId).update({ status: 'PAID' });
-                            showToast("Pembayaran Berhasil! ✅", "success");
+                            showToast("Pembayaran Berhasil! ✅");
                             setTimeout(() => { window.location.href = 'index.html'; }, 1500); 
                         },
                         onPending: function(result){
-                            showToast("Menunggu Pembayaran (Pending) ⏳", "info");
+                            showToast("Menunggu Pembayaran (Pending) ⏳");
                             setTimeout(() => { window.location.href = 'index.html'; }, 1500); 
                         },
                         onError: function(result){
-                            showToast("Pembayaran Gagal ❌", "error");
+                            showToast("Pembayaran Gagal ❌");
                             if(btn) { btn.disabled = false; btn.innerText = "LANJUT KE PEMBAYARAN ➔"; }
                         },
                         onClose: function(){
-                            showToast("Pembayaran ditunda. Cek di Track Order.", "warning");
+                            showToast("Pembayaran ditunda. Cek di Track Order.");
                             setTimeout(() => { window.location.href = 'index.html'; }, 1500);
                         }
                     });
@@ -829,12 +852,9 @@
             }
         }
 
-        // ==========================================
-        // 🔥 LOGIKA VALIDASI KEAMANAN ULASAN KETAT 🔥
-        // ==========================================
         async function openReviewModal() { 
             if(!currentUser) {
-                showToast("Silakan Login terlebih dahulu di halaman Home (Menu Kiri Atas) untuk memberi ulasan.", "error");
+                showToast("Silakan Login terlebih dahulu di halaman Home (Menu Kiri Atas) untuk memberi ulasan.");
                 return;
             }
 
@@ -849,8 +869,9 @@
                     const revs = revSnap.val();
                     let alreadyReviewed = Object.values(revs).some(r => r.email === currentUser.email);
                     if (alreadyReviewed) {
-                        btn.innerText = originalText; btn.disabled = false;
-                        return showToast("❌ Anda sudah pernah memberikan ulasan untuk produk ini.", "warning");
+                        btn.innerText = originalText;
+                        btn.disabled = false;
+                        return showToast("❌ Anda sudah pernah memberikan ulasan untuk produk ini.");
                     }
                 }
 
@@ -863,22 +884,28 @@
                         let o = orders[key];
                         if (o.status === 'SELESAI') {
                             let boughtItem = o.items.find(i => i.id === productId);
-                            if (boughtItem) { hasPurchased = true; break; }
+                            if (boughtItem) {
+                                hasPurchased = true;
+                                break;
+                            }
                         }
                     }
                 }
 
-                btn.innerText = originalText; btn.disabled = false;
+                btn.innerText = originalText;
+                btn.disabled = false;
+
                 if (!hasPurchased) {
-                    return showToast("❌ Ulasan hanya bisa diberikan oleh pembeli yang telah menyelesaikan pesanan ini.", "error");
+                    return showToast("❌ Ulasan hanya bisa diberikan oleh pembeli yang telah menyelesaikan pesanan ini.");
                 }
 
                 setRating(5); 
                 document.getElementById('rName').value = currentUser.displayName || currentUser.email.split('@')[0];
                 document.getElementById('reviewModal').style.display='flex'; 
             } catch (e) {
-                btn.innerText = originalText; btn.disabled = false;
-                showToast("Terjadi kesalahan sistem: " + e.message, "error");
+                btn.innerText = originalText;
+                btn.disabled = false;
+                showToast("Terjadi kesalahan sistem: " + e.message);
             }
         }
 
@@ -889,18 +916,32 @@
         }
 
         function submitReview() {
-            if(!currentUser) return showToast("Sesi login berakhir, silakan muat ulang halaman.", "error");
-            let nama = document.getElementById('rName').value.trim(); let teks = document.getElementById('rText').value.trim();
+            if(!currentUser) return showToast("Sesi login berakhir, silakan muat ulang halaman.");
+            
+            let nama = document.getElementById('rName').value.trim();
+            let teks = document.getElementById('rText').value.trim();
             if(!teks) return alert("Komentar ulasan tidak boleh kosong!");
             
             const btnSub = document.getElementById('btnSubmitReview');
-            btnSub.innerText = "MENGIRIM... ⏳"; btnSub.disabled = true;
+            btnSub.innerText = "MENGIRIM... ⏳";
+            btnSub.disabled = true;
 
-            db.ref('reviews/' + productId).push({ name: nama, email: currentUser.email, rating: selectedRating, text: teks, timestamp: Date.now() }).then(() => {
-                document.getElementById('reviewModal').style.display='none'; showToast("Terima kasih atas ulasannya! ⭐", "success");
-                btnSub.innerText = "KIRIM ULASAN"; btnSub.disabled = false; loadReviews();
+            db.ref('reviews/' + productId).push({
+                name: nama, 
+                email: currentUser.email,
+                rating: selectedRating, 
+                text: teks, 
+                timestamp: Date.now()
+            }).then(() => {
+                document.getElementById('reviewModal').style.display='none';
+                showToast("Terima kasih atas ulasannya! ⭐");
+                btnSub.innerText = "KIRIM ULASAN";
+                btnSub.disabled = false;
+                loadReviews();
             }).catch(e => {
-                showToast("Gagal mengirim: " + e.message, "error"); btnSub.innerText = "KIRIM ULASAN"; btnSub.disabled = false;
+                showToast("Gagal mengirim: " + e.message);
+                btnSub.innerText = "KIRIM ULASAN";
+                btnSub.disabled = false;
             });
         }
 
@@ -908,12 +949,17 @@
             db.ref('reviews/' + productId).on('value', snap => {
                 const data = snap.val(); const list = document.getElementById('reviewsList');
                 if(!data) return;
+                
                 let revs = Object.keys(data).map(k => data[k]).sort((a,b) => b.timestamp - a.timestamp);
-                let totalBintang = revs.reduce((sum, r) => sum + r.rating, 0); let rataRata = (totalBintang / revs.length).toFixed(1);
+                let totalBintang = revs.reduce((sum, r) => sum + r.rating, 0);
+                let rataRata = (totalBintang / revs.length).toFixed(1);
+                
                 let starDisplay = '★'.repeat(Math.round(rataRata)) + '☆'.repeat(5 - Math.round(rataRata));
                 document.getElementById('topRatingSummary').innerHTML = `${starDisplay} <span>(${rataRata} / 5 dari ${revs.length} ulasan)</span>`;
+
                 list.innerHTML = revs.map(r => {
-                    let rStars = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating); let d = new Date(r.timestamp).toLocaleDateString('id-ID');
+                    let rStars = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
+                    let d = new Date(r.timestamp).toLocaleDateString('id-ID');
                     return `<div class="review-card"><div class="r-stars">${rStars}</div><div class="r-user">${r.name} <span style="font-size:9px; color:#4ade80; font-weight:normal; border:1px solid #4ade80; padding:2px 4px; border-radius:3px; margin-left:5px;">✓ Pembeli Terverifikasi</span></div><div class="r-date">${d}</div><div class="r-text">${r.text}</div></div>`;
                 }).join('');
             });
