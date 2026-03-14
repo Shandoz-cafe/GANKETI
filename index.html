@@ -949,16 +949,13 @@
         }
         function removeItem(index) { cart.splice(index, 1); localStorage.setItem('ganketiCart', JSON.stringify(cart)); updateCartCount(); openCart(); }
 
-        let searchDestTimeout;
+                let searchDestTimeout;
         function searchBiteshipDest(query) {
             const resultBox = document.getElementById('cDestResults');
             if(query.length < 3) { resultBox.style.display = 'none'; return; }
             
-            let prov = document.getElementById('cProv').value.trim();
-            let city = document.getElementById('cCity').value.trim();
-            let fullQuery = query;
-            if(city) fullQuery = city + ' ' + fullQuery;
-            if(prov) fullQuery = prov + ' ' + fullQuery;
+            // 🔥 FIX: Nggak usah digabung sama provinsi/kota lagi, langsung pake apa yang diketik user! 🔥
+            let fullQuery = query.trim(); 
             
             clearTimeout(searchDestTimeout);
             searchDestTimeout = setTimeout(async () => {
@@ -966,8 +963,12 @@
                 resultBox.style.display = 'block';
                 try {
                     const res = await fetch(`https://api.biteship.com/v1/maps/areas?countries=ID&input=${encodeURIComponent(fullQuery)}&type=single`, {
-                        headers: { 'Authorization': BITESHIP_KEY }
+                        method: 'GET',
+                        headers: { 
+                            'Authorization': BITESHIP_KEY
+                        }
                     });
+                    
                     const data = await res.json();
                     if(data.success && data.areas && data.areas.length > 0) {
                         resultBox.innerHTML = data.areas.map(a => {
@@ -982,6 +983,7 @@
                 }
             }, 600);
         }
+
 
         function selectBiteshipDest(id, fullName, zip) {
             let shortName = fullName.split(',')[0].trim();
