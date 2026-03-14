@@ -1553,6 +1553,75 @@
                         </thead>
                         <tbody>${itemsHtml}</tbody>
                     </table>
+        function downloadInvoice(invNo) {
+            const order = globalUserOrders.find(o => o.invoice_no === invNo);
+            if(!order) return showToast("Data pesanan tidak ditemukan", "error");
+
+            showToast("Menyiapkan file Tagihan... ⏳", "info");
+
+            let shipCost = order.shippingCost || 0;
+            let courierName = order.courier || '-';
+            let subtotal = order.total - shipCost;
+            
+            let statusLabel = order.status === 'PAID' ? 'LUNAS (DIPROSES)' : 
+                              (order.status === 'SHIPPED' ? 'LUNAS (DIKIRIM)' : 
+                              (order.status === 'UNPAID' ? 'BELUM LUNAS / TAGIHAN' : order.status));
+            
+            let statusBgColor = order.status === 'UNPAID' ? '#ef4444' : '#000';
+
+            let custName = order.customer && order.customer.name ? order.customer.name : '-';
+            let custPhone = order.customer && order.customer.phone ? order.customer.phone : '-';
+            let custAddress = order.customer && order.customer.address ? order.customer.address : '-';
+
+            let itemsHtml = order.items.map(i => `
+                <tr>
+                    <td style="border-bottom: 1px solid #ddd; padding: 12px 5px; vertical-align: middle;"><b>${i.name || 'Produk'}</b><br><span style="color:#666; font-size:11px;">Size: ${i.sizes || 'All Size'} | Color: ${i.color || 'Default'}</span></td>
+                    <td style="border-bottom: 1px solid #ddd; padding: 12px 5px; text-align:center; vertical-align: middle;">${i.qty || 1}</td>
+                    <td style="border-bottom: 1px solid #ddd; padding: 12px 5px; text-align:right; vertical-align: middle;">Rp ${(i.price || 0).toLocaleString('id-ID')}</td>
+                    <td style="border-bottom: 1px solid #ddd; padding: 12px 5px; text-align:right; font-weight:bold; vertical-align: middle;">Rp ${((i.price || 0) * (i.qty || 1)).toLocaleString('id-ID')}</td>
+                </tr>
+            `).join('');
+
+            const invoiceHTML = `
+                <div style="background: #fff; color: #000; padding: 30px; font-family: Helvetica, Arial, sans-serif; width: 750px; box-sizing: border-box;">
+                    
+                    <table style="width: 100%; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px;">
+                        <tr>
+                            <td style="text-align: left; vertical-align: middle;">
+                                <span style="font-family: 'Oswald', sans-serif; font-size: 32px; font-weight: bold; letter-spacing: 2px;">GANKETI</span>
+                            </td>
+                            <td style="text-align: right; vertical-align: middle;">
+                                <span style="font-size: 24px; font-weight: bold; color: #888; letter-spacing: 4px;">INVOICE</span>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <table style="width: 100%; margin-bottom: 30px; font-size: 13px; line-height: 1.6;">
+                        <tr>
+                            <td style="vertical-align: top; width: 50%; padding-right: 20px;">
+                                <b style="color:#000;">DITERBITKAN UNTUK:</b><br><br>
+                                <b style="font-size:14px;">${custName}</b><br>${custPhone}<br>${custAddress}
+                            </td>
+                            <td style="vertical-align: top; width: 50%; text-align: right;">
+                                <b style="color:#000;">DETAIL PESANAN:</b><br><br>
+                                <b>No. Invoice:</b> ${order.invoice_no}<br>
+                                <b>Tanggal:</b> ${order.date}<br><br>
+                                <span style="display: inline-block; padding: 5px 15px; background: ${statusBgColor}; color: #fff; font-weight: bold; letter-spacing: 2px; font-size: 12px; border-radius: 4px;">${statusLabel}</span>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px; font-size: 13px;">
+                        <thead>
+                            <tr style="background-color: #f9f9f9;">
+                                <th style="border-bottom: 2px solid #000; padding: 10px 5px; text-align: left; font-weight: bold; text-transform: uppercase;">Deskripsi Produk</th>
+                                <th style="border-bottom: 2px solid #000; padding: 10px 5px; text-align: center; font-weight: bold; text-transform: uppercase;">Qty</th>
+                                <th style="border-bottom: 2px solid #000; padding: 10px 5px; text-align: right; font-weight: bold; text-transform: uppercase;">Harga</th>
+                                <th style="border-bottom: 2px solid #000; padding: 10px 5px; text-align: right; font-weight: bold; text-transform: uppercase;">Total</th>
+                            </tr>
+                        </thead>
+                        <tbody>${itemsHtml}</tbody>
+                    </table>
 
                     <table style="width: 100%; font-size: 14px;">
                         <tr>
@@ -1583,29 +1652,21 @@
                 </div>
             `;
 
+            // 🔥 OBAT ANTI BLANK: windowWidth diset ke 800 biar HP ngebaca ukurannya utuh 🔥
             var opt = {
-              margin:       [10, 10, 10, 10],
+              margin:       10,
               filename:     `${order.invoice_no}.pdf`,
               image:        { type: 'jpeg', quality: 0.98 },
-              html2canvas:  { scale: 2, useCORS: true },
+              html2canvas:  { scale: 2, useCORS: true, windowWidth: 800 },
               jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
 
-            // 🔥 CARA PALING SAKTI: Bikin wadah langsung pake Javascript 🔥
-            let printContainer = document.createElement('div');
-            printContainer.style.position = 'absolute';
-            printContainer.style.left = '-9999px';
-            printContainer.style.top = '-9999px';
-            printContainer.innerHTML = invoiceHTML;
-            document.body.appendChild(printContainer); // Tempel diem-diem
-
-            html2pdf().set(opt).from(printContainer).save().then(() => {
+            // Masukin HTML murninya langsung ke mesin PDF!
+            html2pdf().set(opt).from(invoiceHTML).save().then(() => {
                 showToast("Tagihan berhasil diunduh! ✅", "success");
-                document.body.removeChild(printContainer); // Langsung hapus lagi biar bersih!
             });
         }
-
-
+        
     </script>
 </body>
 </html>
