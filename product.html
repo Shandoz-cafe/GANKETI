@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>GANKETI | Product Detail</title>
-    <link rel="icon" href="ganketiweb.png" type="image/png">
+    <link rel="icon" href="ganketipreview.png" type="image/png">
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
     <script src="https://app.midtrans.com/snap/snap.js" data-client-key="Mid-client-ci-M4QXxtek0TsyV"></script>
@@ -964,6 +964,13 @@
                 }).join('');
             });
         }
+                // 🔥 RADAR TOMBOL BACK HP: Paksa lari ke Home (index.html) 🔥
+        window.history.replaceState(null, null, 'index.html');
+        window.history.pushState(null, null, window.location.href);
+        window.addEventListener('popstate', function () {
+            window.location.replace('index.html');
+        });
+
     </script>
 </body>
 </html>
