@@ -1464,7 +1464,7 @@
             }
         }
 
-        function downloadInvoice(invNo) {
+                function downloadInvoice(invNo) {
             const order = globalUserOrders.find(o => o.invoice_no === invNo);
             if(!order) return showToast("Data pesanan tidak ditemukan", "error");
 
@@ -1494,7 +1494,7 @@
             `).join('');
 
             const invoiceHTML = `
-                <div style="background: #fff; color: #000; padding: 30px; font-family: Helvetica, Arial, sans-serif; width: 700px; box-sizing: border-box;">
+                <div style="background: #fff; color: #000; padding: 30px; font-family: Helvetica, Arial, sans-serif; width: 800px; box-sizing: border-box;">
                     
                     <table style="width: 100%; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px;">
                         <tr>
@@ -1563,24 +1563,32 @@
                 </div>
             `;
 
+            // 🔥 OBAT SAKTI: windowWidth 800 & scrollY 0 🔥
             var opt = {
               margin:       10,
               filename:     `${order.invoice_no}.pdf`,
               image:        { type: 'jpeg', quality: 0.98 },
-              html2canvas:  { scale: 2, useCORS: true, windowWidth: 800 },
+              html2canvas:  { scale: 2, useCORS: true, windowWidth: 800, scrollY: 0 },
               jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
 
             let printContainer = document.createElement('div');
-            printContainer.style.position = 'absolute';
-            printContainer.style.left = '-9999px';
-            printContainer.style.top = '-9999px';
             printContainer.innerHTML = invoiceHTML;
+            
+            // KITA TEMPELIN DAN KITA UMPETIN DI BLAKANG LAYAR BIAR MESIN BISA BACA CSS-NYA
+            printContainer.style.position = 'absolute';
+            printContainer.style.top = '0';
+            printContainer.style.left = '0';
+            printContainer.style.width = '800px';
+            printContainer.style.zIndex = '-9999'; 
+            printContainer.style.background = '#ffffff';
+            
+            // WAJIB DI-APPEND BIAR JADI NYATA
             document.body.appendChild(printContainer);
 
             html2pdf().set(opt).from(printContainer).save().then(() => {
                 showToast("Tagihan berhasil diunduh! ✅", "success");
-                document.body.removeChild(printContainer);
+                document.body.removeChild(printContainer); // Bersihin lagi setelah kelar
             });
         }
     </script>
