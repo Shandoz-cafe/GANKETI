@@ -644,23 +644,41 @@
             document.getElementById('mainModal').style.display = 'flex';
         }
 
+                let searchDestTimeout;
         function searchBiteshipDest(query) {
             const resultBox = document.getElementById('cDestResults');
             if(query.length < 3) { resultBox.style.display = 'none'; return; }
-            let prov = document.getElementById('cProv').value.trim(); let city = document.getElementById('cCity').value.trim();
-            let fullQuery = query; if(city) fullQuery = city + ' ' + fullQuery; if(prov) fullQuery = prov + ' ' + fullQuery;
+            
+            // 🔥 FIX: Nggak usah digabung sama provinsi/kota lagi, langsung pake apa yang diketik user! 🔥
+            let fullQuery = query.trim(); 
+            
             clearTimeout(searchDestTimeout);
             searchDestTimeout = setTimeout(async () => {
-                resultBox.innerHTML = '<div style="padding:10px; font-size:11px; color:#aaa;">Mencari di sistem Kurir...</div>'; resultBox.style.display = 'block';
+                resultBox.innerHTML = '<div style="padding:10px; font-size:11px; color:#aaa;">Mencari di sistem Kurir...</div>';
+                resultBox.style.display = 'block';
                 try {
-                    const res = await fetch(`https://api.biteship.com/v1/maps/areas?countries=ID&input=${encodeURIComponent(fullQuery)}&type=single`, { headers: { 'Authorization': BITESHIP_KEY } });
+                    const res = await fetch(`https://api.biteship.com/v1/maps/areas?countries=ID&input=${encodeURIComponent(fullQuery)}&type=single`, {
+                        method: 'GET',
+                        headers: { 
+                            'Authorization': BITESHIP_KEY
+                        }
+                    });
+                    
                     const data = await res.json();
                     if(data.success && data.areas && data.areas.length > 0) {
-                        resultBox.innerHTML = data.areas.map(a => `<div class="biteship-item" onclick="selectBiteshipDest('${a.id}', '${a.name.replace(/'/g, "\\'")}', '${a.postal_code}')">${a.name}</div>`).join('');
-                    } else { resultBox.innerHTML = `<div style="padding:10px; font-size:11px; color:#ef4444;">Kecamatan tidak ditemukan.</div>`; }
-                } catch(e) { resultBox.innerHTML = '<div style="padding:10px; font-size:11px; color:#ef4444;">Gagal menghubungi server ongkir.</div>'; }
+                        resultBox.innerHTML = data.areas.map(a => {
+                            return `<div class="biteship-item" onclick="selectBiteshipDest('${a.id}', '${a.name.replace(/'/g, "\\'")}', '${a.postal_code}')">${a.name}</div>`;
+                        }).join('');
+                    } else {
+                        let errorMsg = data.error || data.message || "Kecamatan/Kota tidak ditemukan. Coba ketik lebih spesifik.";
+                        resultBox.innerHTML = `<div style="padding:10px; font-size:11px; color:#ef4444;">Pesan Server: ${errorMsg}</div>`;
+                    }
+                } catch(e) {
+                    resultBox.innerHTML = '<div style="padding:10px; font-size:11px; color:#ef4444;">Gagal menghubungi server ongkir.</div>';
+                }
             }, 600);
         }
+
 
         function selectBiteshipDest(id, fullName, zip) {
             let shortName = fullName.split(',')[0].trim(); document.getElementById('cDestSearch').value = shortName; 
