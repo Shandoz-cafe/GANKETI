@@ -1484,7 +1484,7 @@
             }
         }
 
-        function downloadInvoice(invNo) {
+                function downloadInvoice(invNo) {
             const order = globalUserOrders.find(o => o.invoice_no === invNo);
             if(!order) return showToast("Data pesanan tidak ditemukan", "error");
 
@@ -1504,56 +1504,80 @@
             let custPhone = order.customer && order.customer.phone ? order.customer.phone : '-';
             let custAddress = order.customer && order.customer.address ? order.customer.address : '-';
 
+            // Menggunakan Tabel Murni agar HP tidak bingung saat render PDF
             let itemsHtml = order.items.map(i => `
                 <tr>
-                    <td style="border-bottom: 1px solid #eee; padding: 15px 0;"><b>${i.name || 'Produk'}</b><br><span style="color:#888; font-size:11px;">Size: ${i.sizes || 'All Size'} | Color: ${i.color || 'Default'}</span></td>
-                    <td style="border-bottom: 1px solid #eee; padding: 15px 0; text-align:center;">${i.qty || 1}</td>
-                    <td style="border-bottom: 1px solid #eee; padding: 15px 0; text-align:right;">Rp ${(i.price || 0).toLocaleString('id-ID')}</td>
-                    <td style="border-bottom: 1px solid #eee; padding: 15px 0; text-align:right; font-weight:bold;">Rp ${((i.price || 0) * (i.qty || 1)).toLocaleString('id-ID')}</td>
+                    <td style="border-bottom: 1px solid #ddd; padding: 12px 5px; vertical-align: middle;"><b>${i.name || 'Produk'}</b><br><span style="color:#666; font-size:11px;">Size: ${i.sizes || 'All Size'} | Color: ${i.color || 'Default'}</span></td>
+                    <td style="border-bottom: 1px solid #ddd; padding: 12px 5px; text-align:center; vertical-align: middle;">${i.qty || 1}</td>
+                    <td style="border-bottom: 1px solid #ddd; padding: 12px 5px; text-align:right; vertical-align: middle;">Rp ${(i.price || 0).toLocaleString('id-ID')}</td>
+                    <td style="border-bottom: 1px solid #ddd; padding: 12px 5px; text-align:right; font-weight:bold; vertical-align: middle;">Rp ${((i.price || 0) * (i.qty || 1)).toLocaleString('id-ID')}</td>
                 </tr>
             `).join('');
 
             const invoiceHTML = `
-                <div style="background: #fff; color: #000; padding: 40px; font-family: 'Inter', sans-serif; width: 100%;">
-                    <div style="display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #000; padding-bottom: 20px; margin-bottom: 20px;">
-                        <div style="font-family: 'Oswald', sans-serif; font-size: 32px; font-weight: bold; letter-spacing: 2px;">GANKETI</div>
-                        <div style="font-size: 24px; font-weight: bold; color: #888; letter-spacing: 4px;">INVOICE</div>
-                    </div>
-                    <div style="display: flex; justify-content: space-between; margin-bottom: 30px; font-size: 13px; line-height: 1.6;">
-                        <div>
-                            <b style="color:#000;">DITERBITKAN UNTUK:</b><br><br>
-                            <b>${custName}</b><br>${custPhone}<br>${custAddress}
-                        </div>
-                        <div style="text-align:right;">
-                            <b style="color:#000;">DETAIL PESANAN:</b><br><br>
-                            <b>No. Invoice:</b> ${order.invoice_no}<br>
-                            <b>Tanggal:</b> ${order.date}<br>
-                            <b>Status:</b> <span style="display: inline-block; padding: 5px 15px; background: ${statusBgColor}; color: #fff; font-weight: bold; letter-spacing: 2px; font-size: 12px; border-radius: 4px;">${statusLabel}</span>
-                        </div>
-                    </div>
+                <div style="background: #fff; color: #000; padding: 30px; font-family: Helvetica, Arial, sans-serif; width: 700px; box-sizing: border-box;">
+                    
+                    <table style="width: 100%; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px;">
+                        <tr>
+                            <td style="text-align: left; vertical-align: middle;">
+                                <span style="font-family: 'Oswald', sans-serif; font-size: 32px; font-weight: bold; letter-spacing: 2px;">GANKETI</span>
+                            </td>
+                            <td style="text-align: right; vertical-align: middle;">
+                                <span style="font-size: 24px; font-weight: bold; color: #888; letter-spacing: 4px;">INVOICE</span>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <table style="width: 100%; margin-bottom: 30px; font-size: 13px; line-height: 1.6;">
+                        <tr>
+                            <td style="vertical-align: top; width: 50%; padding-right: 20px;">
+                                <b style="color:#000;">DITERBITKAN UNTUK:</b><br><br>
+                                <b style="font-size:14px;">${custName}</b><br>${custPhone}<br>${custAddress}
+                            </td>
+                            <td style="vertical-align: top; width: 50%; text-align: right;">
+                                <b style="color:#000;">DETAIL PESANAN:</b><br><br>
+                                <b>No. Invoice:</b> ${order.invoice_no}<br>
+                                <b>Tanggal:</b> ${order.date}<br><br>
+                                <span style="display: inline-block; padding: 5px 15px; background: ${statusBgColor}; color: #fff; font-weight: bold; letter-spacing: 2px; font-size: 12px; border-radius: 4px;">${statusLabel}</span>
+                            </td>
+                        </tr>
+                    </table>
+
                     <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px; font-size: 13px;">
                         <thead>
-                            <tr>
-                                <th style="border-bottom: 2px solid #000; padding: 10px 0; text-align: left; font-weight: bold; text-transform: uppercase;">Deskripsi Produk</th>
-                                <th style="border-bottom: 2px solid #000; padding: 10px 0; text-align: center; font-weight: bold; text-transform: uppercase;">Qty</th>
-                                <th style="border-bottom: 2px solid #000; padding: 10px 0; text-align: right; font-weight: bold; text-transform: uppercase;">Harga</th>
-                                <th style="border-bottom: 2px solid #000; padding: 10px 0; text-align: right; font-weight: bold; text-transform: uppercase;">Total</th>
+                            <tr style="background-color: #f9f9f9;">
+                                <th style="border-bottom: 2px solid #000; padding: 10px 5px; text-align: left; font-weight: bold; text-transform: uppercase;">Deskripsi Produk</th>
+                                <th style="border-bottom: 2px solid #000; padding: 10px 5px; text-align: center; font-weight: bold; text-transform: uppercase;">Qty</th>
+                                <th style="border-bottom: 2px solid #000; padding: 10px 5px; text-align: right; font-weight: bold; text-transform: uppercase;">Harga</th>
+                                <th style="border-bottom: 2px solid #000; padding: 10px 5px; text-align: right; font-weight: bold; text-transform: uppercase;">Total</th>
                             </tr>
                         </thead>
                         <tbody>${itemsHtml}</tbody>
                     </table>
-                    <div style="width: 300px; float: right; font-size: 14px;">
-                        <div style="display: flex; justify-content: space-between; padding: 8px 0;">
-                            <span>Subtotal Produk</span><span>Rp ${subtotal.toLocaleString('id-ID')}</span>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; padding: 8px 0;">
-                            <span>Ongkos Kirim (${courierName})</span><span>Rp ${shipCost.toLocaleString('id-ID')}</span>
-                        </div>
-                        <div style="display: flex; justify-content: space-between; padding: 8px 0; font-size: 18px; font-weight: bold; border-top: 2px solid #000; padding-top: 15px; margin-top: 5px;">
-                            <span>TOTAL KESELURUHAN</span><span>Rp ${order.total.toLocaleString('id-ID')}</span>
-                        </div>
-                    </div>
-                    <div style="clear: both; text-align: center; margin-top: 50px; font-size: 12px; color: #888; border-top: 1px solid #eee; padding-top: 20px;">
+
+                    <table style="width: 100%; font-size: 14px;">
+                        <tr>
+                            <td style="width: 50%;"></td>
+                            <td style="width: 50%;">
+                                <table style="width: 100%; border-collapse: collapse;">
+                                    <tr>
+                                        <td style="padding: 6px 0; text-align: left;">Subtotal Produk</td>
+                                        <td style="padding: 6px 0; text-align: right;">Rp ${subtotal.toLocaleString('id-ID')}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 6px 0; text-align: left;">Ongkos Kirim (${courierName})</td>
+                                        <td style="padding: 6px 0; text-align: right;">Rp ${shipCost.toLocaleString('id-ID')}</td>
+                                    </tr>
+                                    <tr>
+                                        <td style="padding: 12px 0 0 0; text-align: left; font-size: 16px; font-weight: bold; border-top: 2px solid #000; margin-top: 5px;">TOTAL TAGIHAN</td>
+                                        <td style="padding: 12px 0 0 0; text-align: right; font-size: 16px; font-weight: bold; border-top: 2px solid #000; margin-top: 5px;">Rp ${order.total.toLocaleString('id-ID')}</td>
+                                    </tr>
+                                </table>
+                            </td>
+                        </tr>
+                    </table>
+
+                    <div style="text-align: center; margin-top: 50px; font-size: 12px; color: #888; border-top: 1px solid #eee; padding-top: 20px;">
                         Terima kasih telah berbelanja di GANKETI. Authentic Streetwear since 2026.<br>
                         Jika ada pertanyaan, hubungi ganketistore@gmail.com atau WhatsApp 0851-7995-0609.
                     </div>
@@ -1561,17 +1585,22 @@
             `;
 
             var opt = {
-              margin:       [15, 15, 15, 15],
+              margin:       [10, 10, 10, 10], // Margin diganti angka agar aman di HP
               filename:     `${order.invoice_no}.pdf`,
               image:        { type: 'jpeg', quality: 0.98 },
               html2canvas:  { scale: 2, useCORS: true },
               jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
 
-            html2pdf().set(opt).from(invoiceHTML).save().then(() => {
+            // Dibungkus ke element khusus sebelum dicetak
+            let invoiceContainer = document.createElement('div');
+            invoiceContainer.innerHTML = invoiceHTML;
+
+            html2pdf().set(opt).from(invoiceContainer).save().then(() => {
                 showToast("Tagihan berhasil diunduh! ✅", "success");
             });
         }
+
 
     </script>
 </body>
