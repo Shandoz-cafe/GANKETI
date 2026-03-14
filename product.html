@@ -6,6 +6,9 @@
     <title>GANKETI | Product Detail</title>
     <link rel="icon" href="ganketiweb.png" type="image/png">
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script src="https://app.midtrans.com/snap/snap.js" data-client-key="Mid-client-ci-M4QXxtek0TsyV"></script>
+
     <style>
         :root { --bg: #050505; --surface: #121212; --primary: #ffffff; --text: #e5e5e5; --text-dim: #888888; --border: #262626; }
         * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Inter', sans-serif; }
@@ -66,7 +69,7 @@
         .r-text { font-size: 13px; color: #ccc; line-height: 1.5;}
 
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; }
-        .card { background: var(--surface); border-radius: 8px; overflow: hidden; border: 1px solid var(--border); cursor: pointer; transition: 0.3s; display: flex; flex-direction: column; }
+        .card { background: var(--surface); border-radius: 8px; overflow: hidden; border: 1px solid var(--border); cursor: pointer; transition: 0.3s; display: flex; flex-direction: column; text-decoration: none;}
         .img-box { width: 100%; aspect-ratio: 1 / 1; background: #1a1a1a; position: relative; overflow: hidden; }
         .img-box img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
         .card:hover .img-box img { transform: scale(1.05); }
@@ -74,8 +77,36 @@
         .name { font-size: 13px; font-weight: 600; margin-bottom: 10px; line-height: 1.4; color: var(--primary); display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
         .price { font-family: 'Oswald', sans-serif; font-weight: 500; font-size: 15px; margin-top: auto; color: var(--primary); }
 
-        .modal { display: none; position: fixed; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.8); z-index: 1000; justify-content: center; align-items: center; backdrop-filter: blur(5px);}
-        .modal-box { background: var(--surface); padding: 25px; border-radius: 12px; width: 90%; max-width: 400px; border: 1px solid var(--border);}
+        /* 🔥 CSS CHECKOUT MODAL (Sama persis kayak index.html) 🔥 */
+        .modal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.85); z-index: 1000; justify-content: center; align-items: flex-end; backdrop-filter: blur(5px); }
+        @media (min-width: 768px) { .modal { align-items: center; } }
+        .modal-box { background: var(--surface); width: 100%; max-width: 500px; border-radius: 20px 20px 0 0; border: 1px solid var(--border); border-bottom: none; padding: 25px; max-height: 90vh; overflow-y: auto; display: flex; flex-direction: column; animation: slideUp 0.3s ease-out; }
+        @media (min-width: 768px) { .modal-box { border-radius: 12px; border-bottom: 1px solid var(--border); animation: popIn 0.3s ease-out; } }
+        @keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+        @keyframes popIn { from { transform: scale(0.9); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+
+        .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 15px; margin-bottom: 20px; }
+        .modal-title { font-family: 'Oswald', sans-serif; font-size: 18px; letter-spacing: 1px; text-transform: uppercase; }
+        .close-btn { color: var(--text-dim); font-size: 24px; cursor: pointer; line-height: 1; }
+        
+        .autocomplete-box { position: absolute; width: 100%; max-height: 180px; overflow-y: auto; z-index: 1000; border: 1px solid #444; border-radius: 4px; box-shadow: 0 4px 10px rgba(0,0,0,0.8); display: none; background: #1a1a1a; margin-top: 2px; }
+        .biteship-item { padding: 12px 10px; border-bottom: 1px solid #333; font-size: 12px; cursor: pointer; color: #ccc; line-height: 1.4; }
+        .biteship-item:hover { background: #3b82f6; color: white; font-weight: bold; }
+
+        .saved-address-card { background: #1a1a1a; border: 1px solid #333; padding: 15px; border-radius: 8px; margin-bottom: 10px; cursor: pointer; transition: 0.2s; font-size: 12px; color: #ccc;}
+        .saved-address-card:hover { border-color: #3b82f6; }
+        .saved-address-card.active { border-color: #4ade80; background: rgba(74, 222, 128, 0.05); }
+        .payment-method-card { display: flex; align-items: center; justify-content: space-between; background: #1a1a1a; border: 1px solid #333; padding: 15px; border-radius: 8px; margin-bottom: 10px; cursor: pointer; transition: 0.2s;}
+        .payment-method-card:hover { border-color: var(--primary); }
+        .courier-card { display: flex; justify-content: space-between; align-items: center; background: #111; border: 1px solid #333; padding: 12px; border-radius: 6px; margin-bottom: 8px; cursor: pointer;}
+        .courier-card:hover { border-color: #f59e0b; }
+
+        .btn-main { background: var(--primary); color: var(--bg); width: 100%; padding: 15px; border: none; font-weight: 700; font-family: 'Inter', sans-serif; font-size: 14px; border-radius: 8px; cursor: pointer; text-transform: uppercase; letter-spacing: 1px;}
+        .btn-main:disabled { background: #333; color: #666; cursor: not-allowed; }
+        
+        .list-item { display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px dashed var(--border); }
+        .list-item:last-child { border-bottom: none; }
+
         .star-input { display: flex; gap: 10px; font-size: 24px; color: #444; cursor: pointer; justify-content: center; margin-bottom: 20px;}
         .star-input span.active { color: #f59e0b; }
 
@@ -95,7 +126,7 @@
     <header>
         <button class="icon-btn" onclick="window.location.href='index.html'">←</button>
         <div class="logo"><img src="ganketilogo.png" alt="GANKETI"></div>
-        <button class="icon-btn" onclick="window.location.href='index.html?cart=true'">🛒 <span class="cart-badge" id="cartCount">0</span></button>
+        <button class="icon-btn" onclick="openCart()">🛒 <span class="cart-badge" id="cartCount">0</span></button>
     </header>
 
     <div class="breadcrumb">
@@ -162,15 +193,140 @@
         <div class="grid" id="recommendationGrid"></div>
     </div>
 
+    <div class="modal" id="mainModal">
+        <div class="modal-box">
+            <div class="modal-header"><div class="modal-title" id="modalTitle" style="font-size: 14px; background:#222; padding:5px 10px; border-radius:4px;">MODAL</div><div class="close-btn" onclick="closeModal()">×</div></div>
+            
+            <div id="cartArea" style="display:none;">
+                <div id="cartItemsList"></div>
+                <div style="display: flex; justify-content: space-between; font-weight: bold; font-size: 18px; margin: 20px 0; border-top: 1px solid var(--border); padding-top: 15px;"><span>Total</span><span id="cartTotalDisplay" style="color: var(--primary);">Rp 0</span></div>
+                <button class="btn-main" style="background:#f59e0b; color:#000;" onclick="goToShipping()">CHECKOUT ➔</button>
+            </div>
+
+            <div id="authArea" style="display:none;">
+                <div style="display:flex; margin-bottom:20px; border-bottom:1px solid #333;">
+                    <div id="tabLogin" onclick="switchAuthMode('login')" style="flex:1; padding:10px; text-align:center; cursor:pointer; color:var(--primary); border-bottom:2px solid var(--primary); font-weight:bold; font-size:14px;">LOGIN</div>
+                    <div id="tabRegister" onclick="switchAuthMode('register')" style="flex:1; padding:10px; text-align:center; cursor:pointer; color:#888; font-size:14px;">REGISTER</div>
+                </div>
+
+                <div id="formLogin">
+                    <div class="form-group"><label>Email</label><input type="email" id="authLogEmail" placeholder="Email Anda"></div>
+                    <div class="form-group"><label>Password</label><input type="password" id="authLogPass" placeholder="••••••••"></div>
+                    <button class="btn-main" onclick="loginWithEmail()" style="margin-top: 10px;">LOGIN</button>
+                </div>
+
+                <div id="formRegister" style="display:none;">
+                    <div class="form-group"><label>Nama Lengkap</label><input type="text" id="authRegName" placeholder="Nama Lengkap Anda"></div>
+                    <div class="form-group"><label>Email</label><input type="email" id="authRegEmail" placeholder="Email Aktif"></div>
+                    <div class="form-group"><label>Password</label><input type="password" id="authRegPass" placeholder="Minimal 6 karakter"></div>
+                    <button class="btn-main" style="background:#4ade80; color:black; margin-top: 10px;" onclick="registerWithEmail()">BUAT AKUN</button>
+                </div>
+
+                <div style="text-align:center; margin: 20px 0; color:#666; font-size:11px; text-transform:uppercase; letter-spacing:1px;">atau masuk dengan</div>
+                
+                <button class="btn-main" style="background:#fff; color:#000; display:flex; align-items:center; justify-content:center; gap:10px; text-transform:none; font-weight:600;" onclick="loginWithGoogle()">
+                    <img src="https://upload.wikimedia.org/wikipedia/commons/c/c1/Google_%22G%22_logo.svg" style="width:18px;"> Lanjutkan dengan Google
+                </button>
+            </div>
+
+            <div id="shippingArea" style="display:none;">
+                <p style="font-size: 12px; color: #4ade80; margin-bottom: 15px;">✅ Secure Checkout.</p>
+                
+                <div id="savedAddressesContainer" style="display:none; margin-bottom: 20px;">
+                    <h3 style="font-size: 12px; margin-bottom: 10px; color: #888; text-transform:uppercase;">Alamat Tersimpan</h3>
+                    <div id="savedAddressesList"></div>
+                    <div style="text-align:right; margin-top:5px;">
+                        <span style="font-size:11px; color:#3b82f6; cursor:pointer;" onclick="clearAddressForm()">+ Tambah Alamat Baru</span>
+                    </div>
+                </div>
+
+                <div class="form-group"><label>Email Akun</label><input type="email" id="cEmail" readonly></div>
+                <div class="form-group"><label>Nama Lengkap / Penerima</label><input type="text" id="cName" placeholder="Full Name"></div>
+                <div class="form-group"><label>Nomor WhatsApp</label><input type="number" id="cPhone" placeholder="08..."></div>
+                
+                <div style="border-top: 1px solid var(--border); margin: 20px 0; padding-top: 15px;"></div>
+                <h3 style="font-size: 14px; margin-bottom: 15px; color: var(--primary);">Shipping Address</h3>
+                
+                <div class="form-group">
+                    <label>Alamat Lengkap (Nama Jalan, Gedung, No. Rumah) *</label>
+                    <input type="text" id="cStreet" placeholder="Cth: Jl. Sudirman No. 10">
+                </div>
+                
+                <div style="display: flex; gap: 10px;">
+                    <div class="form-group" style="flex:1;"><label>RT *</label><input type="number" id="cRT" placeholder="001"></div>
+                    <div class="form-group" style="flex:1;"><label>RW *</label><input type="number" id="cRW" placeholder="002"></div>
+                </div>
+                
+                <div class="form-group">
+                    <label>Provinsi *</label>
+                    <input type="text" id="cProv" placeholder="Cth: Jawa Barat">
+                </div>
+
+                <div class="form-group">
+                    <label>Kota / Kabupaten *</label>
+                    <input type="text" id="cCity" placeholder="Cth: Kota Bandung">
+                </div>
+
+                <div class="form-group" style="position:relative;">
+                    <label>Kode Pos / Kecamatan *</label>
+                    <input type="text" id="cDestSearch" placeholder="Ketik Kecamatan / Kode Pos..." oninput="searchBiteshipDest(this.value)" autocomplete="off">
+                    <input type="hidden" id="cDestId">
+                    <input type="hidden" id="cDestName">
+                    <div id="cDestResults" class="autocomplete-box"></div>
+                </div>
+
+                <div class="form-group">
+                    <label>Kelurahan / Desa *</label>
+                    <input type="text" id="cVillage" placeholder="Cth: Gegerkalong">
+                </div>
+
+                <div class="form-group">
+                    <label>Kode Pos *</label>
+                    <input type="number" id="cZip" placeholder="Terisi otomatis..." readonly style="background: #111; color: #888;">
+                </div>
+                
+                <div style="margin-bottom: 20px;">
+                    <label style="display:flex; align-items:center; gap:8px; font-size:12px; color:#ccc; cursor:pointer;">
+                        <input type="checkbox" id="saveAddressCheck" checked style="width:16px; height:16px; accent-color:#f59e0b;"> Simpan alamat ini untuk pembelian selanjutnya
+                    </label>
+                </div>
+
+                <button class="btn-main" onclick="calculateShipping()" style="margin-top: 10px; background:#f59e0b; color:#000;">PILIH PENGIRIMAN ➔</button>
+            </div>
+
+            <div id="shippingOptionsArea" style="display:none;">
+                <p style="font-size: 12px; color: #aaa; margin-bottom: 15px; text-align:center;">Pilih Jasa Pengiriman</p>
+                <div id="courierListContainer"></div>
+                
+                <div style="margin-top:20px; padding-top:15px; border-top:1px solid #333;">
+                    <div style="display: flex; justify-content: space-between; font-size: 14px; margin-bottom:10px;">
+                        <span style="color:#aaa;">Subtotal Produk:</span>
+                        <b style="color:#fff;" id="sumSubtotal">Rp 0</b>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-size: 14px; margin-bottom:15px;">
+                        <span style="color:#aaa;">Ongkos Kirim:</span>
+                        <b style="color:#ef4444;" id="sumShipping">Rp 0</b>
+                    </div>
+                    <div style="display: flex; justify-content: space-between; font-size: 18px; font-weight:bold;">
+                        <span style="color:#fff;">Grand Total:</span>
+                        <b style="color:var(--primary);" id="sumGrandTotal">Rp 0</b>
+                    </div>
+                </div>
+
+                <button class="btn-main" onclick="goToPayment()" style="margin-top: 20px; background:#f59e0b; color:#000;">LANJUT PEMBAYARAN ➔</button>
+            </div>
+
+            <div id="paymentArea" style="display:none;"></div>
+        </div>
+    </div>
+    
     <div class="modal" id="reviewModal">
         <div class="modal-box">
             <h3 style="margin-bottom:15px; text-transform:uppercase; font-family:'Oswald'; border-bottom:1px solid #333; padding-bottom:10px;">Nilai Produk Ini</h3>
             <div class="star-input" id="starInput">
                 <span onclick="setRating(1)">★</span><span onclick="setRating(2)">★</span><span onclick="setRating(3)">★</span><span onclick="setRating(4)">★</span><span onclick="setRating(5)">★</span>
             </div>
-            
             <div class="form-group"><label>Nama Akun Pembeli</label><input type="text" id="rName" readonly style="background:#1a1a1a; color:#888; border-color:#222; cursor:not-allowed;" title="Nama ditarik otomatis dari akun Anda"></div>
-            
             <div class="form-group"><label>Ulasan / Komentar</label><textarea id="rText" style="width:100%; padding:15px; background:#111; border:1px solid #333; color:white; border-radius:6px; outline:none; resize:none;" rows="3" placeholder="Gimana bahan dan ukurannya?"></textarea></div>
             <div style="display:flex; gap:10px;">
                 <button class="btn-buy" style="background:#333; color:white;" onclick="document.getElementById('reviewModal').style.display='none'">BATAL</button>
@@ -200,8 +356,16 @@
         let wishlist = JSON.parse(localStorage.getItem('ganketiWishlist') || '[]');
         let selectedRating = 5;
         let currentUser = null;
+        
+        // VARIABEL MESIN KASIR
+        let savedAddresses = JSON.parse(localStorage.getItem('ganketiAddresses') || '[]');
+        let pendingOrderData = null; 
+        let selectedShippingCost = 0;
+        let selectedCourierName = "";
+        let isCheckoutPending = false; 
+        const BITESHIP_KEY = 'biteship_live.eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJuYW1lIjoiR2Fua2V0aSIsInVzZXJJZCI6IjY5YWVlODYzM2NjODBhMWUzMjE3ZGJkYyIsImlhdCI6MTc3MzA3OTg3MX0.ot-KA-1HmE0xMsc7OhHeQBaDGo7KrDKU1tuS4bk5fCo';
+        let searchDestTimeout;
 
-        // Cek siapa yang lagi login
         auth.onAuthStateChanged(user => {
             currentUser = user;
         });
@@ -326,6 +490,7 @@
             localStorage.setItem('ganketiWishlist', JSON.stringify(wishlist));
         }
 
+        // 🔥 FUNGSI BELI: KALAU BUY NOW LANGSUNG BUKA POPUP ALAMAT DI SINI 🔥
         function addToCart(isBuyNow = false) {
             const selectedSize = document.getElementById('pSize').value; 
             const selectedColor = document.getElementById('pColor') ? document.getElementById('pColor').value : 'Default';
@@ -349,11 +514,11 @@
             }
             
             localStorage.setItem('ganketiCart', JSON.stringify(cart)); 
-            
+            document.getElementById('cartCount').innerText = cart.reduce((sum, item) => sum + item.qty, 0);
+
             if(isBuyNow) {
-                window.location.href = 'index.html?checkout=true';
+                goToShipping(); // Langsung buka formulir alamat di halaman produk!
             } else {
-                document.getElementById('cartCount').innerText = cart.reduce((sum, item) => sum + item.qty, 0);
                 showToast("Berhasil ditambahkan ke Keranjang! 🛒", "success");
             }
         }
@@ -375,16 +540,316 @@
                 grid.innerHTML = allProducts.map(p => {
                     let img = p.images ? p.images[0] : (p.image || 'https://via.placeholder.com/300');
                     let priceHtml = p.originalPrice ? `<span style="font-size:11px; text-decoration:line-through; color:#ef4444;">Rp ${p.originalPrice.toLocaleString('id-ID')}</span> <br>Rp ${p.price.toLocaleString('id-ID')}` : `Rp ${p.price.toLocaleString('id-ID')}`;
-                    return `<div class="card" onclick="window.location.href='product.html?id=${p.id}'"><div class="img-box"><img src="${img}"></div><div class="info"><div class="name">${p.name}</div><div class="price">${priceHtml}</div></div></div>`;
+                    return `<a href="product.html?id=${p.id}" class="card" style="text-decoration:none;"><div class="img-box"><img src="${img}"></div><div class="info"><div class="name">${p.name}</div><div class="price">${priceHtml}</div></div></a>`;
                 }).join('');
             });
         }
 
+        // ==========================================
+        // 🔥 LOGIKA MESIN KASIR PINDAHAN DARI INDEX 🔥
+        // ==========================================
+        
+        function closeModal() { document.getElementById('mainModal').style.display = 'none'; }
+        function hideAllAreas() { ['cartArea', 'shippingArea', 'shippingOptionsArea', 'paymentArea', 'authArea'].forEach(id => document.getElementById(id).style.display = 'none'); }
+
+        function openCart() {
+            hideAllAreas(); document.getElementById('modalTitle').innerText = "SHOPPING CART";
+            document.getElementById('cartArea').style.display = 'block'; document.getElementById('mainModal').style.display = 'flex';
+            const list = document.getElementById('cartItemsList'); let total = 0;
+            if (cart.length === 0) { list.innerHTML = `<p style="color:var(--text-dim); text-align:center; padding: 40px 0; font-size:16px;">Your cart is empty.</p>`; } 
+            else {
+                list.innerHTML = cart.map((item, index) => {
+                    total += (item.price * item.qty);
+                    let imgUrl = item.images ? item.images[0] : (item.image ? item.image : 'https://via.placeholder.com/60');
+                    return `<div class="list-item" style="align-items:flex-start;">
+                        <img src="${imgUrl}" style="width:60px; height:60px; object-fit:cover; border-radius:6px; margin-right:15px; border:1px solid #333;">
+                        <div style="flex-grow:1; padding-right:10px;"><b style="color:white; font-size:13px; line-height:1.3; display:block; margin-bottom:5px;">${item.name}</b><span style="color:var(--text-dim); font-size:12px;">Qty: ${item.qty} x Rp ${item.price.toLocaleString('id-ID')}</span></div>
+                        <div style="text-align:right;"><b style="color:var(--primary); font-size:14px; display:block; margin-bottom:5px;">Rp ${(item.price * item.qty).toLocaleString('id-ID')}</b><span style="color:#ef4444; font-size:11px; cursor:pointer; font-weight:bold; background:rgba(239,68,68,0.1); padding:4px 8px; border-radius:4px;" onclick="removeItem(${index})">REMOVE</span></div>
+                    </div>`;
+                }).join('');
+            }
+            document.getElementById('cartTotalDisplay').innerText = `Rp ${total.toLocaleString('id-ID')}`;
+        }
+
+        function removeItem(index) { cart.splice(index, 1); localStorage.setItem('ganketiCart', JSON.stringify(cart)); updateCartCount(); openCart(); }
+
+        function openAuthModal() {
+            hideAllAreas(); document.getElementById('modalTitle').innerText = "AUTHENTICATION";
+            document.getElementById('authArea').style.display = 'block'; document.getElementById('mainModal').style.display = 'flex';
+            switchAuthMode('login');
+        }
+
+        function switchAuthMode(mode) {
+            if(mode === 'login') {
+                document.getElementById('tabLogin').style.color = 'var(--primary)'; document.getElementById('tabLogin').style.borderBottom = '2px solid var(--primary)';
+                document.getElementById('tabRegister').style.color = '#888'; document.getElementById('tabRegister').style.borderBottom = 'none';
+                document.getElementById('formLogin').style.display = 'block'; document.getElementById('formRegister').style.display = 'none';
+            } else {
+                document.getElementById('tabRegister').style.color = 'var(--primary)'; document.getElementById('tabRegister').style.borderBottom = '2px solid var(--primary)';
+                document.getElementById('tabLogin').style.color = '#888'; document.getElementById('tabLogin').style.borderBottom = 'none';
+                document.getElementById('formRegister').style.display = 'block'; document.getElementById('formLogin').style.display = 'none';
+            }
+        }
+
+        function loginWithEmail() {
+            let email = document.getElementById('authLogEmail').value.trim(); let pass = document.getElementById('authLogPass').value;
+            if(!email || !pass) return showToast("Isi email dan password!", "error");
+            document.querySelector('#formLogin .btn-main').innerText = "LOADING...";
+            auth.signInWithEmailAndPassword(email, pass).then(res => {
+                document.querySelector('#formLogin .btn-main').innerText = "LOGIN"; showToast(`Welcome back!`, 'success');
+                if(isCheckoutPending) { isCheckoutPending = false; goToShipping(); } else { closeModal(); }
+            }).catch(err => { document.querySelector('#formLogin .btn-main').innerText = "LOGIN"; showToast("Login gagal: " + err.message, "error"); });
+        }
+
+        function registerWithEmail() {
+            let name = document.getElementById('authRegName').value.trim(); let email = document.getElementById('authRegEmail').value.trim(); let pass = document.getElementById('authRegPass').value;
+            if(!name || !email || !pass) return showToast("Lengkapi semua data!", "error");
+            if(pass.length < 6) return showToast("Password minimal 6 karakter!", "error");
+            document.querySelector('#formRegister .btn-main').innerText = "LOADING...";
+            auth.createUserWithEmailAndPassword(email, pass).then(res => {
+                res.user.updateProfile({displayName: name}).then(() => {
+                    document.querySelector('#formRegister .btn-main').innerText = "BUAT AKUN"; showToast(`Akun berhasil dibuat!`, 'success');
+                    if(isCheckoutPending) { isCheckoutPending = false; goToShipping(); } else { closeModal(); }
+                });
+            }).catch(err => { document.querySelector('#formRegister .btn-main').innerText = "BUAT AKUN"; showToast("Register gagal: " + err.message, "error"); });
+        }
+
+        function loginWithGoogle() {
+            const provider = new firebase.auth.GoogleAuthProvider(); 
+            auth.signInWithPopup(provider).then((result) => { 
+                showToast(`Welcome, ${result.user.displayName}!`, 'success'); 
+                if(isCheckoutPending) { isCheckoutPending = false; goToShipping(); } else { closeModal(); }
+            }).catch(err => { showToast("Login Failed: " + err.message, 'error'); });
+        }
+
+        function goToShipping() { 
+            if(cart.length === 0) { showToast("Keranjang kosong!", 'warning'); return; }
+            if(!currentUser) { 
+                isCheckoutPending = true;
+                showToast("Silakan Login atau Daftar dulu untuk Checkout!", 'warning'); 
+                openAuthModal(); return; 
+            }
+            hideAllAreas(); document.getElementById('modalTitle').innerText = "SHIPPING INFO"; 
+            document.getElementById('cEmail').value = currentUser.email;
+            renderSavedAddresses();
+            if(document.getElementById('cName').value === "") document.getElementById('cName').value = currentUser.displayName || '';
+            document.getElementById('shippingArea').style.display = 'block'; 
+            document.getElementById('mainModal').style.display = 'flex';
+        }
+
+        function searchBiteshipDest(query) {
+            const resultBox = document.getElementById('cDestResults');
+            if(query.length < 3) { resultBox.style.display = 'none'; return; }
+            let prov = document.getElementById('cProv').value.trim(); let city = document.getElementById('cCity').value.trim();
+            let fullQuery = query; if(city) fullQuery = city + ' ' + fullQuery; if(prov) fullQuery = prov + ' ' + fullQuery;
+            clearTimeout(searchDestTimeout);
+            searchDestTimeout = setTimeout(async () => {
+                resultBox.innerHTML = '<div style="padding:10px; font-size:11px; color:#aaa;">Mencari di sistem Kurir...</div>'; resultBox.style.display = 'block';
+                try {
+                    const res = await fetch(`https://api.biteship.com/v1/maps/areas?countries=ID&input=${encodeURIComponent(fullQuery)}&type=single`, { headers: { 'Authorization': BITESHIP_KEY } });
+                    const data = await res.json();
+                    if(data.success && data.areas && data.areas.length > 0) {
+                        resultBox.innerHTML = data.areas.map(a => `<div class="biteship-item" onclick="selectBiteshipDest('${a.id}', '${a.name.replace(/'/g, "\\'")}', '${a.postal_code}')">${a.name}</div>`).join('');
+                    } else { resultBox.innerHTML = `<div style="padding:10px; font-size:11px; color:#ef4444;">Kecamatan tidak ditemukan.</div>`; }
+                } catch(e) { resultBox.innerHTML = '<div style="padding:10px; font-size:11px; color:#ef4444;">Gagal menghubungi server ongkir.</div>'; }
+            }, 600);
+        }
+
+        function selectBiteshipDest(id, fullName, zip) {
+            let shortName = fullName.split(',')[0].trim(); document.getElementById('cDestSearch').value = shortName; 
+            document.getElementById('cDestId').value = id; document.getElementById('cDestName').value = fullName;
+            if(zip) document.getElementById('cZip').value = zip; document.getElementById('cDestResults').style.display = 'none';
+        }
+
+        function renderSavedAddresses() {
+            const container = document.getElementById('savedAddressesContainer'); const list = document.getElementById('savedAddressesList');
+            if(savedAddresses.length > 0) {
+                container.style.display = 'block';
+                list.innerHTML = savedAddresses.map((adr, index) => `
+                    <div class="saved-address-card" onclick="useSavedAddress(${index})">
+                        <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:4px;">
+                            <div><b style="color:var(--primary); font-size:14px;">${adr.name}</b> <span style="color:#888;">(${adr.phone})</span></div>
+                            <span onclick="deleteSavedAddress(event, ${index})" style="color:#ef4444; font-size:18px; cursor:pointer; font-weight:bold; padding:0 5px;">×</span>
+                        </div>
+                        ${adr.street}, RT ${adr.rt}/RW ${adr.rw}, Kel. ${adr.village || '-'}, Kec. ${adr.destSearch || '-'}, ${adr.city || '-'}, Prov. ${adr.prov || '-'} - ${adr.zip}
+                    </div>`).join('');
+            } else { container.style.display = 'none'; }
+        }
+
+        function deleteSavedAddress(event, index) { event.stopPropagation(); if(confirm("Hapus alamat ini?")) { savedAddresses.splice(index, 1); localStorage.setItem('ganketiAddresses', JSON.stringify(savedAddresses)); renderSavedAddresses(); } }
+
+        function useSavedAddress(index) {
+            let adr = savedAddresses[index];
+            document.getElementById('cName').value = adr.name || ''; document.getElementById('cPhone').value = adr.phone || '';
+            document.getElementById('cStreet').value = adr.street || ''; document.getElementById('cRT').value = adr.rt || ''; document.getElementById('cRW').value = adr.rw || '';
+            document.getElementById('cProv').value = adr.prov || ''; document.getElementById('cCity').value = adr.city || ''; document.getElementById('cVillage').value = adr.village || '';
+            document.getElementById('cDestSearch').value = adr.destSearch || (adr.destName ? adr.destName.split(',')[0].trim() : ''); 
+            document.getElementById('cDestId').value = adr.destId || ''; document.getElementById('cDestName').value = adr.destName || ''; document.getElementById('cZip').value = adr.zip || '';
+            showToast("Alamat otomatis terisi!", "success");
+        }
+
+        function clearAddressForm() { ['cName', 'cPhone', 'cStreet', 'cRT', 'cRW', 'cProv', 'cCity', 'cVillage', 'cDestSearch', 'cDestId', 'cDestName', 'cZip'].forEach(id => document.getElementById(id).value = ''); }
+
+        async function calculateShipping() {
+            const cEmail = document.getElementById('cEmail').value; const cName = document.getElementById('cName').value.trim(); const cPhone = document.getElementById('cPhone').value.trim(); 
+            const cStreet = document.getElementById('cStreet').value.trim(); const cRT = document.getElementById('cRT').value.trim(); const cRW = document.getElementById('cRW').value.trim();
+            const cProv = document.getElementById('cProv').value.trim(); const cCity = document.getElementById('cCity').value.trim(); const cVillage = document.getElementById('cVillage').value.trim(); const cZip = document.getElementById('cZip').value.trim();
+            const destSearch = document.getElementById('cDestSearch').value.trim(); const destId = document.getElementById('cDestId').value; const destName = document.getElementById('cDestName').value;
+
+            if(!cName || !cPhone || !cStreet || !cRT || !cRW || !cProv || !cCity || !cVillage || !cZip || !destId || !destSearch) { showToast("Lengkapi data alamat dan pilih KECAMATAN dari dropdown!", 'error'); return; }
+            
+            const cAddress = `${cStreet}, RT ${cRT}/RW ${cRW}, Kel. ${cVillage}, Kec. ${destSearch}, ${cCity}, Prov. ${cProv}, ${cZip}`;
+            let subTotal = cart.reduce((sum, item) => sum + (item.price * item.qty), 0);
+
+            if(document.getElementById('saveAddressCheck').checked) {
+                let newAdr = { name: cName, phone: cPhone, street: cStreet, rt: cRT, rw: cRW, prov: cProv, city: cCity, village: cVillage, destSearch: destSearch, destName: destName, destId: destId, zip: cZip };
+                let isDuplicate = savedAddresses.some(a => a.street === newAdr.street && a.name === newAdr.name);
+                if(!isDuplicate) { savedAddresses.push(newAdr); localStorage.setItem('ganketiAddresses', JSON.stringify(savedAddresses)); }
+            }
+
+            pendingOrderData = { customer: { email: cEmail, name: cName, phone: cPhone, address: cAddress }, items: cart, subTotal: subTotal };
+
+            hideAllAreas(); document.getElementById('modalTitle').innerText = "OPSI PENGIRIMAN"; document.getElementById('shippingOptionsArea').style.display = 'block';
+            document.getElementById('courierListContainer').innerHTML = '<p style="color:#aaa; text-align:center; padding:20px;">Menghitung ongkos kirim resmi... ⏳</p>';
+
+            try {
+                let availableCouriers = cart[0].couriers || 'jne,jnt,sicepat'; let formatCouriers = availableCouriers.toLowerCase().replace(/j\&t/g, 'jnt').replace(/ /g, '');
+                let originId = cart[0].originId;
+                
+                if(!originId) {
+                    let baseOrigin = cart[0].origin || 'JAKARTA SELATAN'; let cleanOrigin = baseOrigin.replace(/KABUPATEN |KAB\. |KOTA /gi, '').trim();
+                    const getAreaId = async (searchQuery) => {
+                        const res = await fetch(`https://api.biteship.com/v1/maps/areas?countries=ID&input=${encodeURIComponent(searchQuery)}`, { headers: { 'Authorization': BITESHIP_KEY } });
+                        const data = await res.json(); if(data && data.areas && data.areas.length > 0) return data.areas[0].id; return null;
+                    };
+                    originId = await getAreaId(cleanOrigin);
+                }
+                if(!originId) throw new Error("Lokasi toko asal tidak valid/tidak ditemukan.");
+
+                let totalWeight = cart.reduce((sum, item) => sum + (500 * item.qty), 0); if(totalWeight < 1000) totalWeight = 1000;
+
+                const rateRes = await fetch('https://api.biteship.com/v1/rates/couriers', {
+                    method: 'POST', headers: { 'Authorization': BITESHIP_KEY, 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ origin_area_id: originId, destination_area_id: destId, couriers: formatCouriers, items: [{ name: "Apparel", value: subTotal, weight: totalWeight, quantity: 1 }] })
+                });
+
+                const rateData = await rateRes.json();
+                if(rateData.success && rateData.pricing && rateData.pricing.length > 0) {
+                    let courierHtml = rateData.pricing.map((p, idx) => {
+                        let isChecked = idx === 0 ? 'checked' : ''; let duration = p.duration ? p.duration : '2-4 hari';
+                        return `<label class="courier-card" onclick="updateShippingTotal(${p.price}, '${p.courier_name.toUpperCase()} - ${p.courier_service_name}')">
+                            <div style="display:flex; align-items:center; gap:10px;"><input type="radio" name="courierOption" value="${p.courier_name}" ${isChecked} style="width:16px; height:16px; accent-color:#f59e0b;">
+                                <div><b style="color:white; font-size:13px; text-transform:uppercase;">${p.courier_name} ${p.courier_service_name}</b><br><span style="font-size:10px; color:#888;">Estimasi tiba ${duration}</span></div>
+                            </div><b style="color:var(--primary); font-size:13px;">Rp ${p.price.toLocaleString('id-ID')}</b>
+                        </label>`;
+                    }).join('');
+                    document.getElementById('courierListContainer').innerHTML = courierHtml;
+                    setTimeout(() => { document.querySelector('input[name="courierOption"]:checked').parentElement.parentElement.click(); }, 100);
+                } else { throw new Error(rateData.error || "Kurir API tidak merespon."); }
+
+            } catch (e) {
+                let availableCouriers = (cart[0].couriers || 'JNE,J&T').split(',').map(s => s.trim());
+                let baseCost = destName.toUpperCase().includes("JAWA") || destName.toUpperCase().includes("BANDUNG") || destName.toUpperCase().includes("JAKARTA") ? 15000 : 35000;
+                if(destName.toUpperCase().includes("SUMATERA")) baseCost = 25000; if(destName.toUpperCase().includes("KALIMANTAN")) baseCost = 35000;
+                if(destName.toUpperCase().includes("SULAWESI") || destName.toUpperCase().includes("BALI")) baseCost = 45000; if(destName.toUpperCase().includes("PAPUA") || destName.toUpperCase().includes("MALUKU") || destName.toUpperCase().includes("NTT")) baseCost = 60000;
+                
+                let courierHtml = availableCouriers.map((c, idx) => {
+                    let fee = baseCost; if(c.toUpperCase() === 'JNE') fee += 2000; if(c.toUpperCase() === 'SICEPAT') fee -= 1000; if(c.toUpperCase() === 'ANTERAJA') fee += 500;
+                    let isChecked = idx === 0 ? 'checked' : ''; 
+                    return `<label class="courier-card" onclick="updateShippingTotal(${fee}, '${c.toUpperCase()} Reguler (Estimasi)')">
+                        <div style="display:flex; align-items:center; gap:10px;"><input type="radio" name="courierOption" value="${c}" ${isChecked} style="width:16px; height:16px; accent-color:#f59e0b;">
+                            <div><b style="color:white; font-size:13px;">${c} Reguler</b><br><span style="font-size:10px; color:#888;">Estimasi tiba 2-4 hari</span></div>
+                        </div><b style="color:var(--primary); font-size:13px;">Rp ${fee.toLocaleString('id-ID')}</b>
+                    </label>`;
+                }).join('');
+                document.getElementById('courierListContainer').innerHTML = courierHtml + `<p style="font-size:9px; color:#888; text-align:center; margin-top:10px;">*Menggunakan tarif estimasi sistem karena sedang sinkronisasi kurir.</p>`;
+                setTimeout(() => { document.querySelector('input[name="courierOption"]:checked').parentElement.parentElement.click(); }, 100);
+            }
+        }
+
+        function updateShippingTotal(fee, courierName) {
+            selectedShippingCost = fee; selectedCourierName = courierName; let grandTotal = pendingOrderData.subTotal + fee;
+            document.getElementById('sumSubtotal').innerText = `Rp ${pendingOrderData.subTotal.toLocaleString('id-ID')}`;
+            document.getElementById('sumShipping').innerText = `Rp ${fee.toLocaleString('id-ID')}`;
+            document.getElementById('sumGrandTotal').innerText = `Rp ${grandTotal.toLocaleString('id-ID')}`;
+            pendingOrderData.shippingCost = fee; pendingOrderData.courier = courierName; pendingOrderData.total = grandTotal;
+        }
+
+        function goToPayment() {
+            if(!pendingOrderData.shippingCost) return alert("Pilih jasa pengiriman dulu!");
+            hideAllAreas(); document.getElementById('modalTitle').innerText = "RINCIAN TAGIHAN";
+
+            let itemsHtml = pendingOrderData.items.map(i => `<div style="display:flex; justify-content:space-between; font-size:12px; border-bottom:1px dashed #333; padding:8px 0;"><div style="flex:1;"><b>${i.name}</b><br><span style="color:#888;">${i.qty} x Rp ${i.price.toLocaleString('id-ID')}</span></div><div style="font-weight:bold; color:white;">Rp ${(i.price * i.qty).toLocaleString('id-ID')}</div></div>`).join('');
+
+            document.getElementById('paymentArea').innerHTML = `
+                <p style="font-size: 12px; color: #4ade80; margin-bottom: 15px; text-align:center;">🔒 Secured by Midtrans</p>
+                <div style="background:#111; border:1px solid #333; border-radius:8px; padding:15px; margin-bottom:20px;">
+                    <h4 style="font-size:12px; color:#aaa; margin-bottom:10px; text-transform:uppercase; border-bottom:1px solid #333; padding-bottom:5px;">Rincian Pesanan</h4>
+                    ${itemsHtml}
+                    <div style="display:flex; justify-content:space-between; font-size:12px; padding:8px 0; border-bottom:1px solid #333; margin-top:5px;"><span style="color:#aaa;">Subtotal Produk:</span><b style="color:white;">Rp ${pendingOrderData.subTotal.toLocaleString('id-ID')}</b></div>
+                    <div style="display:flex; justify-content:space-between; font-size:12px; padding:8px 0;"><span style="color:#aaa;">Ongkos Kirim (${pendingOrderData.courier}):</span><b style="color:#ef4444;">Rp ${pendingOrderData.shippingCost.toLocaleString('id-ID')}</b></div>
+                </div>
+                <div style="text-align:center; margin-bottom:20px;"><span style="font-size:12px; color:#888;">Total yang harus dibayar:</span><br><b style="font-size:24px; color:var(--primary);">Rp ${pendingOrderData.total.toLocaleString('id-ID')}</b></div>
+                <button class="btn-main" onclick="processPaymentMidtrans()" style="background:#3b82f6; color:#fff; width:100%; padding:15px; font-weight:bold; border-radius:8px; border:none; font-size:14px; cursor:pointer;">LANJUT KE PEMBAYARAN ➔</button>
+            `;
+            document.getElementById('paymentArea').style.display = 'block';
+        }
+
+        async function processPaymentMidtrans() {
+            if(!pendingOrderData) { alert("Data pesanan kosong, silakan ulangi!"); return; }
+            const btn = document.querySelector('button[onclick="processPaymentMidtrans()"]');
+            if(btn) { btn.innerText = "MEMBUKA PEMBAYARAN... ⏳"; btn.disabled = true; }
+
+            try {
+                const invoiceNumber = "INV-GKT-" + Date.now(); const orderDate = new Date().toLocaleString('id-ID');
+                const newOrderRef = db.ref('orders').push(); const firebaseOrderId = newOrderRef.key; 
+
+                const res = await fetch('https://ganketi-kasir.vercel.app/api/checkout', {
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ order_id: firebaseOrderId, amount: pendingOrderData.total, customer_name: pendingOrderData.customer.name, customer_email: pendingOrderData.customer.email || 'ganketi@gmail.com', items: pendingOrderData.items, shipping_cost: pendingOrderData.shippingCost, courier: pendingOrderData.courier })
+                });
+                
+                const midtransData = await res.json();
+                
+                if(midtransData.token) {
+                    await newOrderRef.set({ invoice_no: invoiceNumber, date: orderDate, customer: pendingOrderData.customer, items: pendingOrderData.items, shippingCost: pendingOrderData.shippingCost, courier: pendingOrderData.courier, total: pendingOrderData.total, status: "UNPAID", payment_token: midtransData.token, timestamp: Date.now() });
+                    cart = []; localStorage.setItem('ganketiCart', JSON.stringify(cart)); updateCartCount();
+                    
+                    window.snap.pay(midtransData.token, {
+                        onSuccess: function(result){
+                            db.ref('orders/' + firebaseOrderId).update({ status: 'PAID' });
+                            showToast("Pembayaran Berhasil! ✅", "success");
+                            setTimeout(() => { window.location.href = 'index.html'; }, 1500); // Balik ke Home kalau udah bayar
+                        },
+                        onPending: function(result){
+                            showToast("Menunggu Pembayaran (Pending) ⏳", "info");
+                            setTimeout(() => { window.location.href = 'index.html'; }, 1500); // Balik ke Home lihat history
+                        },
+                        onError: function(result){
+                            showToast("Pembayaran Gagal ❌", "error");
+                            if(btn) { btn.disabled = false; btn.innerText = "LANJUT KE PEMBAYARAN ➔"; }
+                        },
+                        onClose: function(){
+                            showToast("Pembayaran ditunda. Cek di Track Order.", "warning");
+                            setTimeout(() => { window.location.href = 'index.html'; }, 1500);
+                        }
+                    });
+                } else {
+                    alert("Gagal dari Midtrans: " + JSON.stringify(midtransData));
+                    if(btn) { btn.disabled = false; btn.innerText = "LANJUT KE PEMBAYARAN ➔"; }
+                }
+            } catch(e) {
+                alert("Gagal konek ke server: " + e.message);
+                if(btn) { btn.disabled = false; btn.innerText = "LANJUT KE PEMBAYARAN ➔"; }
+            }
+        }
+
+        // ==========================================
         // 🔥 LOGIKA VALIDASI KEAMANAN ULASAN KETAT 🔥
+        // ==========================================
         async function openReviewModal() { 
             if(!currentUser) {
                 showToast("Silakan Login terlebih dahulu di halaman Home (Menu Kiri Atas) untuk memberi ulasan.", "error");
-                setTimeout(() => { window.location.href = 'index.html'; }, 2500);
                 return;
             }
 
@@ -394,19 +859,16 @@
             btn.disabled = true;
 
             try {
-                // 1. Cek apakah akun ini udah pernah ngasih ulasan di produk ini
                 const revSnap = await db.ref('reviews/' + productId).once('value');
                 if (revSnap.exists()) {
                     const revs = revSnap.val();
                     let alreadyReviewed = Object.values(revs).some(r => r.email === currentUser.email);
                     if (alreadyReviewed) {
-                        btn.innerText = originalText;
-                        btn.disabled = false;
+                        btn.innerText = originalText; btn.disabled = false;
                         return showToast("❌ Anda sudah pernah memberikan ulasan untuk produk ini.", "warning");
                     }
                 }
 
-                // 2. Cek apakah akun ini pernah beli produk ini dan statusnya SELESAI
                 const ordSnap = await db.ref('orders').orderByChild('customer/email').equalTo(currentUser.email).once('value');
                 let hasPurchased = false;
                 
@@ -415,31 +877,22 @@
                     for (let key in orders) {
                         let o = orders[key];
                         if (o.status === 'SELESAI') {
-                            // Cek apakah di dalam riwayat belanja ini ada ID produk yang lagi dibuka
                             let boughtItem = o.items.find(i => i.id === productId);
-                            if (boughtItem) {
-                                hasPurchased = true;
-                                break;
-                            }
+                            if (boughtItem) { hasPurchased = true; break; }
                         }
                     }
                 }
 
-                btn.innerText = originalText;
-                btn.disabled = false;
-
-                // Tolak kalau belum beli atau paket belum diterima
+                btn.innerText = originalText; btn.disabled = false;
                 if (!hasPurchased) {
                     return showToast("❌ Ulasan hanya bisa diberikan oleh pembeli yang telah menyelesaikan pesanan ini.", "error");
                 }
 
-                // Lolos semua Validasi, Buka Modal Ulasan!
                 setRating(5); 
                 document.getElementById('rName').value = currentUser.displayName || currentUser.email.split('@')[0];
                 document.getElementById('reviewModal').style.display='flex'; 
             } catch (e) {
-                btn.innerText = originalText;
-                btn.disabled = false;
+                btn.innerText = originalText; btn.disabled = false;
                 showToast("Terjadi kesalahan sistem: " + e.message, "error");
             }
         }
@@ -452,32 +905,17 @@
 
         function submitReview() {
             if(!currentUser) return showToast("Sesi login berakhir, silakan muat ulang halaman.", "error");
-            
-            let nama = document.getElementById('rName').value.trim();
-            let teks = document.getElementById('rText').value.trim();
+            let nama = document.getElementById('rName').value.trim(); let teks = document.getElementById('rText').value.trim();
             if(!teks) return alert("Komentar ulasan tidak boleh kosong!");
             
             const btnSub = document.getElementById('btnSubmitReview');
-            btnSub.innerText = "MENGIRIM... ⏳";
-            btnSub.disabled = true;
+            btnSub.innerText = "MENGIRIM... ⏳"; btnSub.disabled = true;
 
-            // Masukin data ulasan plus kunci emailnya biar gembok nyala
-            db.ref('reviews/' + productId).push({
-                name: nama, 
-                email: currentUser.email, // 🔥 Ini jejak digitalnya
-                rating: selectedRating, 
-                text: teks, 
-                timestamp: Date.now()
-            }).then(() => {
-                document.getElementById('reviewModal').style.display='none';
-                showToast("Terima kasih atas ulasannya! ⭐", "success");
-                btnSub.innerText = "KIRIM ULASAN";
-                btnSub.disabled = false;
-                loadReviews();
+            db.ref('reviews/' + productId).push({ name: nama, email: currentUser.email, rating: selectedRating, text: teks, timestamp: Date.now() }).then(() => {
+                document.getElementById('reviewModal').style.display='none'; showToast("Terima kasih atas ulasannya! ⭐", "success");
+                btnSub.innerText = "KIRIM ULASAN"; btnSub.disabled = false; loadReviews();
             }).catch(e => {
-                showToast("Gagal mengirim: " + e.message, "error");
-                btnSub.innerText = "KIRIM ULASAN";
-                btnSub.disabled = false;
+                showToast("Gagal mengirim: " + e.message, "error"); btnSub.innerText = "KIRIM ULASAN"; btnSub.disabled = false;
             });
         }
 
@@ -485,17 +923,12 @@
             db.ref('reviews/' + productId).on('value', snap => {
                 const data = snap.val(); const list = document.getElementById('reviewsList');
                 if(!data) return;
-                
                 let revs = Object.keys(data).map(k => data[k]).sort((a,b) => b.timestamp - a.timestamp);
-                let totalBintang = revs.reduce((sum, r) => sum + r.rating, 0);
-                let rataRata = (totalBintang / revs.length).toFixed(1);
-                
+                let totalBintang = revs.reduce((sum, r) => sum + r.rating, 0); let rataRata = (totalBintang / revs.length).toFixed(1);
                 let starDisplay = '★'.repeat(Math.round(rataRata)) + '☆'.repeat(5 - Math.round(rataRata));
                 document.getElementById('topRatingSummary').innerHTML = `${starDisplay} <span>(${rataRata} / 5 dari ${revs.length} ulasan)</span>`;
-
                 list.innerHTML = revs.map(r => {
-                    let rStars = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating);
-                    let d = new Date(r.timestamp).toLocaleDateString('id-ID');
+                    let rStars = '★'.repeat(r.rating) + '☆'.repeat(5 - r.rating); let d = new Date(r.timestamp).toLocaleDateString('id-ID');
                     return `<div class="review-card"><div class="r-stars">${rStars}</div><div class="r-user">${r.name} <span style="font-size:9px; color:#4ade80; font-weight:normal; border:1px solid #4ade80; padding:2px 4px; border-radius:3px; margin-left:5px;">✓ Pembeli Terverifikasi</span></div><div class="r-date">${d}</div><div class="r-text">${r.text}</div></div>`;
                 }).join('');
             });
