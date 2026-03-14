@@ -12,7 +12,7 @@
     <meta property="og:url" content="https://ganketi.store/">
     <meta property="og:title" content="GANKETI | Authentic Streetwear">
     <meta property="og:description" content="GANKETI represents modern elegance, authentic fashion, and timeless style">
-    <meta property="og:image" content="https://ganketi.store/ganketipreview.png">
+    <meta property="og:image" content="https://ganketi.store/ganketiweb.png">
 
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
@@ -176,20 +176,6 @@
         .newsletter input { width: 100%; max-width: 300px; padding: 12px; background: #111; border: 1px solid #333; color: white; border-radius: 4px; margin-bottom: 10px; outline: none;}
         .newsletter button { background: var(--primary); color: var(--bg); padding: 12px 20px; border: none; border-radius: 4px; font-weight: bold; cursor: pointer;}
 
-        .ganketi-invoice-wrapper { background: #fff; color: #000; padding: 40px; width: 800px; max-width: 100%; font-family: 'Inter', sans-serif; position: absolute; left: -9999px; top: -9999px; }
-        .inv-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 2px solid #000; padding-bottom: 20px; margin-bottom: 20px; }
-        .inv-logo { font-family: 'Oswald', sans-serif; font-size: 32px; font-weight: bold; letter-spacing: 2px; }
-        .inv-title { font-size: 24px; font-weight: bold; color: #888; letter-spacing: 4px; }
-        .inv-details { display: flex; justify-content: space-between; margin-bottom: 30px; font-size: 13px; line-height: 1.6; }
-        .inv-table { width: 100%; border-collapse: collapse; margin-bottom: 30px; font-size: 13px; }
-        .inv-table th { border-bottom: 2px solid #000; padding: 10px 0; text-align: left; font-weight: bold; text-transform: uppercase; }
-        .inv-table td { border-bottom: 1px solid #eee; padding: 15px 0; }
-        .inv-totals { width: 300px; float: right; font-size: 14px; }
-        .inv-totals-row { display: flex; justify-content: space-between; padding: 8px 0; }
-        .inv-totals-row.grand { font-size: 18px; font-weight: bold; border-top: 2px solid #000; padding-top: 15px; margin-top: 5px; }
-        .inv-footer { clear: both; text-align: center; margin-top: 50px; font-size: 12px; color: #888; border-top: 1px solid #eee; padding-top: 20px; }
-        .inv-badge { display: inline-block; padding: 5px 15px; background: #000; color: #fff; font-weight: bold; letter-spacing: 2px; font-size: 12px; border-radius: 4px; }
-        
         /* 🔥 CSS TABS TRACK ORDER 🔥 */
         .history-tabs { display: flex; gap: 5px; overflow-x: auto; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 10px; scrollbar-width: none;}
         .history-tabs::-webkit-scrollbar { display: none; }
@@ -262,6 +248,7 @@
             <div class="sidebar-item-sub" onclick="openMyOrders('UNPAID'); toggleMenu();" style="margin-top: 10px; color:#f59e0b; font-weight:bold;">Menunggu Pembayaran ⏳</div>
             <div class="sidebar-item-sub" onclick="openMyOrders('ALL'); toggleMenu();">Track Order / Riwayat</div>
             <div class="sidebar-item-sub" id="sideLoginBtn" onclick="handleAuth(); toggleMenu();" style="font-weight:bold; color:#fff;">Sign In</div>
+            
             <div style="margin-top: 30px; border-top: 1px solid #333; padding-top: 20px; text-align: center;">
                 <p style="color: #888; font-size: 10px; margin-bottom: 12px; text-transform: uppercase; font-weight: bold; letter-spacing: 0.5px;">Secured Payment By Midtrans</p>
                 <div style="display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; padding: 0 10px;">
@@ -272,7 +259,7 @@
                     <span style="border: 1px solid #444; color: #bbb; font-size: 9px; font-weight: bold; padding: 5px 8px; border-radius: 4px; background: #111; letter-spacing: 0.5px;">🛡️ MASTERCARD ID CHECK</span>
                 </div>
             </div>
-        </div>
+            </div>
     </div>
 
     <header>
@@ -359,8 +346,6 @@
         </div>
     </div>
 
-
-
     <footer>
         <div class="footer-grid">
             <div>
@@ -397,8 +382,6 @@
             &copy; 2026 GANKETI Official. All Rights Reserved.
         </div>
     </footer>
-
-    <div id="invoicePrintArea" class="ganketi-invoice-wrapper"></div>
 
     <div class="modal" id="mainModal">
         <div class="modal-box">
@@ -949,12 +932,11 @@
         }
         function removeItem(index) { cart.splice(index, 1); localStorage.setItem('ganketiCart', JSON.stringify(cart)); updateCartCount(); openCart(); }
 
-                let searchDestTimeout;
+        let searchDestTimeout;
         function searchBiteshipDest(query) {
             const resultBox = document.getElementById('cDestResults');
             if(query.length < 3) { resultBox.style.display = 'none'; return; }
             
-            // 🔥 FIX: Nggak usah digabung sama provinsi/kota lagi, langsung pake apa yang diketik user! 🔥
             let fullQuery = query.trim(); 
             
             clearTimeout(searchDestTimeout);
@@ -968,7 +950,6 @@
                             'Authorization': BITESHIP_KEY
                         }
                     });
-                    
                     const data = await res.json();
                     if(data.success && data.areas && data.areas.length > 0) {
                         resultBox.innerHTML = data.areas.map(a => {
@@ -983,7 +964,6 @@
                 }
             }, 600);
         }
-
 
         function selectBiteshipDest(id, fullName, zip) {
             let shortName = fullName.split(',')[0].trim();
@@ -1553,75 +1533,6 @@
                         </thead>
                         <tbody>${itemsHtml}</tbody>
                     </table>
-        function downloadInvoice(invNo) {
-            const order = globalUserOrders.find(o => o.invoice_no === invNo);
-            if(!order) return showToast("Data pesanan tidak ditemukan", "error");
-
-            showToast("Menyiapkan file Tagihan... ⏳", "info");
-
-            let shipCost = order.shippingCost || 0;
-            let courierName = order.courier || '-';
-            let subtotal = order.total - shipCost;
-            
-            let statusLabel = order.status === 'PAID' ? 'LUNAS (DIPROSES)' : 
-                              (order.status === 'SHIPPED' ? 'LUNAS (DIKIRIM)' : 
-                              (order.status === 'UNPAID' ? 'BELUM LUNAS / TAGIHAN' : order.status));
-            
-            let statusBgColor = order.status === 'UNPAID' ? '#ef4444' : '#000';
-
-            let custName = order.customer && order.customer.name ? order.customer.name : '-';
-            let custPhone = order.customer && order.customer.phone ? order.customer.phone : '-';
-            let custAddress = order.customer && order.customer.address ? order.customer.address : '-';
-
-            let itemsHtml = order.items.map(i => `
-                <tr>
-                    <td style="border-bottom: 1px solid #ddd; padding: 12px 5px; vertical-align: middle;"><b>${i.name || 'Produk'}</b><br><span style="color:#666; font-size:11px;">Size: ${i.sizes || 'All Size'} | Color: ${i.color || 'Default'}</span></td>
-                    <td style="border-bottom: 1px solid #ddd; padding: 12px 5px; text-align:center; vertical-align: middle;">${i.qty || 1}</td>
-                    <td style="border-bottom: 1px solid #ddd; padding: 12px 5px; text-align:right; vertical-align: middle;">Rp ${(i.price || 0).toLocaleString('id-ID')}</td>
-                    <td style="border-bottom: 1px solid #ddd; padding: 12px 5px; text-align:right; font-weight:bold; vertical-align: middle;">Rp ${((i.price || 0) * (i.qty || 1)).toLocaleString('id-ID')}</td>
-                </tr>
-            `).join('');
-
-            const invoiceHTML = `
-                <div style="background: #fff; color: #000; padding: 30px; font-family: Helvetica, Arial, sans-serif; width: 750px; box-sizing: border-box;">
-                    
-                    <table style="width: 100%; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px;">
-                        <tr>
-                            <td style="text-align: left; vertical-align: middle;">
-                                <span style="font-family: 'Oswald', sans-serif; font-size: 32px; font-weight: bold; letter-spacing: 2px;">GANKETI</span>
-                            </td>
-                            <td style="text-align: right; vertical-align: middle;">
-                                <span style="font-size: 24px; font-weight: bold; color: #888; letter-spacing: 4px;">INVOICE</span>
-                            </td>
-                        </tr>
-                    </table>
-
-                    <table style="width: 100%; margin-bottom: 30px; font-size: 13px; line-height: 1.6;">
-                        <tr>
-                            <td style="vertical-align: top; width: 50%; padding-right: 20px;">
-                                <b style="color:#000;">DITERBITKAN UNTUK:</b><br><br>
-                                <b style="font-size:14px;">${custName}</b><br>${custPhone}<br>${custAddress}
-                            </td>
-                            <td style="vertical-align: top; width: 50%; text-align: right;">
-                                <b style="color:#000;">DETAIL PESANAN:</b><br><br>
-                                <b>No. Invoice:</b> ${order.invoice_no}<br>
-                                <b>Tanggal:</b> ${order.date}<br><br>
-                                <span style="display: inline-block; padding: 5px 15px; background: ${statusBgColor}; color: #fff; font-weight: bold; letter-spacing: 2px; font-size: 12px; border-radius: 4px;">${statusLabel}</span>
-                            </td>
-                        </tr>
-                    </table>
-
-                    <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px; font-size: 13px;">
-                        <thead>
-                            <tr style="background-color: #f9f9f9;">
-                                <th style="border-bottom: 2px solid #000; padding: 10px 5px; text-align: left; font-weight: bold; text-transform: uppercase;">Deskripsi Produk</th>
-                                <th style="border-bottom: 2px solid #000; padding: 10px 5px; text-align: center; font-weight: bold; text-transform: uppercase;">Qty</th>
-                                <th style="border-bottom: 2px solid #000; padding: 10px 5px; text-align: right; font-weight: bold; text-transform: uppercase;">Harga</th>
-                                <th style="border-bottom: 2px solid #000; padding: 10px 5px; text-align: right; font-weight: bold; text-transform: uppercase;">Total</th>
-                            </tr>
-                        </thead>
-                        <tbody>${itemsHtml}</tbody>
-                    </table>
 
                     <table style="width: 100%; font-size: 14px;">
                         <tr>
@@ -1652,7 +1563,6 @@
                 </div>
             `;
 
-            // 🔥 OBAT ANTI BLANK: windowWidth diset ke 800 biar HP ngebaca ukurannya utuh 🔥
             var opt = {
               margin:       10,
               filename:     `${order.invoice_no}.pdf`,
@@ -1661,12 +1571,18 @@
               jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
 
-            // Masukin HTML murninya langsung ke mesin PDF!
-            html2pdf().set(opt).from(invoiceHTML).save().then(() => {
+            let printContainer = document.createElement('div');
+            printContainer.style.position = 'absolute';
+            printContainer.style.left = '-9999px';
+            printContainer.style.top = '-9999px';
+            printContainer.innerHTML = invoiceHTML;
+            document.body.appendChild(printContainer);
+
+            html2pdf().set(opt).from(printContainer).save().then(() => {
                 showToast("Tagihan berhasil diunduh! ✅", "success");
+                document.body.removeChild(printContainer);
             });
         }
-        
     </script>
 </body>
 </html>
