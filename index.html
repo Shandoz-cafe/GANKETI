@@ -12,7 +12,7 @@
     <meta property="og:url" content="https://ganketi.store/">
     <meta property="og:title" content="GANKETI | Authentic Streetwear">
     <meta property="og:description" content="GANKETI represents modern elegance, authentic fashion, and timeless style">
-    <meta property="og:image" content="ganketipreview.png">
+    <meta property="og:image" content="https://ganketi.store/ganketipreview.png">
 
     <link href="https://fonts.googleapis.com/css2?family=Oswald:wght@500;700&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
     
@@ -98,7 +98,6 @@
         .img-box img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
         .card:hover .img-box img { transform: scale(1.05); }
         
-        /* 🔥 EFEK HOVER GAMBAR KEDUA ALA WEB BRAND MAHAL 🔥 */
         .img-hover { position: absolute; top: 0; left: 0; opacity: 0; transition: opacity 0.5s ease; z-index: 2; width: 100%; height: 100%; object-fit: cover; }
         .card:hover .img-hover { opacity: 1; }
 
@@ -725,7 +724,6 @@
             sec.style.display = 'block';
             let features = Object.keys(data).map(k => data[k]).sort((a,b) => a.timestamp - b.timestamp).slice(0, 3);
             
-            // 🔥 RADAR AUTO-SCROLL PAS KLIK BANNER PROMO 🔥
             container.innerHTML = features.map(f => `<div class="f-card" onclick="filterCategory('${f.target}')"><img src="${f.image}"><div class="f-overlay"><span class="f-title">${f.title}</span></div></div>`).join('');
         });
 
@@ -796,13 +794,11 @@
                 setTimeout(() => { openCart(); }, 500); 
             }
             
-            // 🔥 RADAR CHECKOUT DARI PRODUCT.HTML 🔥
             const checkoutQuery = urlParams.get('checkout');
             if(checkoutQuery === 'true') {
                 setTimeout(() => { goToShipping(); }, 500); 
             }
 
-            // 🔥 RADAR URL SHARE PRODUK (biar pas dishare di WA, tetep bisa ngebuka bajunya) 🔥
             const itemId = urlParams.get('item');
             if(itemId && !isSharedItemOpened) {
                 isSharedItemOpened = true; 
@@ -810,7 +806,6 @@
             }
         });
 
-        // 🔥 FITUR BARU: AUTO-SCROLL PAS KLIK KATEGORI 🔥
         function filterCategory(cat) { 
             activeCategory = cat; 
             let titleText = cat === 'ALL' ? 'LATEST DROP' : cat;
@@ -825,7 +820,6 @@
             });
             renderProducts(); 
             
-            // Mulus meluncur ke bawah
             setTimeout(() => {
                 const el = document.querySelector('.sort-bar');
                 if (el) {
@@ -835,16 +829,14 @@
             }, 100);
         }
 
-        // 🔥 FITUR BARU: AUTO-SCROLL PAS KETIK LALU PENCET ENTER 🔥
         function searchProducts(event) {
             const keyword = document.getElementById('searchInput').value.toLowerCase(); activeCategory = 'ALL'; 
             document.querySelectorAll('.icon-item').forEach(el => el.classList.remove('active')); 
             if(document.querySelector('.icon-item')) document.querySelector('.icon-item').classList.add('active'); 
             renderProducts();
             
-            // Deteksi Enter dari Keyboard HP
             if (event && event.key === 'Enter') {
-                document.getElementById('searchInput').blur(); // Nutup keyboard otomatis
+                document.getElementById('searchInput').blur(); 
                 setTimeout(() => {
                     const el = document.querySelector('.sort-bar');
                     if (el) {
@@ -855,7 +847,6 @@
             }
         }
 
-        // 🔥 FIX KLIK BAJU: GAK PAKE POPUP LAGI, TAPI PINDAH KE PRODUCT.HTML 🔥
         function createProductCard(p) {
             let imgThumb = p.images && p.images.length > 0 ? p.images[0] : (p.image || 'https://via.placeholder.com/300');
             let hoverHtml = p.images && p.images.length > 1 ? `<img src="${p.images[1]}" class="img-hover" style="${(!p.stock || p.stock <= 0) ? 'filter: grayscale(100%);' : ''}">` : '';
@@ -863,7 +854,6 @@
             let priceHtml = p.originalPrice ? `<span class="price-strike">Rp ${p.originalPrice.toLocaleString('id-ID')}</span>Rp ${p.price.toLocaleString('id-ID')}` : `Rp ${p.price.toLocaleString('id-ID')}`;
             let displayCat = p.category ? p.category.split(',')[0] : '';
             
-            // Perhatikan tag <a> di bawah, ini kunci biar bisa pindah halaman dengan sempurna!
             return `<a href="product.html?id=${p.id}" class="card" style="text-decoration:none;"><div class="img-box"><div class="badge" style="background: ${isHabis ? '#ef4444' : 'var(--primary)'}; color: ${isHabis ? 'white' : 'black'}; z-index: 3;">${isHabis ? 'SOLD OUT' : 'ORIGINAL'}</div><img src="${imgThumb}" style="${isHabis ? 'filter: grayscale(100%); opacity: 0.5;' : ''}">${hoverHtml}</div><div class="info"><div class="cat">${displayCat}</div><div class="name">${p.name}</div><div class="price">${priceHtml}</div></div></a>`;
         }
 
@@ -934,9 +924,7 @@
             document.getElementById('mainModal').style.display = 'flex';
         }
 
-        // FUNGSI INI DIBIARKAN KOSONG TAPI TETEP ADA BIAR KODE LAMA LU NGGAK ERROR
         function openPreview(id) {
-            // Sudah diganti pakai link href di createProductCard
         }
 
         function updateCartCount() { document.getElementById('cartCount').innerText = cart.reduce((sum, item) => sum + item.qty, 0); }
@@ -1494,52 +1482,6 @@
             }
         }
 
-                function downloadInvoice(invNo) {
-            const order = globalUserOrders.find(o => o.invoice_no === invNo);
-            if(!order) return showToast("Data pesanan tidak ditemukan", "error");
-
-            showToast("Menyiapkan file Tagihan... ⏳", "info");
-
-            let shipCost = order.shippingCost || 0;
-            let courierName = order.courier || '-';
-            let subtotal = order.total - shipCost;
-            
-            let statusLabel = order.status === 'PAID' ? 'LUNAS (DIPROSES)' : 
-                              (order.status === 'SHIPPED' ? 'LUNAS (DIKIRIM)' : 
-                              (order.status === 'UNPAID' ? 'BELUM LUNAS / TAGIHAN' : order.status));
-            
-            let statusBgColor = order.status === 'UNPAID' ? '#ef4444' : '#000';
-
-            let custName = order.customer && order.customer.name ? order.customer.name : '-';
-            let custPhone = order.customer && order.customer.phone ? order.customer.phone : '-';
-            let custAddress = order.customer && order.customer.address ? order.customer.address : '-';
-
-            // Menggunakan Tabel Murni agar HP tidak bingung saat render PDF
-            let itemsHtml = order.items.map(i => `
-                <tr>
-                    <td style="border-bottom: 1px solid #ddd; padding: 12px 5px; vertical-align: middle;"><b>${i.name || 'Produk'}</b><br><span style="color:#666; font-size:11px;">Size: ${i.sizes || 'All Size'} | Color: ${i.color || 'Default'}</span></td>
-                    <td style="border-bottom: 1px solid #ddd; padding: 12px 5px; text-align:center; vertical-align: middle;">${i.qty || 1}</td>
-                    <td style="border-bottom: 1px solid #ddd; padding: 12px 5px; text-align:right; vertical-align: middle;">Rp ${(i.price || 0).toLocaleString('id-ID')}</td>
-                    <td style="border-bottom: 1px solid #ddd; padding: 12px 5px; text-align:right; font-weight:bold; vertical-align: middle;">Rp ${((i.price || 0) * (i.qty || 1)).toLocaleString('id-ID')}</td>
-                </tr>
-            `).join('');
-
-            const invoiceHTML = `
-                <div style="background: #fff; color: #000; padding: 30px; font-family: Helvetica, Arial, sans-serif; width: 700px; box-sizing: border-box;">
-                    
-                    <table style="width: 100%; border-bottom: 2px solid #000; padding-bottom: 10px; margin-bottom: 20px;">
-                        <tr>
-                            <td style="text-align: left; vertical-align: middle;">
-                                <span style="font-family: 'Oswald', sans-serif; font-size: 32px; font-weight: bold; letter-spacing: 2px;">GANKETI</span>
-                            </td>
-                            <td style="text-align: right; vertical-align: middle;">
-                                <span style="font-size: 24px; font-weight: bold; color: #888; letter-spacing: 4px;">INVOICE</span>
-                            </td>
-                        </tr>
-                    </table>
-
-                    <table style="width: 100%; margin-bottom: 30px; font-size: 13px; line-height: 1.6;">
-                        <tr>
         function downloadInvoice(invNo) {
             const order = globalUserOrders.find(o => o.invoice_no === invNo);
             if(!order) return showToast("Data pesanan tidak ditemukan", "error");
@@ -1647,16 +1589,19 @@
               jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
 
-            // 🔥 FIX: Taruh ke wadah HTML beneran biar mesin PDF bisa baca ukurannya 🔥
-            let printArea = document.getElementById('invoicePrintArea');
-            printArea.innerHTML = invoiceHTML;
+            // 🔥 CARA PALING SAKTI: Bikin wadah langsung pake Javascript 🔥
+            let printContainer = document.createElement('div');
+            printContainer.style.position = 'absolute';
+            printContainer.style.left = '-9999px';
+            printContainer.style.top = '-9999px';
+            printContainer.innerHTML = invoiceHTML;
+            document.body.appendChild(printContainer); // Tempel diem-diem
 
-            html2pdf().set(opt).from(printArea).save().then(() => {
+            html2pdf().set(opt).from(printContainer).save().then(() => {
                 showToast("Tagihan berhasil diunduh! ✅", "success");
-                printArea.innerHTML = ''; // Bersihin lagi wadahnya biar rapi
+                document.body.removeChild(printContainer); // Langsung hapus lagi biar bersih!
             });
         }
-
 
 
     </script>
