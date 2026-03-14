@@ -93,10 +93,15 @@
         .container { padding: 0 20px 30px 20px; max-width: 1200px; margin: 0 auto; min-height: 40vh; }
         .section-title { font-family: 'Oswald', sans-serif; font-size: 20px; letter-spacing: 1px; margin-bottom: 20px; border-bottom: 1px solid var(--border); padding-bottom: 10px; display:flex; justify-content: space-between; align-items:center;}
         .grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 15px; }
-        .card { background: var(--surface); border-radius: 8px; overflow: hidden; border: 1px solid var(--border); cursor: pointer; transition: 0.3s; display: flex; flex-direction: column; }
+        .card { background: var(--surface); border-radius: 8px; overflow: hidden; border: 1px solid var(--border); cursor: pointer; transition: 0.3s; display: flex; flex-direction: column; text-decoration: none;}
         .img-box { width: 100%; aspect-ratio: 1 / 1; background: #1a1a1a; position: relative; overflow: hidden; }
         .img-box img { width: 100%; height: 100%; object-fit: cover; transition: 0.5s; }
         .card:hover .img-box img { transform: scale(1.05); }
+        
+        /* 🔥 EFEK HOVER GAMBAR KEDUA ALA WEB BRAND MAHAL 🔥 */
+        .img-hover { position: absolute; top: 0; left: 0; opacity: 0; transition: opacity 0.5s ease; z-index: 2; width: 100%; height: 100%; object-fit: cover; }
+        .card:hover .img-hover { opacity: 1; }
+
         .badge { position: absolute; top: 10px; left: 10px; background: var(--primary); color: var(--bg); font-size: 10px; font-weight: 800; padding: 4px 8px; text-transform: uppercase; border-radius: 2px;}
         .info { padding: 15px; display: flex; flex-direction: column; flex-grow: 1; }
         .cat { font-size: 9px; color: var(--bg); background: var(--text-dim); padding: 3px 6px; border-radius: 4px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 5px; font-weight: bold; align-self: flex-start;}
@@ -114,14 +119,6 @@
         .modal-header { display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid var(--border); padding-bottom: 15px; margin-bottom: 20px; }
         .modal-title { font-family: 'Oswald', sans-serif; font-size: 18px; letter-spacing: 1px; text-transform: uppercase; }
         .close-btn { color: var(--text-dim); font-size: 24px; cursor: pointer; line-height: 1; }
-        .preview-slider { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; border-radius: 8px; border: 1px solid var(--border); margin-bottom: 15px; aspect-ratio: 1/1;}
-        .preview-slider::-webkit-scrollbar { display: none; }
-        .preview-slider img { width: 100%; height: 100%; object-fit: cover; flex-shrink: 0; scroll-snap-align: start; }
-        
-        .product-desc-box { background: #0a0a0a; border: 1px solid #222; border-radius: 8px; padding: 15px; margin-bottom: 15px; font-size: 12px; color: #ccc; line-height: 1.6;}
-        .product-desc-title { font-size: 11px; color: #888; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 8px; font-weight: bold; border-bottom: 1px dashed #333; padding-bottom: 5px;}
-
-        .stock-warn { font-size: 12px; font-weight: 600; padding: 8px; background: rgba(245, 158, 11, 0.1); color: #f59e0b; border-radius: 6px; margin-bottom: 15px; border: 1px solid rgba(245, 158, 11, 0.2);}
         
         .form-group { margin-bottom: 15px; }
         .form-group label { display: block; font-size: 11px; color: #aaa; margin-bottom: 5px; font-weight: bold; text-transform: uppercase; letter-spacing: 0.5px;}
@@ -717,6 +714,8 @@
             if(!data) { sec.style.display = 'none'; return; }
             sec.style.display = 'block';
             let features = Object.keys(data).map(k => data[k]).sort((a,b) => a.timestamp - b.timestamp).slice(0, 3);
+            
+            // 🔥 RADAR AUTO-SCROLL PAS KLIK BANNER PROMO 🔥
             container.innerHTML = features.map(f => `<div class="f-card" onclick="filterCategory('${f.target}')"><img src="${f.image}"><div class="f-overlay"><span class="f-title">${f.title}</span></div></div>`).join('');
         });
 
@@ -787,14 +786,21 @@
                 setTimeout(() => { openCart(); }, 500); 
             }
             
-            // 🔥 RADAR BARU: Kalau dari URL ketangkep fitur checkout=true, langsung buka modal CART 🔥
+            // 🔥 RADAR CHECKOUT DARI PRODUCT.HTML 🔥
             const checkoutQuery = urlParams.get('checkout');
             if(checkoutQuery === 'true') {
-                setTimeout(() => { openCart(); }, 500); 
+                setTimeout(() => { goToShipping(); }, 500); 
+            }
+
+            // 🔥 RADAR URL SHARE PRODUK (biar pas dishare di WA, tetep bisa ngebuka bajunya) 🔥
+            const itemId = urlParams.get('item');
+            if(itemId && !isSharedItemOpened) {
+                isSharedItemOpened = true; 
+                window.location.replace('product.html?id=' + itemId);
             }
         });
 
-        // 🔥 FITUR BARU: Auto Scroll ke bawah tiap kali klik Kategori 🔥
+        // 🔥 FITUR BARU: AUTO-SCROLL PAS KLIK KATEGORI 🔥
         function filterCategory(cat) { 
             activeCategory = cat; 
             let titleText = cat === 'ALL' ? 'LATEST DROP' : cat;
@@ -809,36 +815,37 @@
             });
             renderProducts(); 
             
-            // Perintah Meluncur ke Bawah
+            // Mulus meluncur ke bawah
             setTimeout(() => {
                 const el = document.querySelector('.sort-bar');
                 if (el) {
                     const y = el.getBoundingClientRect().top + window.scrollY - 80;
                     window.scrollTo({top: y, behavior: 'smooth'});
                 }
-            }, 150);
+            }, 100);
         }
 
-        // 🔥 FITUR BARU: Auto Scroll ke bawah tiap kali ketik search dan tekan "Enter" 🔥
+        // 🔥 FITUR BARU: AUTO-SCROLL PAS KETIK LALU PENCET ENTER 🔥
         function searchProducts(event) {
             const keyword = document.getElementById('searchInput').value.toLowerCase(); activeCategory = 'ALL'; 
             document.querySelectorAll('.icon-item').forEach(el => el.classList.remove('active')); 
             if(document.querySelector('.icon-item')) document.querySelector('.icon-item').classList.add('active'); 
             renderProducts();
             
-            // Deteksi kalau dipencet "Enter" di Keyboard HP
+            // Deteksi Enter dari Keyboard HP
             if (event && event.key === 'Enter') {
-                document.getElementById('searchInput').blur(); // Tutup keyboard HP
+                document.getElementById('searchInput').blur(); // Nutup keyboard otomatis
                 setTimeout(() => {
                     const el = document.querySelector('.sort-bar');
                     if (el) {
                         const y = el.getBoundingClientRect().top + window.scrollY - 80;
                         window.scrollTo({top: y, behavior: 'smooth'});
                     }
-                }, 150);
+                }, 100);
             }
         }
 
+        // 🔥 FIX KLIK BAJU: GAK PAKE POPUP LAGI, TAPI PINDAH KE PRODUCT.HTML 🔥
         function createProductCard(p) {
             let imgThumb = p.images && p.images.length > 0 ? p.images[0] : (p.image || 'https://via.placeholder.com/300');
             let hoverHtml = p.images && p.images.length > 1 ? `<img src="${p.images[1]}" class="img-hover" style="${(!p.stock || p.stock <= 0) ? 'filter: grayscale(100%);' : ''}">` : '';
@@ -846,7 +853,8 @@
             let priceHtml = p.originalPrice ? `<span class="price-strike">Rp ${p.originalPrice.toLocaleString('id-ID')}</span>Rp ${p.price.toLocaleString('id-ID')}` : `Rp ${p.price.toLocaleString('id-ID')}`;
             let displayCat = p.category ? p.category.split(',')[0] : '';
             
-            return `<div class="card" onclick="openPreview('${p.id}')"><div class="img-box"><div class="badge" style="background: ${isHabis ? '#ef4444' : 'var(--primary)'}; color: ${isHabis ? 'white' : 'black'};">${isHabis ? 'SOLD OUT' : 'ORIGINAL'}</div><img src="${imgThumb}" style="${isHabis ? 'filter: grayscale(100%); opacity: 0.5;' : ''}"></div><div class="info"><div class="cat">${displayCat}</div><div class="name">${p.name}</div><div class="price">${priceHtml}</div></div></div>`;
+            // Perhatikan tag <a> di bawah, ini kunci biar bisa pindah halaman dengan sempurna!
+            return `<a href="product.html?id=${p.id}" class="card" style="text-decoration:none;"><div class="img-box"><div class="badge" style="background: ${isHabis ? '#ef4444' : 'var(--primary)'}; color: ${isHabis ? 'white' : 'black'}; z-index: 3;">${isHabis ? 'SOLD OUT' : 'ORIGINAL'}</div><img src="${imgThumb}" style="${isHabis ? 'filter: grayscale(100%); opacity: 0.5;' : ''}">${hoverHtml}</div><div class="info"><div class="cat">${displayCat}</div><div class="name">${p.name}</div><div class="price">${priceHtml}</div></div></a>`;
         }
 
         function renderProducts() {
@@ -916,117 +924,9 @@
             document.getElementById('mainModal').style.display = 'flex';
         }
 
+        // FUNGSI INI DIBIARKAN KOSONG TAPI TETEP ADA BIAR KODE LAMA LU NGGAK ERROR
         function openPreview(id) {
-            hideAllAreas(); const p = globalProducts.find(x => x.id === id); if(!p) return;
-            document.getElementById('modalTitle').innerText = 'PRODUCT DETAIL'; 
-            const previewBox = document.getElementById('previewArea');
-            let imgArray = p.images ? p.images : [p.image]; let isHabis = (!p.stock || p.stock <= 0);
-            
-            let sliderHtml = `<div class="preview-slider">`; imgArray.forEach(img => { sliderHtml += `<img src="${img}" style="${isHabis ? 'filter: grayscale(100%); opacity: 0.5;' : ''}">`; }); sliderHtml += `</div>`;
-            if(imgArray.length > 1) sliderHtml += `<div style="text-align:center; font-size:10px; color:var(--text-dim); margin-top:-10px; margin-bottom:15px;">⟵ Swipe Image ⟶</div>`;
-            
-            let sizesArr = p.sizes ? p.sizes.split(',').map(s => s.trim()) : ['All Size'];
-            let sizeOptions = sizesArr.map(s => `<option value="${s}">${s}</option>`).join('');
-            let sizeHtml = `<div class="form-group"><label>Pilih Ukuran / Varian</label><select id="previewSize">${sizeOptions}</select></div>`;
-            
-            let colorsArr = p.colors && p.colors !== 'Default' ? p.colors.split(',').map(c => c.trim()) : [];
-            let colorHtml = '';
-            if (colorsArr.length > 0) {
-                let colorOptions = colorsArr.map(c => `<option value="${c}">${c}</option>`).join('');
-                colorHtml = `<div class="form-group"><label>Pilih Warna</label><select id="previewColor">${colorOptions}</select></div>`;
-            } else {
-                colorHtml = `<input type="hidden" id="previewColor" value="Default">`;
-            }
-
-            let unit = p.unit || 'pcs';
-            let minQty = p.minOrder ? parseInt(p.minOrder) : 1;
-            let maxQty = p.maxOrder && p.maxOrder < 9999 ? parseInt(p.maxOrder) : p.stock;
-            if(maxQty > p.stock) maxQty = p.stock; 
-
-            let qtyHtml = `<div style="display:flex; gap:10px; margin-bottom:15px;">
-                <div class="form-group" style="flex:1;">
-                    <label>Jumlah (${unit})</label>
-                    <input type="number" id="previewQty" value="${minQty}" min="${minQty}" max="${maxQty}" style="width:100%; font-weight:bold; font-size:16px;">
-                </div>
-                <div style="flex:1; align-self:center; font-size:10px; color:#888;">
-                    Min Order: ${minQty} ${unit} <br> Max Order: ${maxQty} ${unit}
-                </div>
-            </div>`;
-
-            let descHtml = '';
-            if(p.desc && p.desc.trim() !== '') {
-                let formattedDesc = p.desc.replace(/\n/g, '<br>');
-                descHtml = `<div class="product-desc-box"><div class="product-desc-title">Deskripsi Detail</div>${formattedDesc}</div>`;
-            }
-
-            let stockHtml = isHabis ? `<div class="stock-warn" style="color:#ef4444; border-color:rgba(239,68,68,0.2); background:rgba(239,68,68,0.1);">Out of Stock!</div>` : `<div class="stock-warn">🔥 Sisa ${p.stock} ${unit} lagi di gudang!</div>`;
-            let btnHtml = isHabis ? `<button class="btn-main" disabled>SOLD OUT</button>` : `<button class="btn-main" style="background:#f59e0b; color:#000;" onclick="addToCart('${p.id}')">ADD TO CART</button>`;
-            let priceHtml = p.originalPrice ? `<span style="font-size:12px; text-decoration:line-through; color:#ef4444; margin-right:8px; font-family:'Inter';">Rp ${p.originalPrice.toLocaleString('id-ID')}</span>Rp ${p.price.toLocaleString('id-ID')}` : `Rp ${p.price.toLocaleString('id-ID')}`;
-            
-            let titleAndShareHtml = `
-            <div style="display:flex; justify-content:space-between; align-items:flex-start; margin-bottom: 5px;">
-                <h3 style="font-size: 18px; color: white; line-height: 1.3; flex:1; padding-right:10px;">${p.name}</h3>
-                <button onclick="shareProduct('${p.id}')" style="background:#222; border:1px solid #444; color:white; border-radius:50%; width:35px; height:35px; font-size:16px; cursor:pointer; display:flex; justify-content:center; align-items:center; flex-shrink:0;" title="Bagikan Produk">📤</button>
-            </div>`;
-
-            previewBox.innerHTML = `${sliderHtml}${titleAndShareHtml}<p style="font-size: 16px; font-weight: bold; color: var(--primary); margin-bottom: 15px; font-family: 'Oswald';">${priceHtml} <span style="font-size:12px; font-weight:normal; color:#888; font-family:'Inter';">/ ${unit}</span></p>${descHtml}${stockHtml}${colorHtml}${sizeHtml}${qtyHtml}${btnHtml}`;
-            previewBox.style.display = 'block'; document.getElementById('mainModal').style.display = 'flex';
-
-            window.history.replaceState({}, '', '?item=' + p.id);
-        }
-
-        function shareProduct(id) {
-            const p = globalProducts.find(x => x.id === id);
-            if(!p) return;
-            
-            const shareUrl = window.location.origin + window.location.pathname + '?item=' + p.id;
-            const shareText = `GANKETI | ${p.name}\nHarga: Rp ${p.price.toLocaleString('id-ID')}\n\nCek selengkapnya di sini: `;
-
-            if (navigator.share) {
-                navigator.share({
-                    title: p.name,
-                    text: shareText,
-                    url: shareUrl
-                }).catch(console.error);
-            } else {
-                navigator.clipboard.writeText(shareText + shareUrl).then(() => {
-                    showToast("Link produk berhasil disalin! 📋", "success");
-                });
-            }
-        }
-
-        function addToCart(id) {
-            const product = globalProducts.find(p => p.id === id); 
-            const selectedSize = document.getElementById('previewSize').value; 
-            const selectedColor = document.getElementById('previewColor') ? document.getElementById('previewColor').value : 'Default';
-            const inputQty = parseInt(document.getElementById('previewQty').value);
-
-            let minQty = product.minOrder ? parseInt(product.minOrder) : 1;
-            let maxQty = product.maxOrder && product.maxOrder < 9999 ? parseInt(product.maxOrder) : product.stock;
-            if(maxQty > product.stock) maxQty = product.stock;
-
-            if (isNaN(inputQty) || inputQty < minQty) { showToast(`Minimal order adalah ${minQty} ${product.unit || 'pcs'}`, 'warning'); return; }
-            if (inputQty > maxQty) { showToast(`Maksimal order adalah ${maxQty} ${product.unit || 'pcs'}`, 'warning'); return; }
-
-            const cartItemId = id + '-' + selectedColor + '-' + selectedSize;
-            const existing = cart.find(c => c.cartItemId === cartItemId);
-            
-            let totalRequested = existing ? existing.qty + inputQty : inputQty;
-            if (totalRequested > maxQty) { showToast(`Total di keranjang melebihi batas maksimal / stok!`, 'warning'); return; }
-
-            if(existing) { 
-                existing.qty += inputQty; 
-            } else { 
-                let displayName = selectedColor === 'Default' ? `${product.name} (${selectedSize})` : `${product.name} (${selectedColor} - ${selectedSize})`;
-                cart.push({ ...product, cartItemId: cartItemId, name: displayName, qty: inputQty, color: selectedColor }); 
-            }
-            
-            let cartItemIndex = cart.findIndex(c => c.cartItemId === cartItemId);
-            cart[cartItemIndex].origin = product.origin || 'JAKARTA SELATAN'; 
-            cart[cartItemIndex].originId = product.originId || null; 
-            cart[cartItemIndex].couriers = product.couriers || 'jne,jnt,sicepat';
-
-            localStorage.setItem('ganketiCart', JSON.stringify(cart)); updateCartCount(); closeModal(); showToast('Added to Cart! 🛒', 'success');
+            // Sudah diganti pakai link href di createProductCard
         }
 
         function updateCartCount() { document.getElementById('cartCount').innerText = cart.reduce((sum, item) => sum + item.qty, 0); }
@@ -1321,13 +1221,11 @@
             pendingOrderData.total = grandTotal;
         }
 
-        // 🔥 FUNGSI PEMBAYARAN DIROMBAK JADI INVOICE SUMMARY 🔥
         function goToPayment() {
             if(!pendingOrderData.shippingCost) return alert("Pilih jasa pengiriman dulu!");
             hideAllAreas();
             document.getElementById('modalTitle').innerText = "RINCIAN TAGIHAN";
 
-            // Susun HTML buat rincian item
             let itemsHtml = pendingOrderData.items.map(i => {
                 return `<div style="display:flex; justify-content:space-between; font-size:12px; border-bottom:1px dashed #333; padding:8px 0;">
                             <div style="flex:1;"><b>${i.name}</b><br><span style="color:#888;">${i.qty} x Rp ${i.price.toLocaleString('id-ID')}</span></div>
@@ -1335,7 +1233,6 @@
                         </div>`;
             }).join('');
 
-            // Suntik HTML Rincian Pesanan ke dalam paymentArea
             document.getElementById('paymentArea').innerHTML = `
                 <p style="font-size: 12px; color: #4ade80; margin-bottom: 15px; text-align:center;">🔒 Secured by Midtrans</p>
                 
@@ -1374,7 +1271,6 @@
                 const newOrderRef = db.ref('orders').push(); 
                 const firebaseOrderId = newOrderRef.key; 
 
-                // Minta Token Pop-up ke Mesin Vercel
                 const res = await fetch('https://ganketi-kasir.vercel.app/api/checkout', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -1392,7 +1288,6 @@
                 const midtransData = await res.json();
                 
                 if(midtransData.token) {
-                    // Simpan data orderan ke Firebase dengan status UNPAID + Token-nya
                     await newOrderRef.set({ 
                         invoice_no: invoiceNumber, 
                         date: orderDate, 
@@ -1416,7 +1311,7 @@
                         },
                         onPending: function(result){
                             showToast("Menunggu Pembayaran (Pending) ⏳", "info");
-                            openMyOrders('UNPAID'); // Lempar ke menu Menunggu Pembayaran
+                            openMyOrders('UNPAID');
                         },
                         onError: function(result){
                             showToast("Pembayaran Gagal ❌", "error");
@@ -1424,7 +1319,7 @@
                         },
                         onClose: function(){
                             showToast("Pembayaran ditunda. Cek di Track Order.", "warning");
-                            openMyOrders('UNPAID'); // Lempar ke menu Menunggu Pembayaran
+                            openMyOrders('UNPAID');
                         }
                     });
 
@@ -1438,13 +1333,11 @@
             }
         }
 
-        // 🔥 MENU TRACK ORDER DENGAN SISTEM TABS SEPERTI SHOPEE/TOKOPEDIA 🔥
         function openMyOrders(initialTab = 'ALL') {
             if(!currentUser) { showToast("Please Sign In first!", 'warning'); setTimeout(() => handleAuth(), 1500); return; }
             hideAllAreas(); document.getElementById('modalTitle').innerText = "TRACK ORDER";
             document.getElementById('historyArea').style.display = 'block'; document.getElementById('mainModal').style.display = 'flex';
             
-            // Pilih Tab Otomatis
             let tabs = document.querySelectorAll('.h-tab-btn');
             tabs.forEach(t => t.classList.remove('active'));
             if(initialTab === 'UNPAID') tabs[0].classList.add('active');
